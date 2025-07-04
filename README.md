@@ -16,12 +16,18 @@ This repository contains all data, code, and results related to our study on ext
 │
 ├───figures
 │
+├───results
+│   ├───extracted_urls_1000_per_year.json
+│   └───extracted_urls_1000_per_year_10_samples_all_12_folders.json
+│
 ├───scripts
 │   ├───convert_pdf_using_grobid.py
 │   └───pdf_to_text_converter_arxiv.py
 │
 ├───arxiv_extracted_urls_comparison.xlsx
+├───arxiv_file_formats.ipynb
 └───README.md
+
 ```
 
 ---
