@@ -1,0 +1,933 @@
+<?xml version="1.0" encoding="UTF-8"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Non-subjective power analysis to detect G×E interactions in Genome-Wide Association Studies in presence of confounding factor</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2018-10-16">October 16, 2018</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">F</forename><surname>Alarcon</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="laboratory" key="lab1">MAP5</orgName>
+								<orgName type="laboratory" key="lab2">UMR CNRS 8145</orgName>
+								<orgName type="institution">Sorbonne Paris Cité University</orgName>
+								<address>
+									<settlement>Paris</settlement>
+									<country key="FR">France</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">V</forename><surname>Perduca</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="laboratory" key="lab1">MAP5</orgName>
+								<orgName type="laboratory" key="lab2">UMR CNRS 8145</orgName>
+								<orgName type="institution">Sorbonne Paris Cité University</orgName>
+								<address>
+									<settlement>Paris</settlement>
+									<country key="FR">France</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">G</forename><surname>Nuel</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="laboratory">LPMA</orgName>
+								<orgName type="institution" key="instit1">UPMC</orgName>
+								<orgName type="institution" key="instit2">Sorbonne University</orgName>
+								<address>
+									<settlement>Paris</settlement>
+									<country key="FR">France</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Non-subjective power analysis to detect G×E interactions in Genome-Wide Association Studies in presence of confounding factor</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2018-10-16">October 16, 2018</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">69299C8EAE9DED722A38B73D0D1F6964</idno>
+					<idno type="arXiv">arXiv:1406.4592v1[stat.AP]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2025-01-29T07:20+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Background. It is generally acknowledged that most complex diseases are affected in part by interactions between genes and genes and/or between genes and environmental factors. Taking into account environmental exposures and their interactions with genetic factors in genome-wide association studies (GWAS) can help to identify high-risk subgroups in the population and provide a better understanding of the disease. For this reason, many methods have been developed to detect gene-environment (G×E) interactions. Despite this, few loci that interact with environmental exposures have been identified so far. Indeed, the modest effect of G×E interactions as well as confounding factors entail low statistical power to detect such interactions.</p><p>Results. In this work, we provide a simulated dataset in order to study methods for detecting G×E interactions in GWAS in presence of confounding factor and population structure. Our work applies a recently introduced non-subjective method for H1 simulations called waffect and exploits the publicly available HapMap project to build a datasets with real genotypes and population structures. We use this dataset to study the impact of confounding factors and compare the relative performance of popular methods such as PLINK, random forests and linear mixed models to detect G×E interactions.</p><p>Conclusion. Presence of confounding factor is an obstacle to detect G×E interactions in GWAS and the approaches considered in our power study all have insufficient power to detect the strong simulated interaction. Our simulated dataset could help to develop new methods which account for confounding factors through latent exposures in order to improve power.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Genome-wide association studies (GWAS) are a standard method to identify common genetic factors that influence health and disease conditions. These methods have improved our understanding of the genetic basis of many complex traits and are among the most used tools for analyzing complex diseases. However, it is known that most complex diseases (e.g. diabetes, asthma and cancer) are due to combined effect of genes, environmental factors, as well as their interactions <ref type="bibr" target="#b16">(Murcray et al., 2009)</ref>.</p><p>Over the last years, considerable efforts have been put to detect gene-environment interactions (G×E) in GWAS and few loci that interact with environmental exposures have been identified <ref type="bibr" target="#b21">(Rothman et al., 2010;</ref><ref type="bibr" target="#b10">Hamza et al., 2011;</ref><ref type="bibr" target="#b7">Garcia-Closas et al., 2010)</ref>.</p><p>However, this problem is well known to be challenging due, in part, to the modest effect of such interactions in terms of relative risk. Another reason why detecting G×E interactions is difficult is population structure which can partially explain spurious associations <ref type="bibr" target="#b0">(Astle and Balding, 2009)</ref>. Environmental confounding factors can also be an obstacle for detecting G×E interactions. VanderWeele et al. have studied extensively the implications of confounding factors in G×E interactions studies <ref type="bibr" target="#b27">(VanderWeele et al., 2013</ref><ref type="bibr" target="#b26">(VanderWeele et al., , 2012))</ref>. However, they were more concerned about the rise of false positives in presence of environmental confounding than by the lose of power to detect the causal loci. Indeed, if the environmental factor that interacts with a susceptibility gene is unobserved but is correlated at some extent with one or several observed factors, not taking it into account could decrease radically the power to detect the G×E interactions.</p><p>Nowadays, several methods are available to perform GWAS. In principle, they could be used to detect G×E interactions. Among them, PLINK <ref type="bibr" target="#b18">(Purcell et al., 2007)</ref> can be considered as a gold standard for classical analysis. A major concern in GWAS is the need to account for the complicate dependence structure in the data, between loci as well as between individuals. Effects of population stratification can be easily accounted in PLINK by adding the PCA's first components as covariates.</p><p>As an alternative, linear mixed models stem as promising statistical methods to correct for the stratification in the population. A popular implementation of linear mixed models is Fast-LMM <ref type="bibr" target="#b14">(Lippert et al., 2011)</ref>.</p><p>Furthermore, powerful data mining techniques are being increasingly used. Among them, the application of random forests (RFs) to the discovery of SNPs related to human diseases has grown in recent years <ref type="bibr" target="#b9">(Goldstein et al., 2010)</ref>.</p><p>Each time a new method is introduced, it is obviously essential to evaluate its performance in comparison with existing techniques through power studies <ref type="bibr" target="#b22">(Spencer et al., 2009)</ref>. However, such studies are often conducted by performing H1 simulations under models which are very similar to the ones used to design the new method, thus giving it an obvious advantage over the other methods. It is hence quite common to see many concurrent approaches each claiming to outperform all others.</p><p>Recently, a new method for H1 simulations called waffect (pronounced "double-u affect" for weighted affectations) has been introduced to avoid this issue <ref type="bibr" target="#b17">(Perduca et al., 2012)</ref>. Indeed, this method does not make any other assumption than the causal disease model itself, whose choice is completely unconstrained. waffect uses weighted permutations to generate phenotypes conditionally to the genotypes and covariates by taking into account both the causal disease model and the design of the study. With this new approach, it is hence possible to produce non-subjective H1 datasets which do not favor one analysis method over the others.</p><p>The aim of this paper is twofold: 1-To propose an useful simulated dataset based on real genotypes with a confounding factor that interacts with the causal locus and is correlated with the observed covariates. For this purpose, we exploited the publicly available HapMap project datasets <ref type="bibr" target="#b24">(Thorisson et al., 2005)</ref> to obtain real genotypes with population structures, and we used waffect to generate phenotypes for a chosen causal disease model. This simulated dataset could be very useful for future works aiming at studying the many issues involved in the detection of G×E interactions in GWAS. 2-To study the effect of a confounding factor on the power to detect G×E interactions in GWAS. For this purpose, we compared four approaches based on three popular methods (PLINK, Fast-LMM and random forests) by performing power analysis on our simulated dataset.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Simulated Dataset</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Genotypes</head><p>The genotypic dataset used in our study was extracted from the HapMap phase III database of genetic variations <ref type="bibr" target="#b8">(Gibbs et al., 2003)</ref>. This database investigates 11 human populations including 57 unrelated MEX, 146 unrelated YRI, 52 unrelated ASW, 110 unrelated CEU, 154 unrelated MKK, 137 unrelated CHB, 109 unrelated CHD, 101 unrelated GIH, 113 unrelated JPT, 110 unrelated LWK and 102 unrelated TSI. Only the SNPs that are shared by all populations were retained.</p><p>Principal component analysis (PCA) was performed on the whole genome, keeping one SNP over 1000 SNPs; the first five principal components (pca i , i = 1, . . . , 5) were considered as covariates. Figure <ref type="figure">1</ref> shows that the PCs allow to retrieve easily the information about the population.</p><p>The association analysis in our study were conducted on Chromosome 6, after quality control including Hardy Weinberg equilibrium testing and exclusion of SNPs with a minor allele frequency (MAF) less than 5%.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Covariates</head><p>Covariates and phenotypes were simulated in order to mimic a complex interaction between an arbitrarily chosen causal SNP and a confounding factor through a latent exposure (called treatment). The latent exposure was defined with high correlation with two observed covariates (bmi, for body mass index, and sex) as well as with the population of belonging. The idea is that the treatment is typically taken by women (and less often by men) trying to loose weight.</p><p>bmi was simulated taken into account the five first principal components and another environmental covariate denoted smoking. This binary variable was simulated to mimic smoking behaviors with a probability distribution which depends on the population and sex. Indeed, women usually smoke less than men with this difference depending on the population. In order to simulate the smoking covariate, the eleven populations were classified in three sub-populations: European (E); African (Af) and Asian (As).</p><p>In the European sub-population, we considered that 32% of individuals were smokers. More specifically, we supposed that 37% of men and 27% of women were smokers. In the African subpopulation, the prevalence of smoking was supposed to be 27%: 43.8% among men and 12.9% among women <ref type="bibr" target="#b4">(Christopoulou and Lillard, 2011)</ref>. At last, in the Asian sub-population, we considered that 27% of individuals were smokers: 45.7% among men and 4.8 % among women <ref type="bibr" target="#b25">(Tsai et al., 2008)</ref>. Covariate sex was obtained from HapMap data.</p><p>Specifically, bmi was simulated with a regression on the first five principal components in order to have 60% of heritability and with a residual standard deviation of 4.0. To take into account the fact that in average smokers have a lower bmi than non-smokers, we simulated a smoker effect in the bmi covariate by adding a score of 1.5 to the bmi average for non-smokers <ref type="bibr" target="#b3">(Chiolero et al., 2008)</ref>.</p><p>The individual probability to take a treatment, P(treatment), was correlated with covariates bmi, sex and the population of belonging as follows:</p><formula xml:id="formula_0">1/P(treatment) = (1 + 2 × 1 sex=1 ) × [1 + exp(-bmi + 25 + γ)]</formula><p>where γ ∈ {-inf, -0.1, 0, 0.15, -0.45, 0.35, 0.6, -0.4, 0.05, 0.1} for population 1 to 11.</p><p>To sum up, in our standard design covariates sex, pca i , (i = 1, . . . , 5), bmi and smoking were supposed observed. The population of belonging, covariate treatment and the other principal components were supposed unknown (even though these are easily computable).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Disease Model</head><p>We arbitrarily chose the SNP in position 22,683,075 in a dense area of chromosome 6, as the binary susceptibility locus, denoted causalSNP. Assuming a dominant effect, we encoded causalSNP = 1 in presence of at least one minor frequency allele and causalSNP = 0 otherwise. We considered a disease model with a very strong G×E interaction (relative risk of 50) with a baseline prevalence of 1%:</p><formula xml:id="formula_1">P(disease) = 0.01 × (1.0 + 50.0 × 1 causalSNP=1 × 1 treatment=1 )</formula><p>It is important to stress that this is not a very realistic model of complex disease due to the lack of genetic marginal effects and also due to the very strong interaction with a relative risk (RR) equal to 50. We chose not to include any marginal effects for sake of clarity and because we were interested on the detection of G×E interactions. Concerning the strong G×E interaction, we chose to have a relative risk as 50 in order to increase the chance of detecting the G×E interaction in presence of the simulated confounding factor.</p><p>Phenotypes were simulated accordingly to the disease models by means of the package waffect <ref type="bibr" target="#b17">(Perduca et al., 2012)</ref> publicly available on the CRAN server of R packages <ref type="bibr" target="#b19">(R Core Team, 2013)</ref>. This enabled us to simulate exactly 595 cases and 596 controls for the 1191 individuals from the HapMap genotypic dataset (see next session for a comprehensive introduction to waffect ).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Power analysis</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Phenotype Simulations</head><p>In order to assess the empirical statistical power of different tools to detect associations, we simulated 200 phenotypes replicates under the disease model H1 and 200 phenotypes replicates under the null hypothesis H0 of no association. Each replicate consists of 1191 phenotypes, one for each individual.</p><p>The simulations under H0 were obtained by simply permuting the phenotypes, thus breaking potential associations between phenotypes and genotypes. The simulations under the alternative hypothesis H1 were performed using the R package waffect publicly available on CRAN <ref type="bibr" target="#b17">(Perduca et al., 2012)</ref>.</p><p>The principal function in waffect is based on a backward sampling algorithm which makes it possible to generate weighted permutations. For the purposes of phenotype simulation, the vector of weights is given by the penetrance, that is the probability for each individual to be a case according to the disease model. One crucial consequence of using weighted permutations is that the number of cases and controls is constant across the replicates. This makes it possible to respect the original design in each replicate and therefore to compare the performance of an association method across different replicates.</p><p>Simulating phenotypes rather than genotypes, as does the gold standard Hapgen <ref type="bibr" target="#b23">(Su et al., 2011)</ref>, does not require additional data such as haplotype frequencies or recombination rates and has the obvious advantages of requiring much smaller computational memory and time. Moreover, for the purposes of the present work, the primary benefit of using waffect is that it only requires a vector of probabilities as input. As a result, the choice of the disease model is totally unconstrained; in particular it is possible to include G×E interactions.</p><p>In principle, one could achieve the same result by simply using a rejection algorithm which samples the phenotype of each individual according to the probability to be a case and then accepts the resulting replicate only if there are enough cases. Because the probability of obtaining a full configuration of phenotypes with the correct number of cases is extremely low, this approach cannot be used in practice. In order to overcome this problem, a solution often applied in practice is to increase the prevalence in the disease model, maintaining unchanged the relative risks. However it can be proved that adjusting the prevalence creates bias in the empirical power estimate <ref type="bibr" target="#b17">(Perduca et al., 2012)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Statistical analysis</head><p>In this section, we briefly describe the four popular approaches adopted in our study to perform GWA analysis. The goal standard PLINK (individual SNP logistic regression, <ref type="bibr" target="#b18">Purcell et al., 2007)</ref> was applied in two alternative approaches : 1-analysis performed regardless of G×E interactions and considering only genetic effects; and, since it is easy to consider interaction terms with PLINK, 2-analysis performed taking into account G×E interactions. The other two approaches are 3-the linear mixed model for population structure correction implemented in Fast-LMM <ref type="bibr" target="#b14">(Lippert et al., 2011)</ref>, and 4-the random forest data mining technique (RandomForest R package, <ref type="bibr" target="#b13">Liaw and Wiener, 2002)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.1">PLINK</head><p>PLINK implements a logistic regression approach <ref type="bibr" target="#b18">(Purcell et al., 2007)</ref> that allows for multiple binary or continuous covariates when testing for disease trait SNP association and interactions with covariates. PLINK provides p-values for significance coefficients in the logistic model. In this work, we considered two approaches using PLINK.</p><p>The first approach, which we referred to as "PLINK SNP", consisted in performing analysis regardless of G×E interactions by looking at the p-value associated to the significant coefficients for the SNPs.</p><p>We referred to the second approach as "PLINK SNP×COV", where COV is the environmental covariate under consideration (either bmi in our standard design or treatment in our further analysis, see below). PLINK SNP×COV accounted for all the interactions between the analyzed SNPs and the environmental factor considered through the p-values associated to the significance coefficients of such interactions.</p><p>Correction for population structure was taken into account by considering the five first principal components resulting from the PCA performed on the whole genome.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.2">Random Forests</head><p>Random forests (RFs) have been introduced by <ref type="bibr" target="#b2">Breiman (2001)</ref>. The general principle consists in building repeatedly classification and regression trees (CART) from bootstrapping of the original data. This process produces a forest of classification trees which are statistically analyzed to produce importance measures of the covariates (e.g. a variable belonging to many trees probably plays a key role in the classification).</p><p>Random forests are a popular way to perform data mining on GWAS data. Despite the fact that they exploit heavily marginal linear regressions, random forests are able to detect interactions between variables (see <ref type="bibr" target="#b1">Boulesteix et al., 2012</ref>, for an overview of random forests in the GWAS context). Recently, a regularized version of random forests has been proposed to deal with high dimensional data <ref type="bibr" target="#b6">(Deng and Runger, 2012)</ref>. In this work we decided to disregard this approach because it was too slow on our data to be practical.</p><p>For our random forests analysis, we used the randomForest package (version 4.6-7) from R (R Core Team, 2013). We simply used the default parameters of the method with the disease status as a binary outcome and with all observed covariates and SNPs as explanatory variables. Once the forest computed, we extracted for each variable its importance measure using the default approach of the package (normalized difference between out-of-bag proportion error using original data or a permuted version). We hence obtained for each variable and each replicate a real value which reflects the importance of the variable for discriminating between cases and controls. The higher this importance value, the stronger the association with the disease.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.3">Fast-LMM</head><p>It is a well known problem that in GWAS confounding effects of population structure lead to false positive and therefore need to be taken into account. An alternative to including the first principal components in linear or logistic regression models in order to correct for confounding factors are Linear Mixed Models <ref type="bibr">(LMMs, Hoffman, 2013)</ref>. LMMs generalize linear models by introducing random effects as predictors, in addition to the usual fixed effects. Indeed, LMMs are known to be effective when observations are not independent but rather involve related individuals.</p><p>In LMMs for GWAS, the random effect is expressed by a multivariate normal distribution whose variance-covariance matrix measures the genetic similarity between individuals. Recently the algorithm Fast-LMM has been introduced to perform efficiently exact inference for LMMs <ref type="bibr" target="#b14">(Lippert et al., 2011)</ref>. Roughly speaking, Fast-LMM (for Factored spectrally transformed Linear Mixed Models) is based on a spectral decomposition of the genetic similarity matrix which rotates the phenotypes into uncorrelated phenotypes thus converting the original estimation problem into the maximization of the likelihood of a linear regression model.</p><p>A drawback of the current implementation of Fast-LMM is that it does not allow to consider explicit interaction terms between genotypic variables and covariates in the linear mixed model<ref type="foot" target="#foot_0">foot_0</ref> . A possible solution to overcome this limitation is to code directly such interactions in the covariate file, thus adding new columns. However, this solution was not appropriate in this context because it would have required to magnify several times the size of the variables file in order to consider the cartesian product of all the SNPs with all the covariates. We then we simply applied Fast-LMM to the original genotypic and covariate datasets.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Power, ROC curves and AUC</head><p>In order to evaluate empirically the performance of the methods described above, we computed four summary statistics, one for each method. These global statistics were then used to estimate the Area under the Curve (AUC) corresponding to the receiver operating characteristic (ROC) curves of the four methods, each expressing the performance of the corresponding method.</p><p>More specifically, for PLINK SNP we took as simple global statistics the smallest among all the p-values associated to the significance coefficients of the SNPs, similarly for Fast-LMM. For PLINK SNP×COV, we took the smallest among all the p-values associated to significance coefficients of the terms coding for the interactions between the SNPs and the covariate (bmi or treatment). At last, the summary statistics for the random forest-based method was defined as the maximum of the importance statistics over all considered SNPs.</p><p>Then, for each method, we obtained two vectors of length 200, one under H0 and one under H1. These two vectors of comprehensive signals were used to estimate the ROC curves of the four methods using the R package pROC <ref type="bibr" target="#b20">(Robin et al., 2011)</ref>.</p><p>We recall that ROC curves provide a graphical representation of the specificities and sensitivities (i.e. values of statistical power) that can be obtained for all possible values of the threshold of significance <ref type="bibr" target="#b15">(Metz, 1978)</ref>. An informative summary of the ROC curve information is the area under the ROC curve (i.e. AUC). The AUC can be qualitatively interpreted as follows: AUC ≤ 0.6 means 'fail'; 0.6 &lt; AUC ≤ 0.70 means 'poor'; 0.7 &lt; AUC ≤ 0.80 means 'fair'; 0.8 &lt; AUC ≤ 0.9 means 'good'; 0.9 &lt; AUC ≤ 1.0 means 'excellent'.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Results and discussion</head><p>Association analysis were adjusted on covariates sex, smoking together with either bmi (our standard design) or treatment. Moreover, for PLINK and random forests the five first principal components pc i , i ∈ {1, . . . , 5} were included as predictors. We recall that in order to evaluate empirically the detection power of the four approaches in presence of confounding factor, analysis were performed on 200+200 phenotypic replicates under H0 and H1. Investigations were performed on chromosome 6 and subregions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Confounding factor is not known</head><p>At first, the latent exposure treatment (i.e. the confounding factor) was supposed to be unknown : the covariate bmi was observed instead of treatment and considered, mistakenly, as the environmental exposure of interest.</p><p>Table <ref type="table">1</ref> shows the estimated AUC together with 95% confidence intervals for the four approaches. Obviously, the performance of each method increases when the region under consideration decreases and reach a good power when the region is restricted to the causal SNP. However power is low (fail or poor) when estimation are done on whole chromosome 6. PLINK SNP, Fast-LMM and RF provide comparable results even if PLINK SNP seems to be a little more efficient.</p><p>Surprisingly, the estimated performance is better with PLINK SNP than with PLINK SNP×bmi. For example, applying PLINK SNP on a region with less than 800 SNPs around the causal SNP provides good to excellent power while analysis with PLINK SNP×bmi need to be restricted to the causal SNP to reach similar power. At first, this counter-intuitive result led us to believe that it is unnecessary to account for the G×E interactions in analysis since PLINK SNP provides better power than PLINK SNP×bmi.</p><p>Furthermore, we note that AUC estimate applying PLINK SNP×bmi when the analysis is performed on the whole chromosome 6 appears higher than on a region of 4000 SNPs around the causal SNP. This result could be explained by sample variability.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Confounding factor is known</head><p>To try to understand the fact that taking into account G×E interactions in presence of a confounding factor seems not to improve the performance, we performed association analysis by replacing the covariate bmi by the confounding factor treatment. This is possible because analysis are done on our simulated dataset for which we know the covariate treatment.</p><p>Table <ref type="table">2</ref> shows the results obtained observing the confounding factor. In this context, AUC estimated with PLINK SNP×treatment are equal to 1, as expected given the strength of the simulated G×E interaction. This results show that the approach accounting for the interaction is better than approach accounting only for the SNP and demonstrate the importance of accounting for G×E interaction in a process of consideration of a confounding factor.</p><p>In contrast, the AUC estimated with PLINK SNP are almost equal to the AUC estimated when the confounding factor treatment is latent and instead the covariate bmi is observed. As expected, Fast-LMM gives similar results to PLINK SNP. For the RF, we can only observe a slight improvement (1 to 3% of AUC). This is due to the fact that, like for Fast-LMM or PLINK SNP, the RF approach does not consider explicitly interactions with the covariates. However, RF are known to be able to capture complex non-linear interaction between covariates which tend to be co-selected in the same trees. In our example, this alleged feature clearly shows its limits.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Further considerations</head><p>An interesting property of Fast-LMM is it accounts for population structure by introducing random effects as predictors. In this context, analysis were performed with Fast-LMM, with no principal components as covariates. We verified (results not shown) that accounting explicitly for principal components gives similar results. In the same way, we performed analysis with PLINK SNP×bmi considering explicitly the population of belonging instead of principal components and found similar results than considering principal components (results not shown).</p><p>Another question that may arise is about the signal localization. Indeed, presence of confounding factor makes very difficult to identify the causal SNP. Figure <ref type="figure" target="#fig_1">2</ref> shows the Manhattan plots obtained performing PLINK SNP×COV analysis on Chromosome 6 from one simulation under H1. The vertical red line indicates the causal SNP location. On figure 2(a) analysis was performed observing the confounding factor treatment (i.e. using PLINK SNP×treatment approach) and on figure 2(b) analysis was performed in presence of confounding factor. (i.e. using PLINK SNP×bmi approach). When the confounding factor is known, the location detected by the signal is the same as the causal SNP location. In contrast, in presence of confounding factor, there is no signal clearly detected.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Conclusion</head><p>This article presents a simulated dataset -based on the HapMap project data with real genotypes and population structures -which can be helpful in studying the impact of a confounding factor on the detection of G×E interactions in GWAS. Furthermore, the proposed dataset was used to conduct a non-subjective power analysis using three popular GWAS statistical methods (PLINK, Random Forests and Fast-LMM) and four corresponding summary statistics. The non-subjectivity comes from the fact that the phenotypes under H1 as well as under H0 were simulated with waffect which does not require any additional information other than the original genotypes. The dataset will be made available on ENA at the time of publication, so that all replication will be feasible.</p><p>The disease model was built with a strong interaction between the causal SNP (which was chosen arbitrarily) and an unobserved environmental exposure to a treatment and no main effect given by the causal SNP or the latent exposure. Obviously, the high relative risk resulting from the considered G×E interaction and the absence of a marginal SNP effect are unrealistic. However, the confounding factor causes such a loss of detection power that it is necessary to study such typical case in first place. Indeed, analysis performed on the whole chromosome 6 shows a poor signal detection power for the four approaches considered in presence of confounding factor. Furthermore, we show that when analysis is performed regardless the interaction, the fact to observe or not the confounding factor treatment has no impact on the detection power. These results highlight the importance of taking into account the G×E interactions at the risk of finding no signal at all.</p><p>In this work, we chose to focus on three popular methods belonging to different families of statistical techniques. Unfortunately, the current implementation of Fast-LMM does not allow to account for G×E interactions. The proposed dataset has the potential to provide a good framework to develop further features of Fast-LMM enabling it to account for such interactions. As an alternative, we considered the idea to precompute a full covariate matrix including interaction to Fast-LMM, but this approach was finally discarded since there was no way to force fast-LMM to perform the appropriate significance tests. Similar consideration hold for the RF which are not specifically designed to deal with explicit interactions.</p><p>Other methods based on the linear model are known for case control data, in order to detect G×E interactions. <ref type="bibr" target="#b12">Kraft and al. (Kraft et al., 2007)</ref> proposed a powerful 2-df joint test of marginal association and G×E interaction. Shortly after, Mucray and al. <ref type="bibr" target="#b16">(Murcray et al., 2009)</ref> proposed a 2-step approach for detecting G×E interaction in GWA studies. <ref type="bibr" target="#b5">Dai and al.(Dai et al., 2012)</ref> proposed a new way to combine the test of marginal genetic effect and the test of G×E interaction, by exploiting the independence between the two tests. While these methods have demonstrated their efficiency, their performance was assessed through simulations that do not account for realistic complexity such as the inclusion of confounding factor and/or of complicated dependance structures between individuals as well as between loci. Testing the detection power of these tests on our realistic simulated dataset could then be an interesting development. Results obtained in this paper already seem to show that methods based on the linear model have poor power. As a consequence, we can expect that the tests mentioned above will not perform well either.</p><p>In conclusion, efforts should be put in developing methods able to take into account confounding factors such as a potential latent exposure.  </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: Manhattan plots considering Chromosome 6 and observing the covariate treatment or the covariate bmi. The red vertical line indicates the causal SNP</figDesc></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>(We unsuccessfully tried to contact the authors of Fast-LMM on this matter.)</p></note>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>AUC (%) PLINK SNP</head><p>PLINK SNP×bmi RF Fast-LMM whole chromosome 6 64. <ref type="bibr">69 [59.26 -70.13] 56.39 [50.69 -62.08] 66.23 [60.93 -71.55]</ref>  <ref type="bibr">61.91 [56.42 -67.41</ref>  Table <ref type="table">2</ref>: Association analysis performed on Chromosome 6 with the four approaches, when the confounding factor treatment is considered known. Restricted regions are centered on causal SNP q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q qq q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q -30 -10 0 10 20 30 -20 0 10 20 30 PC1 PC2 q q q q q q q q q q q q q q q q q q q q q q q q q qq q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q qq q q q q q q q q q q q q qq q q q q q q q q q q q qq q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q qq qq q q q q q q q q q q q q q q q qq -20 -10 0 10 20 30 -20 -10 0 10 PC2 PC3 q q q q q q q q q q qq q qq q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q qq q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q qq q q q q q q q q q q q q q q q q q q qq q q q q q q q q q q q q q q q q q q q q q qq q q q q q q -20 -10 0 10 -10 0 10 20 PC3 PC4 q q q qq qq q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q q qq q q q q q q q q q q q q q q q q q q q q q q q -10 0 10 20 -40 -30 -20 -10 0 </p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Population structure and cryptic relatedness in genetic association studies</title>
+		<author>
+			<persName><forename type="first">William</forename><surname>Astle</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><forename type="middle">J</forename><surname>Balding</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Statistical Science</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="451" to="471"/>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">William Astle and David J Balding. Population structure and cryptic relatedness in genetic asso- ciation studies. Statistical Science, 24(4):451-471, 2009.</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Overview of random forest methodology and practical guidance with emphasis on computational biology and bioinformatics</title>
+		<author>
+			<persName><forename type="first">Anne-Laure</forename><surname>Boulesteix</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Silke</forename><surname>Janitza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jochen</forename><surname>Kruppa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Inke</forename><forename type="middle">R</forename><surname>König</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="493" to="507"/>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Anne-Laure Boulesteix, Silke Janitza, Jochen Kruppa, and Inke R König. Overview of random forest methodology and practical guidance with emphasis on computational biology and bioinfor- matics. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 2(6):493-507, 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Random forests</title>
+		<author>
+			<persName><forename type="first">Leo</forename><surname>Breiman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Machine learning</title>
+		<imprint>
+			<biblScope unit="volume">45</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="5" to="32"/>
+			<date type="published" when="2001">2001</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Leo Breiman. Random forests. Machine learning, 45(1):5-32, 2001.</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Consequences of smoking for body weight, body fat distribution, and insulin resistance</title>
+		<author>
+			<persName><forename type="first">Arnaud</forename><surname>Chiolero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Faeh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fred</forename><surname>Paccaud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jacques</forename><surname>Cornuz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The American journal of clinical nutrition</title>
+		<imprint>
+			<biblScope unit="volume">87</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="801" to="809"/>
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Arnaud Chiolero, David Faeh, Fred Paccaud, and Jacques Cornuz. Consequences of smoking for body weight, body fat distribution, and insulin resistance. The American journal of clinical nutrition, 87(4):801-809, 2008.</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">The role of culture in smoking behavior: evidence from british immigrants in australia, africa, and the us</title>
+		<author>
+			<persName><forename type="first">Rebekka</forename><surname>Christopoulou</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Dean R Lillard</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2011">2011</date>
+		</imprint>
+		<respStmt>
+			<orgName>Cornell University</orgName>
+		</respStmt>
+	</monogr>
+	<note type="report_type">Technical report</note>
+	<note type="raw_reference">Rebekka Christopoulou and Dean R Lillard. The role of culture in smoking behavior: evidence from british immigrants in australia, africa, and the us. Technical report, Cornell University, 2011.</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Simultaneously testing for marginal genetic association and geneenvironment interaction</title>
+		<author>
+			<persName><forename type="first">Benjamin</forename><forename type="middle">A</forename><surname>James Y Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ying</forename><surname>Logsdon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><forename type="middle">P</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ross</forename><forename type="middle">L</forename><surname>Reiner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Charles</forename><surname>Prentice</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Kooperberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">American journal of epidemiology</title>
+		<imprint>
+			<biblScope unit="volume">176</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="164" to="173"/>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">James Y Dai, Benjamin A Logsdon, Ying Huang, Li Hsu, Alexander P Reiner, Ross L Prentice, and Charles Kooperberg. Simultaneously testing for marginal genetic association and gene- environment interaction. American journal of epidemiology, 176(2):164-173, 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Feature selection via regularized trees</title>
+		<author>
+			<persName><forename type="first">Houtao</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">George</forename><surname>Runger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The 2012 International Joint Conference on Neural Networks (IJCNN)</title>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Houtao Deng and George Runger. Feature selection via regularized trees. The 2012 International Joint Conference on Neural Networks (IJCNN), 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Analysis of epidemiologic studies of genetic effects and gene-environment interactions</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Garcia-Closas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Jacobs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Kraft</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Chatterjee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IARC scientific publications</title>
+		<imprint>
+			<biblScope unit="volume">163</biblScope>
+			<biblScope unit="issue">163</biblScope>
+			<biblScope unit="page" from="281" to="301"/>
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">M Garcia-Closas, K Jacobs, P Kraft, and N Chatterjee. Analysis of epidemiologic studies of genetic effects and gene-environment interactions. IARC scientific publications, 163(163):281-301, 2010.</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">The international hapmap project</title>
+		<author>
+			<persName><forename type="first">Richard</forename><forename type="middle">A</forename><surname>Gibbs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><forename type="middle">W</forename><surname>Belmont</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Paul</forename><surname>Hardenbol</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><forename type="middle">D</forename><surname>Willis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fuli</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huanming</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lan-Yang</forename><surname>Ch'ang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bin</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yan</forename><surname>Shen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature</title>
+		<imprint>
+			<biblScope unit="volume">426</biblScope>
+			<biblScope unit="issue">6968</biblScope>
+			<biblScope unit="page" from="789" to="796"/>
+			<date type="published" when="2003">2003</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Richard A Gibbs, John W Belmont, Paul Hardenbol, Thomas D Willis, Fuli Yu, Huanming Yang, Lan-Yang Ch'ang, Wei Huang, Bin Liu, Yan Shen, et al. The international hapmap project. Nature, 426(6968):789-796, 2003.</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">An application of Random Forests to a genome-wide association dataset: Methodological considerations &amp; new findings</title>
+		<author>
+			<persName><forename type="first">Alan</forename><forename type="middle">E</forename><surname>Benjamin A Goldstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adele</forename><surname>Hubbard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lisa</forename><forename type="middle">F</forename><surname>Cutler</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Barcellos</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">BMC genetics</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">49</biblScope>
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Benjamin A Goldstein, Alan E Hubbard, Adele Cutler, and Lisa F Barcellos. An application of Random Forests to a genome-wide association dataset: Methodological considerations &amp; new findings. BMC genetics, 11(1):49, 2010.</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Genome-wide gene-environment study identifies glutamate receptor gene grin2a as a parkinson's disease modifier gene via interaction with coffee</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Taye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Honglei</forename><surname>Hamza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Erin</forename><forename type="middle">M</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shannon</forename><forename type="middle">L</forename><surname>Hill-Burns</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jennifer</forename><surname>Rhodes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Denise</forename><forename type="middle">M</forename><surname>Montimurro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Albert</forename><surname>Kay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Victoria</forename><forename type="middle">I</forename><surname>Tenesa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Patricia</forename><surname>Kusel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Muthukrishnan</forename><surname>Sheehan</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Eaaswarkhanth</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">PLoS genetics</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page">1002237</biblScope>
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Taye H Hamza, Honglei Chen, Erin M Hill-Burns, Shannon L Rhodes, Jennifer Mon- timurro, Denise M Kay, Albert Tenesa, Victoria I Kusel, Patricia Sheehan, Muthukrishnan Eaaswarkhanth, et al. Genome-wide gene-environment study identifies glutamate receptor gene grin2a as a parkinson's disease modifier gene via interaction with coffee. PLoS genetics, 7(8): e1002237, 2011.</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Correcting for population structure and kinship using the linear mixed model: Theory and extensions</title>
+		<author>
+			<persName><forename type="first">E</forename><surname>Gabriel</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Hoffman</surname></persName>
+		</author>
+		<idno type="DOI">10.1371/journal.pone.0075707</idno>
+		<ptr target="http://dx.doi.org/10.1371%2Fjournal.pone.0075707"/>
+	</analytic>
+	<monogr>
+		<title level="j">PLoS ONE</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page" from="10" to="2013"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Gabriel E. Hoffman. Correcting for population structure and kinship using the linear mixed model: Theory and extensions. PLoS ONE, 8(10):e75707, 10 2013. doi: 10.1371/journal.pone.0075707. URL http://dx.doi.org/10.1371%2Fjournal.pone.0075707.</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Exploiting gene-environment interaction to detect genetic associations</title>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Kraft</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y-C</forename><surname>Yen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Daniel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><surname>Stram</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Morrison</surname></persName>
+		</author>
+		<author>
+			<persName><surname>James Gauderman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Human heredity</title>
+		<imprint>
+			<biblScope unit="volume">63</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="111" to="119"/>
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Peter Kraft, Y-C Yen, Daniel O Stram, John Morrison, and W James Gauderman. Exploiting gene-environment interaction to detect genetic associations. Human heredity, 63(2):111-119, 2007.</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Classification and regression by randomforest</title>
+		<author>
+			<persName><forename type="first">Andy</forename><surname>Liaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthew</forename><surname>Wiener</surname></persName>
+		</author>
+		<ptr target="http://CRAN.R-project.org/doc/Rnews/"/>
+	</analytic>
+	<monogr>
+		<title level="j">R News</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="18" to="22"/>
+			<date type="published" when="2002">2002</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Andy Liaw and Matthew Wiener. Classification and regression by randomforest. R News, 2(3): 18-22, 2002. URL http://CRAN.R-project.org/doc/Rnews/.</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Fast linear mixed models for genome-wide association studies</title>
+		<author>
+			<persName><forename type="first">Christoph</forename><surname>Lippert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jennifer</forename><surname>Listgarten</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ying</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Carl</forename><forename type="middle">M</forename><surname>Kadie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><forename type="middle">I</forename><surname>Davidson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Heckerman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature Methods</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page" from="833" to="835"/>
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Christoph Lippert, Jennifer Listgarten, Ying Liu, Carl M Kadie, Robert I Davidson, and David Heckerman. Fast linear mixed models for genome-wide association studies. Nature Methods, 8 (10):833-835, 2011.</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Basic principles of roc analysis</title>
+		<author>
+			<persName><forename type="first">Charles</forename><forename type="middle">E</forename><surname>Metz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Seminars in nuclear medicine</title>
+		<imprint>
+			<publisher>Elsevier</publisher>
+			<date type="published" when="1978">1978</date>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page" from="283" to="298"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Charles E Metz. Basic principles of roc analysis. In Seminars in nuclear medicine, volume 8, pages 283-298. Elsevier, 1978.</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Gene-environment interaction in genome-wide association studies</title>
+		<author>
+			<persName><forename type="first">Cassandra</forename><forename type="middle">E</forename><surname>Murcray</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Juan</forename><surname>Pablo Lewinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>James Gauderman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">American journal of epidemiology</title>
+		<imprint>
+			<biblScope unit="volume">169</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="219" to="226"/>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Cassandra E Murcray, Juan Pablo Lewinger, and W James Gauderman. Gene-environment inter- action in genome-wide association studies. American journal of epidemiology, 169(2):219-226, 2009.</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Alternative Methods for H1 Simulations in Genome-Wide Association Studies</title>
+		<author>
+			<persName><forename type="first">Vittorio</forename><surname>Perduca</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christine</forename><surname>Sinoquet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Raphaël</forename><surname>Mourad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gregory</forename><surname>Nuel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Human Heredity</title>
+		<imprint>
+			<biblScope unit="volume">73</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="95" to="104"/>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Vittorio Perduca, Christine Sinoquet, Raphaël Mourad, and Gregory Nuel. Alternative Methods for H1 Simulations in Genome-Wide Association Studies. Human Heredity, 73(2):95-104, 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">PLINK: a tool set for whole-genome association and population-based linkage analyses</title>
+		<author>
+			<persName><forename type="first">Shaun</forename><surname>Purcell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Neale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kathe</forename><surname>Todd-Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lori</forename><surname>Thomas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Manuel Ar Ferreira</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Julian</forename><surname>Bender</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pamela</forename><surname>Maller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Paul Iw De</forename><surname>Sklar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mark</forename><forename type="middle">J</forename><surname>Bakker</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Daly</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The American Journal of Human Genetics</title>
+		<imprint>
+			<biblScope unit="volume">81</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="559" to="575"/>
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Shaun Purcell, Benjamin Neale, Kathe Todd-Brown, Lori Thomas, Manuel AR Ferreira, David Bender, Julian Maller, Pamela Sklar, Paul IW De Bakker, Mark J Daly, et al. PLINK: a tool set for whole-genome association and population-based linkage analyses. The American Journal of Human Genetics, 81(3):559-575, 2007.</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">R: A Language and Environment for Statistical Computing</title>
+		<author>
+			<persName><forename type="first">Team</forename><surname>Core</surname></persName>
+		</author>
+		<ptr target="http://www.R-project.org"/>
+	</analytic>
+	<monogr>
+		<title level="m">R Foundation for Statistical Computing</title>
+		<meeting><address><addrLine>Vienna, Austria</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">R Core Team. R: A Language and Environment for Statistical Computing. R Foundation for Statistical Computing, Vienna, Austria, 2013. URL http://www.R-project.org.</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">proc: an open-source package for r and s+ to analyze and compare roc curves</title>
+		<author>
+			<persName><forename type="first">Natacha</forename><surname>Xavier Robin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexandre</forename><surname>Turck</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Natalia</forename><surname>Hainard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Frédérique</forename><surname>Tiberti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jean-Charles</forename><surname>Lisacek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Markus</forename><surname>Sanchez</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Müller</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">BMC bioinformatics</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">77</biblScope>
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Xavier Robin, Natacha Turck, Alexandre Hainard, Natalia Tiberti, Frédérique Lisacek, Jean- Charles Sanchez, and Markus Müller. proc: an open-source package for r and s+ to analyze and compare roc curves. BMC bioinformatics, 12(1):77, 2011.</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">A multi-stage genome-wide association study of bladder cancer identifies multiple susceptibility loci</title>
+		<author>
+			<persName><forename type="first">Nathaniel</forename><surname>Rothman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Montserrat</forename><surname>Garcia-Closas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nilanjan</forename><surname>Chatterjee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nuria</forename><surname>Malats</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xifeng</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonine</forename><forename type="middle">D</forename><surname>Figueroa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francisco</forename><forename type="middle">X</forename><surname>Real</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Van Den</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Giuseppe</forename><surname>Berg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dalsu</forename><surname>Matullo</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Baris</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature genetics</title>
+		<imprint>
+			<biblScope unit="volume">42</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page" from="978" to="984"/>
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Nathaniel Rothman, Montserrat Garcia-Closas, Nilanjan Chatterjee, Nuria Malats, Xifeng Wu, Jonine D Figueroa, Francisco X Real, David Van Den Berg, Giuseppe Matullo, Dalsu Baris, et al. A multi-stage genome-wide association study of bladder cancer identifies multiple susceptibility loci. Nature genetics, 42(11):978-984, 2010.</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Designing genome-wide association studies: sample size, power, imputation, and the choice of genotyping chip</title>
+		<author>
+			<persName><forename type="first">Chris Ca</forename><surname>Spencer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhan</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Donnelly</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Marchini</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">PLoS genetics</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page">1000477</biblScope>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Chris CA Spencer, Zhan Su, Peter Donnelly, and Jonathan Marchini. Designing genome-wide association studies: sample size, power, imputation, and the choice of genotyping chip. PLoS genetics, 5(5):e1000477, 2009.</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">HAPGEN2: simulation of multiple disease SNPs</title>
+		<author>
+			<persName><forename type="first">Zhan</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Marchini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Donnelly</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Bioinformatics</title>
+		<imprint>
+			<biblScope unit="volume">27</biblScope>
+			<biblScope unit="issue">16</biblScope>
+			<biblScope unit="page" from="2304" to="2305"/>
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Zhan Su, Jonathan Marchini, and Peter Donnelly. HAPGEN2: simulation of multiple disease SNPs. Bioinformatics, 27(16):2304-2305, 2011.</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">The international hapmap project web site</title>
+		<author>
+			<persName><forename type="first">Albert</forename><forename type="middle">V</forename><surname>Gudmundur A Thorisson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lalitha</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lincoln</forename><forename type="middle">D</forename><surname>Krishnan</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Stein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Genome research</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page" from="1592" to="1593"/>
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Gudmundur A Thorisson, Albert V Smith, Lalitha Krishnan, and Lincoln D Stein. The interna- tional hapmap project web site. Genome research, 15(11):1592-1593, 2005.</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Gender differences in smoking behaviors in an asian population</title>
+		<author>
+			<persName><forename type="first">Yi-Wen</forename><surname>Tsai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tzu-I</forename><surname>Tsai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chung-Lin</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ken</forename><forename type="middle">N</forename><surname>Kuo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Women's Health</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="971" to="978"/>
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Yi-Wen Tsai, Tzu-I Tsai, Chung-Lin Yang, and Ken N Kuo. Gender differences in smoking be- haviors in an asian population. Journal of Women's Health, 17(6):971-978, 2008.</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Sensitivity analysis for interactions under unmeasured confounding</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tyler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bhramar</forename><surname>Vanderweele</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jinbo</forename><surname>Mukherjee</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Statistics in medicine</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="issue">22</biblScope>
+			<biblScope unit="page" from="2552" to="2564"/>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Tyler J VanderWeele, Bhramar Mukherjee, and Jinbo Chen. Sensitivity analysis for interactions under unmeasured confounding. Statistics in medicine, 31(22):2552-2564, 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Environmental confounding in geneenvironment interaction studies</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tyler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi-An</forename><surname>Vanderweele</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bhramar</forename><surname>Ko</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Mukherjee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">American Journal of Epidemiology</title>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Tyler J VanderWeele, Yi-An Ko, and Bhramar Mukherjee. Environmental confounding in gene- environment interaction studies. American Journal of Epidemiology, 2013.</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

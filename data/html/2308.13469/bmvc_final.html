@@ -1,0 +1,782 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network</title>
+<!--Generated on Thu Dec  5 01:52:51 2024 by LaTeXML (version 0.8.8) http://dlmf.nist.gov/LaTeXML/.-->
+
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line">
+<div id="p1" class="ltx_para">
+<span class="ltx_ERROR undefined">\addauthor</span>
+<p class="ltx_p">Xinyang Huanghsinyanghuang7@gmail.com1
+<span class="ltx_ERROR undefined">\addauthor</span>Chuang Zhu<span id="footnotex1" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">1</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">1</sup>
+          <span class="ltx_tag ltx_tag_note">1</span>
+          
+          
+          
+        Corresponding author</span></span></span>czhu@bupt.edu.com1
+<span class="ltx_ERROR undefined">\addauthor</span>Wenkai Chenwkchen@bupt.edu.com1
+<span class="ltx_ERROR undefined">\addinstitution</span>
+School of Artificial Intelligence,
+<br class="ltx_break">Beijing University of Posts and Telecommunications
+<br class="ltx_break">Beijing, China
+
+RestNet: Boosting Cross-Domain Few-Shot
+
+
+
+<span class="ltx_ERROR undefined">\floatsetup</span>[table]capposition=top
+<span class="ltx_ERROR undefined">\newfloatcommand</span>capbtabboxtable[][<span class="ltx_ERROR undefined">\FBwidth</span>]
+
+</p>
+</div>
+<h1 class="ltx_title ltx_title_document">RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network</h1>
+
+<div class="ltx_abstract">
+<h6 class="ltx_title ltx_title_abstract">Abstract</h6>
+    
+<p class="ltx_p">Cross-domain few-shot segmentation (CD-FSS) aims to achieve semantic segmentation in previously unseen domains with a limited number of annotated samples.
+Although existing CD-FSS models focus on cross-domain feature transformation, relying exclusively on inter-domain knowledge transfer may lead to the loss of critical intra-domain information.
+To this end, we propose a novel residual transformation network (RestNet) that facilitates knowledge transfer while retaining the intra-domain support-query feature information.
+Specifically, we propose a Semantic Enhanced Anchor Transform (SEAT) module that maps features to a stable domain-agnostic space using advanced semantics.
+Additionally, an Intra-domain Residual Enhancement (IRE) module is designed to maintain the intra-domain representation of the original discriminant space in the new space.
+We also propose a mask prediction strategy based on prototype fusion to help the model gradually learn how to segment.
+Our RestNet can transfer cross-domain knowledge from both inter-domain and intra-domain without requiring additional fine-tuning.
+Extensive experiments on ISIC, Chest X-ray, and FSS-1000 show that our RestNet achieves state-of-the-art performance.
+Our code is available at <a href="https://github.com/bupt-ai-cz/RestNet" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://github.com/bupt-ai-cz/RestNet</a>.</p>
+  
+</div>
+<section id="S1" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">1 </span>Introduction</h2>
+
+<div id="S1.p1" class="ltx_para">
+<p class="ltx_p">Deep convolutional neural networks (CNNs) have demonstrated remarkable performance in diverse computer vision tasks, including semantic segmentation <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">long2015fully</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">zhao2017pyramid</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">ronneberger2015u</span>]</cite> and object detection <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">dai2017deformable</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">he2017mask</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">redmon2016you</span>]</cite>.
+Although CNNs are effective, their dependence on a large number of labeled data is still a constraint.
+To alleviate this dependence, the Few-shot Semantic Segmentation (FSS) <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">shaban2017one</span>]</cite> was proposed to learn the model of segmenting new classes with only a few pixel-level annotations.
+In recent years, significant progress has been made in the FSS <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">zhang2019canet</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">wang2019panet</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">siam2019amp</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">zhang2019pyramid</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">okazawa2022interclass</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">liu2020crnet</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">tian2020prior</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">min2021hypercorrelation</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">boudiaf2021few</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">Liu_2022_BMVC</span>]</cite>.
+However, it is still challenging to apply them to cross-domain scenarios.
+To solve this problem, the Cross-Domain Few-Shot Segmentation (CD-FSS) was proposed <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite> to generalize meta-knowledge from the source domain with sufficient labels to the target domain with limited labels.</p>
+</div>
+<div id="S1.p2" class="ltx_para">
+<p class="ltx_p">The CD-FSS problem considers a more realistic scenario: the model cannot access the target data during training, and the data distribution and label space in the test phase are different from those in the training phase.
+To accomplish the CD-FSS, PATNet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite> was proposed to perform a linear transformation on the support foreground features and query features, project them into domain-agnostic features, and compute the feature similarity in the new spaces before exporting the query mask.
+However, the cross-domain feature mapping by imprecise projection layers often makes the distribution alignment of features aligned in the original space fail in the new space.
+In the CD-FSS scenarios, it reflects reduced matching between intra-domain support and query samples, so additional fine-tuning is required in the target domain, as shown in Figure <a href="#S1.F1.sf1" title="In Figure 1 ‣ 1 Introduction ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1(a)</span></a>.
+In addition, due to the fine-grained differences between support and query samples and the presence of support masks, the learning of knowledge may be biased towards the support samples even if they belong to the same class <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">zha2023boosting</span>]</cite>.
+To address these problems, we propose the <span class="ltx_text ltx_font_bold">Res</span>idual <span class="ltx_text ltx_font_bold">T</span>ransformation <span class="ltx_text ltx_font_bold">Net</span>work (RestNet).
+It considers not only inter-domain transfer but also the preservation of intra-domain knowledge, as illustrated in Figure <a href="#S1.F1.sf2" title="In Figure 1 ‣ 1 Introduction ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1(b)</span></a>.</p>
+</div>
+<figure id="S1.F1" class="ltx_figure">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1">
+<figure id="S1.F1.sf1" class="ltx_figure ltx_figure_panel ltx_align_center">
+<div class="ltx_block ltx_minipage ltx_align_middle" style="width:256.1pt;">
+<img src="x1.png" id="S1.F1.sf1.g1" class="ltx_graphics ltx_img_landscape" width="598" height="157" alt="Refer to caption">
+</div>
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:80%;">(a)</span> </span><span class="ltx_text" style="font-size:80%;">Previous CD-FFS Method <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite></span></figcaption>
+</figure>
+</div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1">
+<figure id="S1.F1.sf2" class="ltx_figure ltx_figure_panel ltx_align_center">
+<div class="ltx_block ltx_minipage ltx_align_middle" style="width:270.3pt;">
+<img src="x2.png" id="S1.F1.sf2.g1" class="ltx_graphics ltx_img_landscape" width="598" height="169" alt="Refer to caption">
+</div>
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:80%;">(b)</span> </span><span class="ltx_text" style="font-size:80%;">Our Residual Transformation Network (RestNet)</span></figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 1: </span>The comparison between the previous cross-domain few-shot segmentation method and our RestNet.
+(a) The previous CD-FSS method focused on knowledge transfer using an inter-domain transformation that may lose the intra-domain information, so additional target domain fine-tuning is required.
+(b) Our RestNet learns knowledge from both inter-domain and intra-domain.
+It performs cross-domain enhancement transformation while preserving the intra-domain matching information.</figcaption>
+</figure>
+<div id="S1.p3" class="ltx_para">
+<p class="ltx_p">For the inter-domain, we propose a novel <span class="ltx_text ltx_font_bold">S</span>emantic <span class="ltx_text ltx_font_bold">E</span>nhanced <span class="ltx_text ltx_font_bold">A</span>nchor <span class="ltx_text ltx_font_bold">T</span>ransform (SEAT), which uses the attention to help the model learn advanced semantic features that are then mapped to domain unknown spaces for knowledge migration.
+Further, we propose a simple and effective <span class="ltx_text ltx_font_bold">I</span>ntra-domain <span class="ltx_text ltx_font_bold">R</span>esidual <span class="ltx_text ltx_font_bold">E</span>nhancement (IRE) mechanism.
+It associates the information of the original discriminative space to the present domain-agnostic space via residual connection <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">he2016deep</span>]</cite> and helps the model to align the support and query features of the domain-agnostic feature space to enhance the intra-domain knowledge representation.
+The two mechanisms each help the model adapt more comprehensively to cross-domain small-sample tasks from different perspectives.
+Finally, we generate a coarse soft query mask and feed it to the network with the support mask through prototype fusion to obtain the final mask, which can help the model learn how to segment step by step.</p>
+</div>
+<div id="S1.p4" class="ltx_para">
+<p class="ltx_p">In summary, our contributions are summarized as follows:</p>
+<ul id="S1.I1" class="ltx_itemize">
+<li id="S1.I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S1.I1.i1.p1" class="ltx_para">
+<p class="ltx_p">We propose a Residual Transform network (RestNet) that uses the proposed SEAT and IRE modules to help the model preserve key information in the original domain while performing cross-domain few-shot segmentation.</p>
+</div>
+</li>
+<li id="S1.I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S1.I1.i2.p1" class="ltx_para">
+<p class="ltx_p">We propose a new mask prediction strategy based on the prototype fusion. This strategy helps the proposed RestNet gradually learn how to segment the unseen domain.</p>
+</div>
+</li>
+<li id="S1.I1.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S1.I1.i3.p1" class="ltx_para">
+<p class="ltx_p">Our method achieves state-of-the-art results on three CD-FSS benchmarks, namely ISIC, Chest X-ray, and FSS-1000. Our RestNet solves the problem of intra-domain knowledge loss under the condition of considering inter-domain knowledge transfer, which provides a new idea for future research in this field.</p>
+</div>
+</li>
+</ul>
+</div>
+</section>
+<section id="S2" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">2 </span>Related Work</h2>
+
+<section id="S2.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.1 </span>Domain Adaptive Segmentation</h3>
+
+<div id="S2.SS1.p1" class="ltx_para">
+<p class="ltx_p">Domain adaptive segmentation has led to some achievements.
+The goal of the method is to transfer knowledge learned from a labeled source domain to an unlabeled or weakly labeled target domain.
+The method based on adversarial learning <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">chen2017no</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">chen2018road</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">du2019ssf</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">huang2022multi</span>]</cite> aims to learn domain invariant representations in features. In addition, the design loss function <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">hsu2021darcnn</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">liu2021source</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">wang2021exploring</span>]</cite> to constrain the data distribution can also achieve feature alignment.
+These methods operate in settings where the target domain data can be accessed during training to drive model adaption and compensate for domain offsets.
+In contrast, our source and target domain have completely disjoint label spaces and no target data is required during the CD-FSS training.</p>
+</div>
+</section>
+<section id="S2.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.2 </span>Few-Shot Semantic Segmentation</h3>
+
+<div id="S2.SS2.p1" class="ltx_para">
+<p class="ltx_p">Unlike domain adaptive semantic segmentation, the target domain cannot be accessed by the FSS tasks during training. The goal is to segment new semantic objects in the image, with only a few labeled available.
+Current methods mainly focus on the improvement of the meta-learning stage.
+Prototype-based approach <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">zhang2019canet</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">wang2019panet</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">siam2019amp</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">okazawa2022interclass</span>]</cite> is to use methods to extract representative foreground or background prototypes that support data and then use different strategies to interact between different prototypes or between prototypes and query features.
+Relation-based methods <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">zhang2019pyramid</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">liu2020crnet</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">li2021few</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">tian2020prior</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">min2021hypercorrelation</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">Liu_2022_BMVC</span>]</cite> also achieved success in the few-shot segmentation.
+HSNet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">min2021hypercorrelation</span>]</cite> uses multi-scale dense matching to construct hypercorrelation and uses 4D convolution to capture context information.
+RePRI <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">boudiaf2021few</span>]</cite> presents a transduction inference for feature extraction on a base class without meta-learning.
+However, these methods focus only on segmenting new categories from the same domain.
+Because of the large differences in cross-domain distributions, they cannot be extended to invisible domains.</p>
+</div>
+</section>
+</section>
+<section id="S3" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">3 </span>Method</h2>
+
+<section id="S3.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.1 </span>Problem Setting</h3>
+
+<div id="S3.SS1.p1" class="ltx_para">
+<p class="ltx_p">In the problem setting of the CD-FSS, there exists a source domain <math id="S3.SS1.p1.m1" class="ltx_Math" alttext="(X_{s},Y_{s})" display="inline"><mrow><mo stretchy="false">(</mo><msub><mi>X</mi><mi>s</mi></msub><mo>,</mo><msub><mi>Y</mi><mi>s</mi></msub><mo stretchy="false">)</mo></mrow></math> and a target domain <math id="S3.SS1.p1.m2" class="ltx_Math" alttext="(X_{t},Y_{t})" display="inline"><mrow><mo stretchy="false">(</mo><msub><mi>X</mi><mi>t</mi></msub><mo>,</mo><msub><mi>Y</mi><mi>t</mi></msub><mo stretchy="false">)</mo></mrow></math>, where <math id="S3.SS1.p1.m3" class="ltx_Math" alttext="X" display="inline"><mi>X</mi></math> denotes the distribution of the input data and <math id="S3.SS1.p1.m4" class="ltx_Math" alttext="Y" display="inline"><mi>Y</mi></math> denotes the space of the data label.
+The input data distribution of the source domain is different from the target domain, and the label space of the source domain does not intersect with the target domain, i.e., <math id="S3.SS1.p1.m5" class="ltx_Math" alttext="X_{s}\neq X_{t}" display="inline"><mrow><msub><mi>X</mi><mi>s</mi></msub><mo>≠</mo><msub><mi>X</mi><mi>t</mi></msub></mrow></math> and <math id="S3.SS1.p1.m6" class="ltx_Math" alttext="Y_{s}\cap Y_{t}=\emptyset" display="inline"><mrow><mrow><msub><mi>Y</mi><mi>s</mi></msub><mo>∩</mo><msub><mi>Y</mi><mi>t</mi></msub></mrow><mo>=</mo><mi mathvariant="normal">∅</mi></mrow></math>.
+The model is trained on the source domain and does not have access to the target data.
+We place it in a few-shot learning scenario <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">finn2017meta</span>]</cite> for training and inference based on the episode data <math id="S3.SS1.p1.m7" class="ltx_Math" alttext="(S,Q)" display="inline"><mrow><mo stretchy="false">(</mo><mi>S</mi><mo>,</mo><mi>Q</mi><mo stretchy="false">)</mo></mrow></math> as same as the previous work <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite>.
+For the few-shot setup, the support set <math id="S3.SS1.p1.m8" class="ltx_Math" alttext="S={(I^{i}_{s},M^{i}_{s})}^{K}_{i=1}" display="inline"><mrow><mi>S</mi><mo>=</mo><msubsup><mrow><mo stretchy="false">(</mo><msubsup><mi>I</mi><mi>s</mi><mi>i</mi></msubsup><mo>,</mo><msubsup><mi>M</mi><mi>s</mi><mi>i</mi></msubsup><mo stretchy="false">)</mo></mrow><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></msubsup></mrow></math> contains <math id="S3.SS1.p1.m9" class="ltx_Math" alttext="K" display="inline"><mi>K</mi></math> image mask pairs, where <math id="S3.SS1.p1.m10" class="ltx_Math" alttext="I^{i}_{s}" display="inline"><msubsup><mi>I</mi><mi>s</mi><mi>i</mi></msubsup></math> denotes the <math id="S3.SS1.p1.m11" class="ltx_Math" alttext="i" display="inline"><mi>i</mi></math>-th support image and <math id="S3.SS1.p1.m12" class="ltx_Math" alttext="M^{i}_{s}" display="inline"><msubsup><mi>M</mi><mi>s</mi><mi>i</mi></msubsup></math> denotes the corresponding binary mask.
+Similarly, the query set is defined as <math id="S3.SS1.p1.m13" class="ltx_Math" alttext="Q=({I^{i}_{q},M^{i}_{q})}^{K}_{i=1}" display="inline"><mrow><mi>Q</mi><mo>=</mo><msubsup><mrow><mo stretchy="false">(</mo><msubsup><mi>I</mi><mi>q</mi><mi>i</mi></msubsup><mo>,</mo><msubsup><mi>M</mi><mi>q</mi><mi>i</mi></msubsup><mo stretchy="false">)</mo></mrow><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></msubsup></mrow></math>.
+In the training or meta-training phase, the model obtains the support set <math id="S3.SS1.p1.m14" class="ltx_Math" alttext="S" display="inline"><mi>S</mi></math> and the query set <math id="S3.SS1.p1.m15" class="ltx_Math" alttext="I_{q}" display="inline"><msub><mi>I</mi><mi>q</mi></msub></math> from a specific class <math id="S3.SS1.p1.m16" class="ltx_Math" alttext="c" display="inline"><mi>c</mi></math> as input and predicts the mask <math id="S3.SS1.p1.m17" class="ltx_Math" alttext="M_{q}" display="inline"><msub><mi>M</mi><mi>q</mi></msub></math> of the query image.
+In the testing or meta-testing phase, the model performance is evaluated by providing the model with the support set and using the query set of the target domain.</p>
+</div>
+</section>
+<section id="S3.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.2 </span>Overview</h3>
+
+<figure id="S3.F2" class="ltx_figure"><img src="x3.png" id="S3.F2.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="355" height="116" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 2: </span>The framework of our RestNet.
+The model maps support and query features to a new domain-independent space using Semantic Enhanced Anchor Transform (SEAT). The Intra-Domain Residual Enhancement (IRE) module is designed to preserve the matching information of the original feature space in the new space. Next, the similarity between the support and query is calculated and input into the encoder and decoder to generate a rough mask. The final mask is obtained by a prototype fusion mechanism in the fine stage.</figcaption>
+</figure>
+<div id="S3.SS2.p1" class="ltx_para">
+<p class="ltx_p">Figure <a href="#S3.F2" title="Figure 2 ‣ 3.2 Overview ‣ 3 Method ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a> illustrates our RestNet, which incorporates two key components to enable rapid CD-FSS adaptation across both inter- and intra-domain: Semantic Enhancement Anchor Transformation (SEAT) and Intra-domain Residual Enhancement (IRE) module.
+Given the support set <math id="S3.SS2.p1.m1" class="ltx_Math" alttext="S={(I^{i}_{s},M^{i}_{s})}^{K}_{i=1}" display="inline"><mrow><mi>S</mi><mo>=</mo><msubsup><mrow><mo stretchy="false">(</mo><msubsup><mi>I</mi><mi>s</mi><mi>i</mi></msubsup><mo>,</mo><msubsup><mi>M</mi><mi>s</mi><mi>i</mi></msubsup><mo stretchy="false">)</mo></mrow><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></msubsup></mrow></math> and the query image <math id="S3.SS2.p1.m2" class="ltx_Math" alttext="I_{q}" display="inline"><msub><mi>I</mi><mi>q</mi></msub></math>, we first derive a multi-level feature map by extracting the features of different layers of the shared backbone weights.
+We map support and query features to a new domain-agnostic space through the semantic enhancement anchor transformation (SEAT).
+Then, the intra-domain residual enhancement (IRE) module is designed to preserve the matching information of the original feature space in the new feature space.
+After realignment, we calculate the similarity between the support and query features and input it into the 4D convolution encoder and 2D convolution decoder <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">min2021hypercorrelation</span>]</cite> to generate a coarse query mask.
+The coarse mask is fed to the network with the support mask through the prototype fusion mechanism to obtain the final mask.</p>
+</div>
+</section>
+<section id="S3.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.3 </span>Semantic Enhanced Anchor Transformation</h3>
+
+<div id="S3.SS3.p1" class="ltx_para">
+<p class="ltx_p">To help the model transfer the cross-domain knowledge, we propose a novel semantic enhancement anchor transformation (SEAT).
+The goal is to learn a stable pyramid anchor layer using advanced semantic features derived from a unified attention mechanism to translate features into domain-agnostic features.
+The downstream partitioning module will be easier to predict in such a stable space.</p>
+</div>
+<div id="S3.SS3.p2" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Semantic Enhancement. </span>Before the transformation, the quality of segmentation prediction is highly dependent on the quality of advanced features from the encoder.
+If the encoder fails to provide informative advanced features, it is impossible to obtain useful domain-agnostic features.
+Thus, we use a unified attention mechanism <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">woo2018cbam</span>]</cite> to enhance the support and query feature semantics at intermediate layer <math id="S3.SS3.p2.m1" class="ltx_Math" alttext="l" display="inline"><mi>l</mi></math>:</p>
+<table id="Sx1.EGx1" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="S3.E1"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S3.E1.m1" class="ltx_Math" alttext="\displaystyle\mathbf{\hat{F}}^{l}=\sigma(Conv([\operatorname{AvgPool}(\hat{F}^%
+{l});\operatorname{MaxPool}(\hat{F}^{l})]))\otimes\hat{F}^{l}," display="inline"><mrow><mrow><msup><mover accent="true"><mi>𝐅</mi><mo>^</mo></mover><mi>l</mi></msup><mo>=</mo><mrow><mrow><mi>σ</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mrow><mi>C</mi><mo>⁢</mo><mi>o</mi><mo>⁢</mo><mi>n</mi><mo>⁢</mo><mi>v</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mrow><mo stretchy="false">[</mo><mrow><mi>AvgPool</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><msup><mover accent="true"><mi>F</mi><mo>^</mo></mover><mi>l</mi></msup><mo stretchy="false">)</mo></mrow></mrow><mo>;</mo><mrow><mi>MaxPool</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><msup><mover accent="true"><mi>F</mi><mo>^</mo></mover><mi>l</mi></msup><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">]</mo></mrow><mo stretchy="false">)</mo></mrow></mrow><mo rspace="0.055em" stretchy="false">)</mo></mrow></mrow><mo rspace="0.222em">⊗</mo><msup><mover accent="true"><mi>F</mi><mo>^</mo></mover><mi>l</mi></msup></mrow></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S3.SS3.p2.m2" class="ltx_Math" alttext="\hat{F}^{l}" display="inline"><msup><mover accent="true"><mi>F</mi><mo>^</mo></mover><mi>l</mi></msup></math> denotes the masked feature, <math id="S3.SS3.p2.m3" class="ltx_Math" alttext="\sigma" display="inline"><mi>σ</mi></math> denotes the sigmoid function, <math id="S3.SS3.p2.m4" class="ltx_Math" alttext="[\mathbf{\cdot};\mathbf{\cdot}]" display="inline"><mrow><mo stretchy="false">[</mo><mo lspace="0em" rspace="0em">⋅</mo><mo rspace="0em">;</mo><mo lspace="0em" rspace="0em">⋅</mo><mo stretchy="false">]</mo></mrow></math> represents the concatenation and <math id="S3.SS3.p2.m5" class="ltx_Math" alttext="\otimes" display="inline"><mo>⊗</mo></math> represents the element-wise multiplication.
+The unified spatial attention mechanism can share an attention extraction module for the feature layers of different feature channels and support-query samples.
+It can reduce the number of parameters to be learned and help the model learn a unified domain-invariant knowledge between different feature maps from the support and query.</p>
+</div>
+<div id="S3.SS3.p3" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Anchor Transformation. </span>Inspired by the previous work <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">seo2022task</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite>, we use the linear transformation matrix as the transformation mapper.
+The matrix can be calculated from the anchor layer parameter matrix and the support prototype.
+Taking 1-way 1-shot as an example, for the intermediate feature layer <math id="S3.SS3.p3.m1" class="ltx_Math" alttext="\{F^{l}_{s}\}_{l=1}^{L}" display="inline"><msubsup><mrow><mo stretchy="false">{</mo><msubsup><mi>F</mi><mi>s</mi><mi>l</mi></msubsup><mo stretchy="false">}</mo></mrow><mrow><mi>l</mi><mo>=</mo><mn>1</mn></mrow><mi>L</mi></msubsup></math> supporting the image, the <math id="S3.SS3.p3.m2" class="ltx_Math" alttext="l" display="inline"><mi>l</mi></math>-th foreground support prototype is as follows:</p>
+<table id="Sx1.EGx2" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="S3.E2"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S3.E2.m1" class="ltx_Math" alttext="\displaystyle\mathbf{c}^{l}_{s,f}=\frac{\sum_{i}\sum_{j}F^{l,i,j}_{s}\psi^{l}(%
+M_{s}^{i,j})}{\sum_{i}\sum_{j}\psi^{l}(M_{s}^{i,j})}," display="inline"><mrow><mrow><msubsup><mi>𝐜</mi><mrow><mi>s</mi><mo>,</mo><mi>f</mi></mrow><mi>l</mi></msubsup><mo>=</mo><mstyle displaystyle="true"><mfrac><mrow><msub><mo>∑</mo><mi>i</mi></msub><mrow><msub><mo lspace="0.167em">∑</mo><mi>j</mi></msub><mrow><msubsup><mi>F</mi><mi>s</mi><mrow><mi>l</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msubsup><mo>⁢</mo><msup><mi>ψ</mi><mi>l</mi></msup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msubsup><mi>M</mi><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msubsup><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow><mrow><msub><mo>∑</mo><mi>i</mi></msub><mrow><msub><mo lspace="0.167em">∑</mo><mi>j</mi></msub><mrow><msup><mi>ψ</mi><mi>l</mi></msup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msubsup><mi>M</mi><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msubsup><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></mfrac></mstyle></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(2)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S3.SS3.p3.m3" class="ltx_Math" alttext="\psi^{l}(\cdot)" display="inline"><mrow><msup><mi>ψ</mi><mi>l</mi></msup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mo lspace="0em" rspace="0em">⋅</mo><mo stretchy="false">)</mo></mrow></mrow></math> denotes the bilinear interpolation, <math id="S3.SS3.p3.m4" class="ltx_Math" alttext="F^{l,i,j}_{s}" display="inline"><msubsup><mi>F</mi><mi>s</mi><mrow><mi>l</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msubsup></math> and <math id="S3.SS3.p3.m5" class="ltx_Math" alttext="M_{s}^{i,j}" display="inline"><msubsup><mi>M</mi><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msubsup></math> represent the pixel values corresponding to the support feature and the mask in row <math id="S3.SS3.p3.m6" class="ltx_Math" alttext="i" display="inline"><mi>i</mi></math> and column <math id="S3.SS3.p3.m7" class="ltx_Math" alttext="j" display="inline"><mi>j</mi></math> respectively.
+Similarly, the supporting background prototype <math id="S3.SS3.p3.m8" class="ltx_Math" alttext="\mathbf{c}^{l}_{s,b}" display="inline"><msubsup><mi>𝐜</mi><mrow><mi>s</mi><mo>,</mo><mi>b</mi></mrow><mi>l</mi></msubsup></math> can be obtained in the same way. Therefore, given the weight matrix of anchor layer <math id="S3.SS3.p3.m9" class="ltx_Math" alttext="\mathbf{A}" display="inline"><mi>𝐀</mi></math>, the definition of transformation matrix is as follows:</p>
+<table id="Sx1.EGx3" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="S3.E3"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S3.E3.m1" class="ltx_Math" alttext="\displaystyle\mathbf{W}\mathbf{C}_{s}=\mathbf{A}," display="inline"><mrow><mrow><msub><mi>𝐖𝐂</mi><mi>s</mi></msub><mo>=</mo><mi>𝐀</mi></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(3)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S3.SS3.p3.m10" class="ltx_Math" alttext="\mathbf{C}_{s}=\left[\frac{\mathbf{c}_{s,f}}{\|\mathbf{c}_{s,f}\|},\frac{%
+\mathbf{c}_{s,b}}{\|\mathbf{c}_{s,b}\|}\right]" display="inline"><mrow><msub><mi>𝐂</mi><mi>s</mi></msub><mo>=</mo><mrow><mo>[</mo><mfrac><msub><mi>𝐜</mi><mrow><mi>s</mi><mo>,</mo><mi>f</mi></mrow></msub><mrow><mo stretchy="false">‖</mo><msub><mi>𝐜</mi><mrow><mi>s</mi><mo>,</mo><mi>f</mi></mrow></msub><mo stretchy="false">‖</mo></mrow></mfrac><mo>,</mo><mfrac><msub><mi>𝐜</mi><mrow><mi>s</mi><mo>,</mo><mi>b</mi></mrow></msub><mrow><mo stretchy="false">‖</mo><msub><mi>𝐜</mi><mrow><mi>s</mi><mo>,</mo><mi>b</mi></mrow></msub><mo stretchy="false">‖</mo></mrow></mfrac><mo>]</mo></mrow></mrow></math>, <math id="S3.SS3.p3.m11" class="ltx_Math" alttext="\mathbf{A}=\left[\frac{\mathbf{a}_{f}}{\|\mathbf{a}_{f}\|},\frac{\mathbf{a}_{b%
+}}{\|\mathbf{a}_{b}\|}\right]" display="inline"><mrow><mi>𝐀</mi><mo>=</mo><mrow><mo>[</mo><mfrac><msub><mi>𝐚</mi><mi>f</mi></msub><mrow><mo stretchy="false">‖</mo><msub><mi>𝐚</mi><mi>f</mi></msub><mo stretchy="false">‖</mo></mrow></mfrac><mo>,</mo><mfrac><msub><mi>𝐚</mi><mi>b</mi></msub><mrow><mo stretchy="false">‖</mo><msub><mi>𝐚</mi><mi>b</mi></msub><mo stretchy="false">‖</mo></mrow></mfrac><mo>]</mo></mrow></mrow></math> and <math id="S3.SS3.p3.m12" class="ltx_Math" alttext="\mathbf{a}" display="inline"><mi>𝐚</mi></math> is the anchor vector that has the length matching the number of channels in the high-level feature.
+Therefore, we can calculate the transformation matrix <math id="S3.SS3.p3.m13" class="ltx_Math" alttext="\mathbf{W}" display="inline"><mi>𝐖</mi></math> conveniently. However, since the prototype <math id="S3.SS3.p3.m14" class="ltx_Math" alttext="\mathbf{C}_{s}" display="inline"><msub><mi>𝐂</mi><mi>s</mi></msub></math> is usually a non-square matrix, we can calculate its generalized inverse <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">ben2003generalized</span>]</cite> with <math id="S3.SS3.p3.m15" class="ltx_Math" alttext="\mathbf{C}^{+}_{s}=\{\mathbf{C}_{s}^{T}\mathbf{C}_{s}\}^{-1}\mathbf{C}^{T}_{s}" display="inline"><mrow><msubsup><mi>𝐂</mi><mi>s</mi><mo>+</mo></msubsup><mo>=</mo><mrow><msup><mrow><mo stretchy="false">{</mo><mrow><msubsup><mi>𝐂</mi><mi>s</mi><mi>T</mi></msubsup><mo>⁢</mo><msub><mi>𝐂</mi><mi>s</mi></msub></mrow><mo stretchy="false">}</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>⁢</mo><msubsup><mi>𝐂</mi><mi>s</mi><mi>T</mi></msubsup></mrow></mrow></math>.
+Therefore, the transformation matrix of the <math id="S3.SS3.p3.m16" class="ltx_Math" alttext="l" display="inline"><mi>l</mi></math>-th intermediate layer is calculated as
+<math id="S3.SS3.p3.m17" class="ltx_Math" alttext="\textbf{W}^{l}=\textbf{A}^{l}\textbf{C}^{l+}_{s}" display="inline"><mrow><msup><mtext class="ltx_mathvariant_bold">W</mtext><mi>l</mi></msup><mo>=</mo><mrow><msup><mtext class="ltx_mathvariant_bold">A</mtext><mi>l</mi></msup><mo>⁢</mo><msubsup><mtext class="ltx_mathvariant_bold">C</mtext><mi>s</mi><mrow><mi>l</mi><mo>+</mo></mrow></msubsup></mrow></mrow></math>.
+Similar to <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite>, we have three anchor layers for low, medium, and high-level features respectively.
+Then, we can map the support and query features to stable domain-agnostic space more effectively through this transformation matrix.</p>
+</div>
+</section>
+<section id="S3.SS4" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.4 </span>Intra-domain Residual Enhancement</h3>
+
+<div id="S3.SS4.p1" class="ltx_para">
+<p class="ltx_p">Considering only inter-domain knowledge transfer, the model’s ability to perform few-shot tasks in unseen domains is limited.
+This limitation arises from the fact that the features are transformed into a unified space solely through an anchor layer, leading to the loss of crucial intra-domain information.
+This loss is reflected in the reduced matching between support-query features within the same domain.
+To address this issue, we propose an intra-domain residual enhancement module that leverages residual connections to preserve essential information from the original space to help the model perform well in the unseen domain.</p>
+</div>
+<div id="S3.SS4.p2" class="ltx_para">
+<p class="ltx_p">Formally, for the transformed feature <math id="S3.SS4.p2.m1" class="ltx_Math" alttext="\hat{F}^{l}_{trans}=\mathbf{W}^{l}\mathbf{\hat{F}}^{l}" display="inline"><mrow><msubsup><mover accent="true"><mi>F</mi><mo>^</mo></mover><mrow><mi>t</mi><mo>⁢</mo><mi>r</mi><mo>⁢</mo><mi>a</mi><mo>⁢</mo><mi>n</mi><mo>⁢</mo><mi>s</mi></mrow><mi>l</mi></msubsup><mo>=</mo><mrow><msup><mi>𝐖</mi><mi>l</mi></msup><mo>⁢</mo><msup><mover accent="true"><mi>𝐅</mi><mo>^</mo></mover><mi>l</mi></msup></mrow></mrow></math>, the definition of intra-domain residual enhancement is as follows:</p>
+<table id="Sx1.EGx4" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="S3.E4"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S3.E4.m1" class="ltx_Math" alttext="\displaystyle R^{l}=\hat{F}^{l}_{trans}\oplus\hat{F}^{l}," display="inline"><mrow><mrow><msup><mi>R</mi><mi>l</mi></msup><mo>=</mo><mrow><msubsup><mover accent="true"><mi>F</mi><mo>^</mo></mover><mrow><mi>t</mi><mo>⁢</mo><mi>r</mi><mo>⁢</mo><mi>a</mi><mo>⁢</mo><mi>n</mi><mo>⁢</mo><mi>s</mi></mrow><mi>l</mi></msubsup><mo>⊕</mo><msup><mover accent="true"><mi>F</mi><mo>^</mo></mover><mi>l</mi></msup></mrow></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(4)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S3.SS4.p2.m2" class="ltx_Math" alttext="\oplus" display="inline"><mo>⊕</mo></math> denotes the residual connection and <math id="S3.SS4.p2.m3" class="ltx_Math" alttext="\hat{F}^{l}" display="inline"><msup><mover accent="true"><mi>F</mi><mo>^</mo></mover><mi>l</mi></msup></math> denotes the masked feature.
+The residual enhancement module reduces the cross-domain knowledge forgetting caused by anchor layer transformation by introducing support and query information in the original domain.
+It does not introduce additional parameters or require additional fine-tuning in the target domain.</p>
+</div>
+<div id="S3.SS4.p3" class="ltx_para">
+<p class="ltx_p">For each residual enhancement support-query pair, the cosine similarity is calculated to form a 4D hypercorrelation tensor:</p>
+<table id="Sx1.EGx5" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="S3.E5"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S3.E5.m1" class="ltx_Math" alttext="\displaystyle Cos^{l}_{i,j}=\operatorname{ReLU}\left(\frac{R^{l}_{s}(i)\cdot R%
+^{l}_{q}(j)}{\left\|R^{l}_{s}(i)\right\|\left\|R^{l}_{q}(j)\right\|}\right)," display="inline"><mrow><mrow><mrow><mi>C</mi><mo>⁢</mo><mi>o</mi><mo>⁢</mo><msubsup><mi>s</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow><mi>l</mi></msubsup></mrow><mo>=</mo><mrow><mi>ReLU</mi><mo>⁡</mo><mrow><mo>(</mo><mstyle displaystyle="true"><mfrac><mrow><mrow><mrow><msubsup><mi>R</mi><mi>s</mi><mi>l</mi></msubsup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>i</mi><mo rspace="0.055em" stretchy="false">)</mo></mrow></mrow><mo rspace="0.222em">⋅</mo><msubsup><mi>R</mi><mi>q</mi><mi>l</mi></msubsup></mrow><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>j</mi><mo stretchy="false">)</mo></mrow></mrow><mrow><mrow><mo>‖</mo><mrow><msubsup><mi>R</mi><mi>s</mi><mi>l</mi></msubsup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>i</mi><mo stretchy="false">)</mo></mrow></mrow><mo>‖</mo></mrow><mo>⁢</mo><mrow><mo>‖</mo><mrow><msubsup><mi>R</mi><mi>q</mi><mi>l</mi></msubsup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>j</mi><mo stretchy="false">)</mo></mrow></mrow><mo>‖</mo></mrow></mrow></mfrac></mstyle><mo>)</mo></mrow></mrow></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(5)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S3.SS4.p3.m1" class="ltx_Math" alttext="R^{l}_{s}(i)" display="inline"><mrow><msubsup><mi>R</mi><mi>s</mi><mi>l</mi></msubsup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>i</mi><mo stretchy="false">)</mo></mrow></mrow></math> and <math id="S3.SS4.p3.m2" class="ltx_Math" alttext="R^{l}_{q}(j)" display="inline"><mrow><msubsup><mi>R</mi><mi>q</mi><mi>l</mi></msubsup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>j</mi><mo stretchy="false">)</mo></mrow></mrow></math> means the <math id="S3.SS4.p3.m3" class="ltx_Math" alttext="i" display="inline"><mi>i</mi></math>-th support
+and <math id="S3.SS4.p3.m4" class="ltx_Math" alttext="j" display="inline"><mi>j</mi></math>-th query residual enhancement feature.
+The similarity is fed to the 4D convolution encoder and the 2D convolution decoder to generate the query mask.
+The prediction query mask and the ground truth mask are used to calculate the cross-entropy loss, and the model parameters are updated by backpropagation.</p>
+</div>
+</section>
+<section id="S3.SS5" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.5 </span>Mask Prediction Strategy</h3>
+
+<div id="S3.SS5.p1" class="ltx_para">
+<p class="ltx_p">Due to the fine-grained difference between the support query samples and the lack of the query mask, the learning of knowledge may also be biased towards the support samples <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">zha2023boosting</span>]</cite>.
+At the same time, we can not calculate the query prototype, resulting in the transformation matrix being biased toward the support.
+To solve the above problems, we use the idea of coarse to fine <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">marr2010vision</span>]</cite> to generate a coarse query mask, and then feed it and the support mask to the network through the prototype fusion mechanism to get the final prediction mask.</p>
+</div>
+<div id="S3.SS5.p2" class="ltx_para">
+<p class="ltx_p">Specifically, the model first generates a coarse soft mask <math id="S3.SS5.p2.m1" class="ltx_Math" alttext="\hat{M}_{q}" display="inline"><msub><mover accent="true"><mi>M</mi><mo>^</mo></mover><mi>q</mi></msub></math> for query samples, and the query foreground mask is calculated as follows:</p>
+<table id="Sx1.EGx6" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="S3.E6"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S3.E6.m1" class="ltx_Math" alttext="\displaystyle\mathbf{\hat{c}}^{l}_{q,f}=\frac{\sum_{i}\sum_{j}F^{l,i,j}_{q}%
+\psi^{l}(\hat{M}_{q}^{i,j})}{\sum_{i}\sum_{j}\psi^{l}(\hat{M}_{q}^{i,j})}," display="inline"><mrow><mrow><msubsup><mover accent="true"><mi>𝐜</mi><mo>^</mo></mover><mrow><mi>q</mi><mo>,</mo><mi>f</mi></mrow><mi>l</mi></msubsup><mo>=</mo><mstyle displaystyle="true"><mfrac><mrow><msub><mo>∑</mo><mi>i</mi></msub><mrow><msub><mo lspace="0.167em">∑</mo><mi>j</mi></msub><mrow><msubsup><mi>F</mi><mi>q</mi><mrow><mi>l</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msubsup><mo>⁢</mo><msup><mi>ψ</mi><mi>l</mi></msup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msubsup><mover accent="true"><mi>M</mi><mo>^</mo></mover><mi>q</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msubsup><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow><mrow><msub><mo>∑</mo><mi>i</mi></msub><mrow><msub><mo lspace="0.167em">∑</mo><mi>j</mi></msub><mrow><msup><mi>ψ</mi><mi>l</mi></msup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msubsup><mover accent="true"><mi>M</mi><mo>^</mo></mover><mi>q</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msubsup><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></mfrac></mstyle></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(6)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S3.SS5.p2.m2" class="ltx_Math" alttext="F^{l,i,j}_{q}" display="inline"><msubsup><mi>F</mi><mi>q</mi><mrow><mi>l</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msubsup></math> and <math id="S3.SS5.p2.m3" class="ltx_Math" alttext="\hat{M}_{q}^{i,j}" display="inline"><msubsup><mover accent="true"><mi>M</mi><mo>^</mo></mover><mi>q</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msubsup></math> represent the pixel values corresponding to the query feature and the soft mask respectively.
+The background mask for the query can also be calculated in the same way.
+Then we use a simple prototype fusion mechanism to get the final unbiased prototype:</p>
+<table id="Sx1.EGx7" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="S3.E7"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S3.E7.m1" class="ltx_Math" alttext="\displaystyle\mathbf{c}^{l}_{f}=\alpha\mathbf{c}^{l}_{s,f}+(1-\alpha)\mathbf{%
+\hat{c}}^{l}_{q,f}," display="inline"><mrow><mrow><msubsup><mi>𝐜</mi><mi>f</mi><mi>l</mi></msubsup><mo>=</mo><mrow><mrow><mi>α</mi><mo>⁢</mo><msubsup><mi>𝐜</mi><mrow><mi>s</mi><mo>,</mo><mi>f</mi></mrow><mi>l</mi></msubsup></mrow><mo>+</mo><mrow><mrow><mo stretchy="false">(</mo><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow><mo stretchy="false">)</mo></mrow><mo>⁢</mo><msubsup><mover accent="true"><mi>𝐜</mi><mo>^</mo></mover><mrow><mi>q</mi><mo>,</mo><mi>f</mi></mrow><mi>l</mi></msubsup></mrow></mrow></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(7)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S3.SS5.p2.m4" class="ltx_Math" alttext="\alpha" display="inline"><mi>α</mi></math> is a learnable parameter.
+Bring the fused prototype into Equation <a href="#S3.E3" title="In 3.3 Semantic Enhanced Anchor Transformation ‣ 3 Method ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a> to get the exact transformation matrix and go through subsequent modules to get the final query mask.
+This method not only solves the potential phenomenon of supporting sample over-fitting in FSS but also helps the model learn how to segment across domains step by step.
+Finally, we optimize the whole model through the cross-entropy loss.</p>
+</div>
+</section>
+</section>
+<section id="S4" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">4 </span>Experiments</h2>
+
+<section id="S4.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">4.1 </span>Implementation Details</h3>
+
+<div id="S4.SS1.p1" class="ltx_para">
+<p class="ltx_p">Following the previous approach, we used PASCAL VOC 2012 <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">everingham2009pascal</span>]</cite> and SBD <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">hariharan2011semantic</span>]</cite> as training domains, and then tested our models on ISIC <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">tschandl2018ham10000</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">codella2019skin</span>]</cite>, Chest X-ray <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">candemir2013lung</span>, <span class="ltx_ref ltx_missing_citation ltx_ref_self">jaeger2013automatic</span>]</cite>, and FSS-1000 <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">li2020fss</span>]</cite>, respectively.
+Each run contains 1200 tasks that contain all datasets except FSS-1000.
+FSS-1000 has 2400 tasks per run <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite>.
+We chose VGG-16 <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">simonyan2014very</span>]</cite> and ResNet-50 <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">he2016deep</span>]</cite> for feature extraction.
+During the training, we kept these weights frozen and selected the feature map as the same as the previous work <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite>.
+We employed Adam <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">kingma2014adam</span>]</cite> as the optimizer with a learning rate of 1e-3.</p>
+</div>
+</section>
+<section id="S4.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">4.2 </span>Experimental Results</h3>
+
+<div id="S4.SS2.p1" class="ltx_para">
+<p class="ltx_p">As shown in Table <a href="#S4.T1" title="Table 1 ‣ 4.2 Experimental Results ‣ 4 Experiments ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>, our average results at 1-shot and 5-shot show that compared to existing methods, the mIOU of VGG-16 has increased by 3.91% and 0.59%, and the mIOU of ResNet-50 has increased by 2.62% and 1.55%.
+In the case of a large gap between the fields in the source domain dataset, our model achieves SOTA in all results for Chest X-rays.
+In ISIC, the mIOU of VGG-16 increased by 3.93% (1-shot), and the mIOU of ResNet-50 increased by 1.09% (1-shot).
+For FSS-1000, which has a relatively small gap from the source domain dataset, our model surpasses all existing methods and validates its advantages in CD-FSS.
+In addition, we show some qualitative results of the proposed method on different datasets in Figure <a href="#S4.F3" title="Figure 3 ‣ 4.2 Experimental Results ‣ 4 Experiments ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>.
+These results prove that our method can improve the generalization ability, which benefits from that our method can learn cross-domain knowledge from different views.</p>
+</div>
+<figure id="S4.T1" class="ltx_table">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_table">Table 1: </span>The results of comparison with FSS and CD-FSS methods under 1-way 1-shot and 5-shot settings on the CD-FSS benchmark.
+It is noteworthy that all methods are trained in PASCAL VOC and tested on the CD-FSS benchmark.</figcaption>
+<div class="ltx_inline-block ltx_align_center ltx_transformed_outer" style="width:380.5pt;height:202.3pt;vertical-align:-0.7pt;"><span class="ltx_transformed_inner" style="transform:translate(-81.5pt,43.2pt) scale(0.7,0.7) ;">
+<table class="ltx_tabular ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_tt" rowspan="2">Methods</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_tt" rowspan="2">Backbone</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_tt" colspan="2">ISIC</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_tt" colspan="2">Chest X-ray</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_tt" colspan="2">FSS-1000</td>
+<td class="ltx_td ltx_align_center ltx_border_tt" colspan="2">Average</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">1-shot</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">5-shot</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">1-shot</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">5-shot</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">1-shot</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">5-shot</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">1-shot</td>
+<td class="ltx_td ltx_align_center ltx_border_t">5-shot</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_t" colspan="10">Few-shot Segmentation Methods</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">AMP <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">siam2019amp</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">VGG-16</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">28.42</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">30.41</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">51.23</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">53.04</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">57.18</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">59.24</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">45.61</td>
+<td class="ltx_td ltx_align_center ltx_border_t">47.56</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r">PGNet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">zhang2019pyramid</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r">ResNet-50</td>
+<td class="ltx_td ltx_align_center ltx_border_r">21.86</td>
+<td class="ltx_td ltx_align_center ltx_border_r">21.25</td>
+<td class="ltx_td ltx_align_center ltx_border_r">33.95</td>
+<td class="ltx_td ltx_align_center ltx_border_r">27.96</td>
+<td class="ltx_td ltx_align_center ltx_border_r">62.42</td>
+<td class="ltx_td ltx_align_center ltx_border_r">62.74</td>
+<td class="ltx_td ltx_align_center ltx_border_r">39.41</td>
+<td class="ltx_td ltx_align_center">37.32</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r">PANet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">wang2019panet</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r">ResNet-50</td>
+<td class="ltx_td ltx_align_center ltx_border_r">25.29</td>
+<td class="ltx_td ltx_align_center ltx_border_r">33.99</td>
+<td class="ltx_td ltx_align_center ltx_border_r">57.75</td>
+<td class="ltx_td ltx_align_center ltx_border_r">69.31</td>
+<td class="ltx_td ltx_align_center ltx_border_r">69.15</td>
+<td class="ltx_td ltx_align_center ltx_border_r">71.68</td>
+<td class="ltx_td ltx_align_center ltx_border_r">50.73</td>
+<td class="ltx_td ltx_align_center">58.33</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r">CaNet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">zhang2019canet</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r">ResNet-50</td>
+<td class="ltx_td ltx_align_center ltx_border_r">25.16</td>
+<td class="ltx_td ltx_align_center ltx_border_r">28.22</td>
+<td class="ltx_td ltx_align_center ltx_border_r">28.35</td>
+<td class="ltx_td ltx_align_center ltx_border_r">28.62</td>
+<td class="ltx_td ltx_align_center ltx_border_r">70.67</td>
+<td class="ltx_td ltx_align_center ltx_border_r">72.03</td>
+<td class="ltx_td ltx_align_center ltx_border_r">41.39</td>
+<td class="ltx_td ltx_align_center">42.96</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r">RPMMs <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">yang2020prototype</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r">ResNet-50</td>
+<td class="ltx_td ltx_align_center ltx_border_r">18.02</td>
+<td class="ltx_td ltx_align_center ltx_border_r">20.04</td>
+<td class="ltx_td ltx_align_center ltx_border_r">30.11</td>
+<td class="ltx_td ltx_align_center ltx_border_r">30.82</td>
+<td class="ltx_td ltx_align_center ltx_border_r">65.12</td>
+<td class="ltx_td ltx_align_center ltx_border_r">67.06</td>
+<td class="ltx_td ltx_align_center ltx_border_r">37.75</td>
+<td class="ltx_td ltx_align_center">39.31</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r">PFENet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">tian2020prior</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r">ResNet-50</td>
+<td class="ltx_td ltx_align_center ltx_border_r">23.50</td>
+<td class="ltx_td ltx_align_center ltx_border_r">23.83</td>
+<td class="ltx_td ltx_align_center ltx_border_r">27.22</td>
+<td class="ltx_td ltx_align_center ltx_border_r">27.57</td>
+<td class="ltx_td ltx_align_center ltx_border_r">70.87</td>
+<td class="ltx_td ltx_align_center ltx_border_r">70.52</td>
+<td class="ltx_td ltx_align_center ltx_border_r">40.53</td>
+<td class="ltx_td ltx_align_center">40.64</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r">RePRI <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">boudiaf2021few</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r">ResNet-50</td>
+<td class="ltx_td ltx_align_center ltx_border_r">23.27</td>
+<td class="ltx_td ltx_align_center ltx_border_r">26.23</td>
+<td class="ltx_td ltx_align_center ltx_border_r">65.08</td>
+<td class="ltx_td ltx_align_center ltx_border_r">65.48</td>
+<td class="ltx_td ltx_align_center ltx_border_r">70.96</td>
+<td class="ltx_td ltx_align_center ltx_border_r">74.23</td>
+<td class="ltx_td ltx_align_center ltx_border_r">53.10</td>
+<td class="ltx_td ltx_align_center">55.31</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r">HSNet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">min2021hypercorrelation</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r">ResNet-50</td>
+<td class="ltx_td ltx_align_center ltx_border_r">31.20</td>
+<td class="ltx_td ltx_align_center ltx_border_r">35.10</td>
+<td class="ltx_td ltx_align_center ltx_border_r">51.88</td>
+<td class="ltx_td ltx_align_center ltx_border_r">54.36</td>
+<td class="ltx_td ltx_align_center ltx_border_r">77.53</td>
+<td class="ltx_td ltx_align_center ltx_border_r">80.99</td>
+<td class="ltx_td ltx_align_center ltx_border_r">53.54</td>
+<td class="ltx_td ltx_align_center">56.82</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_t" colspan="10">Cross-domain Few-shot Segmentation Methods</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">PATNet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">VGG-16</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">33.07</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">45.83</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">57.83</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">60.55</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">71.60</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">76.17</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_t">54.17</td>
+<td class="ltx_td ltx_align_center ltx_border_t">60.85</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r">RestNet (Ours)</td>
+<td class="ltx_td ltx_align_center ltx_border_r">VGG-16</td>
+<td class="ltx_td ltx_align_center ltx_border_r">37.00</td>
+<td class="ltx_td ltx_align_center ltx_border_r">43.10</td>
+<td class="ltx_td ltx_align_center ltx_border_r">62.03</td>
+<td class="ltx_td ltx_align_center ltx_border_r">62.41</td>
+<td class="ltx_td ltx_align_center ltx_border_r">75.20</td>
+<td class="ltx_td ltx_align_center ltx_border_r">78.81</td>
+<td class="ltx_td ltx_align_center ltx_border_r">58.08</td>
+<td class="ltx_td ltx_align_center">61.44</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r">PATNet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r">ResNet-50</td>
+<td class="ltx_td ltx_align_center ltx_border_r">41.16</td>
+<td class="ltx_td ltx_align_center ltx_border_r"><span class="ltx_text ltx_font_bold">53.58</span></td>
+<td class="ltx_td ltx_align_center ltx_border_r">66.61</td>
+<td class="ltx_td ltx_align_center ltx_border_r">70.20</td>
+<td class="ltx_td ltx_align_center ltx_border_r">78.59</td>
+<td class="ltx_td ltx_align_center ltx_border_r">81.23</td>
+<td class="ltx_td ltx_align_center ltx_border_r">62.12</td>
+<td class="ltx_td ltx_align_center">68.34</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r">RestNet (Ours)</td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r">ResNet-50</td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r"><span class="ltx_text ltx_font_bold">42.25</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r">51.10</td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r"><span class="ltx_text ltx_font_bold">70.43</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r"><span class="ltx_text ltx_font_bold">73.69</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r"><span class="ltx_text ltx_font_bold">81.53</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r"><span class="ltx_text ltx_font_bold">84.89</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r"><span class="ltx_text ltx_font_bold">64.74</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb"><span class="ltx_text ltx_font_bold">69.89</span></td>
+</tr>
+</tbody>
+</table>
+</span></div>
+</figure>
+<figure id="S4.F3" class="ltx_figure"><img src="x4.png" id="S4.F3.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="248" height="122" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 3: </span>Qualitative results of our model for 1-way 1-shot in different CD-FSS datasets. The model is trained using PASCAL VOC. Best color view and zoom in.</figcaption>
+</figure>
+</section>
+<section id="S4.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">4.3 </span>Ablation Study</h3>
+
+<section id="S4.SS3.SSS1" class="ltx_subsubsection">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">4.3.1 </span>Component Analysis</h4>
+
+<div id="S4.SS3.SSS1.p1" class="ltx_para">
+<p class="ltx_p">Our method mainly includes three parts, namely the Semantic Enhanced Anchor Transformation (SEAT) module and the Residual Enhancement (IRE) module, and Mask Prediction Strategy (MPS).
+We validated the effectiveness of each component and presented the results in Table <a href="#S4.T3" title="Table 3 ‣ 4.3.2 Effect of Different Attention ‣ 4.3 Ablation Study ‣ 4 Experiments ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>.
+It can be concluded that SEAT and IRE have brought significant improvements to the model from different perspectives, and MPS is also indispensable.</p>
+</div>
+</section>
+<section id="S4.SS3.SSS2" class="ltx_subsubsection">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">4.3.2 </span>Effect of Different Attention</h4>
+
+<div id="S4.SS3.SSS2.p1" class="ltx_para">
+<p class="ltx_p">We mentioned a unified attention mechanism in Section <a href="#S3.SS3" title="3.3 Semantic Enhanced Anchor Transformation ‣ 3 Method ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3.3</span></a>.
+In Table <a href="#S4.T3" title="Table 3 ‣ 4.3.2 Effect of Different Attention ‣ 4.3 Ablation Study ‣ 4 Experiments ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>, we calculated its results on the FSS-1000 with different attention mechanisms (i.e., support and query non-shared attention mechanism modules).
+The results show that a unified attention mechanism can not only help the model reduce learnable parameters but also help the model learn unified support query attention information to achieve better segmentation results.</p>
+</div>
+<figure id="S4.T3" class="ltx_table">
+<div class="ltx_flex_figure ltx_flex_table">
+<div class="ltx_flex_cell ltx_flex_size_1">
+<div class="ltx_block ltx_figure_panel">
+<span class="ltx_ERROR undefined">{floatrow}</span><span class="ltx_ERROR undefined">\capbtabbox</span>
+<div class="ltx_inline-block ltx_transformed_outer" style="width:135.3pt;height:54pt;vertical-align:-0.0pt;"><span class="ltx_transformed_inner" style="transform:translate(-45.1pt,18.0pt) scale(0.6,0.6) ;">
+<table class="ltx_tabular ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt">Baseline</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt">SEAT</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt">IRE</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_r ltx_border_tt">MPS</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt">1-shot mIOU</th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_t">✓</td>
+<td class="ltx_td ltx_border_t"></td>
+<td class="ltx_td ltx_border_t"></td>
+<td class="ltx_td ltx_border_r ltx_border_t"></td>
+<td class="ltx_td ltx_align_center ltx_border_t">77.53</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">✓</td>
+<td class="ltx_td ltx_align_center">✓</td>
+<td class="ltx_td"></td>
+<td class="ltx_td ltx_border_r"></td>
+<td class="ltx_td ltx_align_center">78.21</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">✓</td>
+<td class="ltx_td ltx_align_center">✓</td>
+<td class="ltx_td ltx_align_center">✓</td>
+<td class="ltx_td ltx_border_r"></td>
+<td class="ltx_td ltx_align_center">81.03</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_bb">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_bb">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_bb">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_bb"><span class="ltx_text ltx_font_bold">81.53</span></td>
+</tr>
+</tbody>
+</table>
+</span></div>
+</div>
+</div>
+</div>
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_table">Table 2: </span>Ablation study of key modules on FSS-1000.</figcaption><div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1">
+<div class="ltx_block ltx_figure_panel">
+<span class="ltx_ERROR undefined">\capbtabbox</span>
+<div class="ltx_inline-block ltx_transformed_outer" style="width:120.2pt;height:37.8pt;vertical-align:-0.0pt;"><span class="ltx_transformed_inner" style="transform:translate(-25.8pt,8.1pt) scale(0.7,0.7) ;">
+<table class="ltx_tabular ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt">Method</th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt">1-shot mIOU</th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_t">Different Attention</td>
+<td class="ltx_td ltx_align_center ltx_border_t">81.69</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_bb">Unified Attention</td>
+<td class="ltx_td ltx_align_center ltx_border_bb"><span class="ltx_text ltx_font_bold">82.03</span></td>
+</tr>
+</tbody>
+</table>
+</span></div>
+</div>
+</div>
+</div>
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_table">Table 3: </span>Ablation study of different attention on FSS-1000.</figcaption>
+</figure>
+</section>
+</section>
+<section id="S4.SS4" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">4.4 </span>Additional Analysis</h3>
+
+<section id="S4.SS4.SSS1" class="ltx_subsubsection">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">4.4.1 </span>Visualization of Intra-domain Knowledge</h4>
+
+<figure id="S4.F4" class="ltx_figure">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_3">
+<figure id="S4.F4.sf1" class="ltx_figure ltx_figure_panel ltx_align_center"><img src="x5.png" id="S4.F4.sf1.g1" class="ltx_graphics ltx_img_landscape" width="216" height="162" alt="Refer to caption">
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:80%;">(a)</span> </span><span class="ltx_text" style="font-size:80%;">Activate Matching</span></figcaption>
+</figure>
+</div>
+<div class="ltx_flex_cell ltx_flex_size_3">
+<figure id="S4.F4.sf2" class="ltx_figure ltx_figure_panel ltx_align_center"><img src="x6.png" id="S4.F4.sf2.g1" class="ltx_graphics ltx_img_square" width="186" height="162" alt="Refer to caption">
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:80%;">(b)</span> </span><span class="ltx_text" style="font-size:80%;">PATNet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite></span></figcaption>
+</figure>
+</div>
+<div class="ltx_flex_cell ltx_flex_size_3">
+<figure id="S4.F4.sf3" class="ltx_figure ltx_figure_panel ltx_align_center"><img src="x7.png" id="S4.F4.sf3.g1" class="ltx_graphics ltx_img_square" width="168" height="164" alt="Refer to caption">
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:80%;">(c)</span> </span><span class="ltx_text" style="font-size:80%;">RestNet (Ours)</span></figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 4: </span>Visualization of the Intra-domain support-query activate matching.</figcaption>
+</figure>
+<div id="S4.SS4.SSS1.p1" class="ltx_para">
+<p class="ltx_p">In Section <a href="#S3.SS4" title="3.4 Intra-domain Residual Enhancement ‣ 3 Method ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3.4</span></a>, we mentioned the importance of intra-domain matching similarity.
+To quantify this attribute, for the same domain support and query samples, we calculate the support-query similarity in Equation <a href="#S3.E5" title="In 3.4 Intra-domain Residual Enhancement ‣ 3 Method ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a> and count the pixel pairs in each similarity whose value is greater than zero.
+We call these pixel pairs <span class="ltx_text ltx_font_italic">intra-domain active matching</span>.
+The Intra-domain active matching reflects the knowledge learning between support and query samples from the same domain, which can well represent the retention of intra-domain knowledge by the model after cross-domain feature projection in the CD-FSS.</p>
+</div>
+<div id="S4.SS4.SSS1.p2" class="ltx_para">
+<p class="ltx_p">Specifically, we visualized the active matching of our method and existing methods <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite> during the training process, as shown in Figure <a href="#S4.F4.sf1" title="In Figure 4 ‣ 4.4.1 Visualization of Intra-domain Knowledge ‣ 4.4 Additional Analysis ‣ 4 Experiments ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4(a)</span></a>, where <span class="ltx_text ltx_font_italic">Original</span> denotes no feature transformation.
+Compared to existing methods, our method can well preserve the intra-domain knowledge in the original space and reduce the loss caused by cross-domain transformation.
+Further, we visualize the support-query similarity for the 30th epoch.
+For ease of visualization, we reshape the similarity from <math id="S4.SS4.SSS1.p2.m1" class="ltx_Math" alttext="\mathbb{R}^{\in H\times W\times H\times W}" display="inline"><msup><mi>ℝ</mi><mrow><mi></mi><mo>∈</mo><mrow><mi>H</mi><mo lspace="0.222em" rspace="0.222em">×</mo><mi>W</mi><mo lspace="0.222em" rspace="0.222em">×</mo><mi>H</mi><mo lspace="0.222em" rspace="0.222em">×</mo><mi>W</mi></mrow></mrow></msup></math> to <math id="S4.SS4.SSS1.p2.m2" class="ltx_Math" alttext="\mathbb{R}^{\in HW\times HW}" display="inline"><msup><mi>ℝ</mi><mrow><mi></mi><mo>∈</mo><mrow><mrow><mrow><mi>H</mi><mo>⁢</mo><mi>W</mi></mrow><mo lspace="0.222em" rspace="0.222em">×</mo><mi>H</mi></mrow><mo>⁢</mo><mi>W</mi></mrow></mrow></msup></math>, as shown in Figure <a href="#S4.F4.sf2" title="In Figure 4 ‣ 4.4.1 Visualization of Intra-domain Knowledge ‣ 4.4 Additional Analysis ‣ 4 Experiments ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4(b)</span></a> and Figure <a href="#S4.F4.sf3" title="In Figure 4 ‣ 4.4.1 Visualization of Intra-domain Knowledge ‣ 4.4 Additional Analysis ‣ 4 Experiments ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4(c)</span></a>.
+It can be shown that our method can activate more intra-domain matching, helping the model utilize more intra-domain support-query information.</p>
+</div>
+</section>
+<section id="S4.SS4.SSS2" class="ltx_subsubsection">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">4.4.2 </span>Comparison of Model Parameter Quantities</h4>
+
+<div id="S4.SS4.SSS2.p1" class="ltx_para">
+<p class="ltx_p">In Table <a href="#S4.T4" title="Table 4 ‣ 4.4.2 Comparison of Model Parameter Quantities ‣ 4.4 Additional Analysis ‣ 4 Experiments ‣ RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4</span></a>, we compare the number of parameters with those of existing FSS methods and CD-FSS methods.
+We calculate the number of additional parameters relative to the backbone.
+The results show that our method only introduces a very small number of parameters but has additional performance improvements compared with the recent CD-FSS method.</p>
+</div>
+<figure id="S4.T4" class="ltx_table">
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_table">Table 4: </span>Comparison of the number of additional parameters of different methods.</figcaption>
+<div class="ltx_inline-block ltx_align_center ltx_transformed_outer" style="width:332.4pt;height:24pt;vertical-align:-0.6pt;"><span class="ltx_transformed_inner" style="transform:translate(-89.5pt,6.3pt) scale(0.65,0.65) ;">
+<table class="ltx_tabular ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_tt">Method</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_tt">HSNet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">min2021hypercorrelation</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_r ltx_border_tt">PATNet <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">lei2022cross</span>]</cite>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_tt">RestNet (Ours)</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r ltx_border_t">Additional Parameters (M)</td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r ltx_border_t">2.5740 M</td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_r ltx_border_t">2.5809 M</td>
+<td class="ltx_td ltx_align_center ltx_border_bb ltx_border_t">2.5812 M</td>
+</tr>
+</tbody>
+</table>
+</span></div>
+</figure>
+</section>
+</section>
+</section>
+<section id="S5" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">5 </span>Conclusion</h2>
+
+<div id="S5.p1" class="ltx_para">
+<p class="ltx_p">In this work, we propose a residual transform network (RestNet) to solve the cross-domain few-shot segmentation (CD-FSS).
+It is to comprehensively help the model to transfer knowledge with few samples from both inter-domain and intra-domain perspectives.
+To achieve this, we propose a Semantic Enhanced Anchor Transformation (SEAT) module to help the model learn domain-independent features using advanced semantic features.
+In addition, an intra-domain residual enhancement (IRE) module is also involved to help the model enhance intra-domain information while transferring knowledge between domains.
+Finally, we use the mask prediction strategy based on prototype fusion to help the model gradually learn how to segment the unseen domain.
+On the three CD-FSS benchmarks, several experiments have proved that our RestNet achieves state-of-the-art performance.</p>
+</div>
+</section>
+<section id="Sx1" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">Acknowledgement</h2>
+
+<div id="Sx1.p1" class="ltx_para">
+<p class="ltx_p">This work was supported by the National Key R&amp;D Program of China (2021ZD0109800), by the National Natural Science Foundation of China (81972248).</p>
+</div>
+</section>
+<section id="bib" class="ltx_bibliography">
+<h2 class="ltx_title ltx_title_bibliography">References</h2>
+
+<ul id="bib.L1" class="ltx_biblist">
+</ul>
+</section>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Thu Dec  5 01:52:51 2024 by <a href="http://dlmf.nist.gov/LaTeXML/" class="ltx_LaTeXML_logo"><span style="letter-spacing:-0.2em; margin-right:0.1em;">L<span class="ltx_font_smallcaps" style="position:relative; bottom:2.2pt;">a</span>T<span class="ltx_font_smallcaps" style="font-size:120%;position:relative; bottom:-0.2ex;">e</span></span><span style="font-size:90%; position:relative; bottom:-0.2ex;">XML</span><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="Mascot Sammy"></a>
+</div></footer>
+</div>
+</body>
+</html>

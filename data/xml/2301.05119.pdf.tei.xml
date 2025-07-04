@@ -1,0 +1,793 @@
+<?xml version="1.0" encoding="UTF-8"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">ITA-ELECTION-2022: A multi-platform dataset of social media conversations around the 2022 Italian general election</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2023-06-12">12 Jun 2023</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Francesco</forename><surname>Pierri</surname></persName>
+							<email>francesco.pierri@polimi.it</email>
+							<affiliation key="aff0">
+								<orgName type="department" key="dep1">Dipartimento di Elettronica</orgName>
+								<orgName type="department" key="dep2">Informazione e Bioingegneria</orgName>
+								<orgName type="institution">Politecnico di Milano Milano</orgName>
+								<address>
+									<country key="IT">Italy</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Geng</forename><surname>Liu</surname></persName>
+							<email>geng.liu@polimi.it</email>
+							<affiliation key="aff1">
+								<orgName type="department" key="dep1">Dipartimento di Elettronica</orgName>
+								<orgName type="department" key="dep2">Informazione e Bioingegneria</orgName>
+								<orgName type="institution">Politecnico di Milano Milano</orgName>
+								<address>
+									<country key="IT">Italy</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Stefano</forename><surname>Ceri</surname></persName>
+							<email>stefano.ceri@polimi.it</email>
+							<affiliation key="aff2">
+								<orgName type="department" key="dep1">Dipartimento di Elettronica</orgName>
+								<orgName type="department" key="dep2">Informazione e Bioingegneria</orgName>
+								<orgName type="institution">Politecnico di Milano Milano</orgName>
+								<address>
+									<country key="IT">Italy</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><surname>Pierri</surname></persName>
+							<affiliation key="aff3">
+								<orgName type="institution">University of Birmingham</orgName>
+								<address>
+									<settlement>Eastside Rooms</settlement>
+									<country key="GB">UK</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ceri</forename><surname>Liu</surname></persName>
+							<affiliation key="aff3">
+								<orgName type="institution">University of Birmingham</orgName>
+								<address>
+									<settlement>Eastside Rooms</settlement>
+									<country key="GB">UK</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">ITA-ELECTION-2022: A multi-platform dataset of social media conversations around the 2022 Italian general election</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2023-06-12">12 Jun 2023</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">DA5DABB5C6DE653E2A0F4320E1B197C8</idno>
+					<idno type="DOI">10.7910/DVN/EALXH2</idno>
+					<idno type="arXiv">arXiv:2301.05119v2[cs.SI]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2025-01-29T07:33+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>• Applied computing → Voting / election technologies</term>
+					<term>• Computer systems organization → Embedded systems</term>
+					<term>Redundancy</term>
+					<term>Robotics</term>
+					<term>• Networks → Network reliability advertisement, Italy, multi-platform, politics, social media</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Online social media play a major role in shaping public discourse and opinion, especially during political events. We present the first public multi-platform dataset of Italian-language political conversations, focused on the 2022 Italian general election taking place on September 25th. Leveraging public APIs and a keyword-based search, we collected millions of posts published by users, pages and groups on Facebook, Instagram and Twitter, along with metadata of TikTok and YouTube videos shared on these platforms, over a period of four months. We augmented the dataset with a collection of political ads sponsored on Meta platforms, and a list of social media handles associated with political representatives. Our data resource will allow researchers and academics to further our understanding of the role of social media in the democratic process.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">INTRODUCTION</head><p>Online social media provide researchers and academics with unprecedented opportunities to observe a wide range of political and societal phenomena <ref type="bibr" target="#b20">[21]</ref>. They also play a critical role in shaping public opinion during political events <ref type="bibr" target="#b22">[23]</ref>, and represent a rich source of data to study the interplay between political actors' campaigns <ref type="bibr" target="#b21">[22]</ref>, media outlets' agenda settings <ref type="bibr" target="#b16">[17]</ref>, and users' news consumption <ref type="bibr" target="#b2">[3]</ref>.</p><p>In Italy, as of 2022 <ref type="foot" target="#foot_0">1</ref> , YouTube is the platform used by the largest amount of internet users (88%), followed by Meta platforms (64%) and TikTok (54%), whereas Twitter only accounts for approximately 7% <ref type="foot" target="#foot_1">2</ref> . However, previous studies of online social media during Italian elections and referendum mostly focused on Twitter <ref type="bibr" target="#b20">[21]</ref>, due to the large availability of data via its APIs. In this work, instead, we present a public data resource of political conversations and usergenerated content shared around the 2022 Italian general election, which allows researchers and academics to study multiple social platforms simultaneously.</p><p>The 2022 Italian general election was the first ever to take place in autumn, as a consequence of the fall of the government of national unity led by Mario Draghi in July <ref type="foot" target="#foot_2">3</ref> . The election had a record-low voter turnout and it was won by the right-wing coalition of Giorgia Meloni with over 43% of the vote share. Among the opponents, the Centre-left coalition led by Enrico Letta obtained approximately 25% of the voters, the populist Movimento 5 Stelle led by former PM Giuseppe Conte reached less than 16%, and the liberal and centrist Third Pole, which included former PM Matteo Renzi, obtained almost 8% of the vote share.</p><p>We present ITA-ELECTION-2022, the first public multi-platform dataset of Italian-language political conversations taking place on online social media, with a focus on the 2022 Italian general election. We collected millions of social media posts from Facebook, Instagram and Twitter, as well as advertisements sponsored on Meta platforms and metadata for TikTok and YouTube videos shared on the aforementioned platforms. We finally augment the dataset with a collection of social media handles associated with Italian political representatives. To collect the data, we employed a snowball sampling procedure and curated a list of relevant terms to accordingly perform a keyword-based search during a period of four months (July 2022 -October 2022). We provide public access to the data via GitHub and DataVerse repositories, as detailed next.</p><p>Given the nature of multi-platform, our dataset offers a unique opportunity for researchers to explore online political discourse during election seasons. It is particularly beneficial for researchers in those fields such as political science, sociology, digital ethics, and information disorder studies to study political communication, and information dissemination on social media.</p><p>The outline of this paper is the following: in the next section we review existing public data resources related to the present work; then, we describe the data collection procedure(s) carried out to build the dataset; next, we describe a few potential applications of the collected data; finally, we discuss limitations, draw conclusions and provide some ethical remarks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">RELATED WORK</head><p>There are several public datasets that allow to study social media conversations around political issues. We focus our literature review on the Italian context, and then describe a few datasets related to other countries. We also refer the interested reader to <ref type="bibr" target="#b20">[21]</ref> for an overview of studies that describe the interplay between social media and Italian politics.</p><p>[4] collect tweets in the Italian language continuously from 2012 to 2018, extracting a number of smaller datasets enriched with different kinds of annotations for linguistic purposes. They provide access to tweet IDs and annotations in a public repository. <ref type="bibr" target="#b19">[20]</ref> analyze the prevalence of Italian disinformation spreading on Twitter in the five months preceding the 2019 European Parliament election. They collect over 300 k tweets sharing thousands of news articles originating from websites flagged as unreliable by journalists and fact-checkers, providing public access to tweet IDs and lists of websites. The same authors provide a similar dataset collected in a different period of 2019, and that contains tweets sharing links to mainstream and traditional news websites, both in the Italian and French language <ref type="bibr" target="#b18">[19]</ref>.</p><p>[12] study the polarization around the 2020 Italian constitutional referendum. They collect a dataset of 1.2 M tweets discussing the event -and provide access to their IDs -, with the goal of designing a hashtag-based semi-automatic approach to label Twitter users' stance towards the referendum.</p><p>Following the COVID-19 pandemic, several researchers collected social media data to study conversations around the crisis, with a particular focus on the impact of vaccine misinformation. <ref type="bibr" target="#b8">[9]</ref> study the evolution of Italian Twitter conversations around vaccines during the period 2019-2021, whereas <ref type="bibr" target="#b12">[13]</ref> collect tweets in multiple languages (French, German and Italian) during the first year of world vaccination programs. Both contributions give public access to tweet IDs, with the latter providing also a set of labeled pro/antivaccines tweets and hashtags that can be used for training machine learning classifiers.</p><p>[6] provide a dataset of tweets discussing Brexit for a period of 45 months, from January 2016 until September 2019. The data, which comprises 50.8 million tweets and 3.97 million users, is enriched with metadata such as the bot score of users, sentiment score of tweets, and political stance labels predicted by a classifier developed by the authors.</p><p>There is a large number of datasets that focus on the U.S. elections (both presidential and midterms), and we provide here a nonexhaustive list of available resources. <ref type="bibr" target="#b15">[16]</ref> map candidates from the 2010 U.S. Midterm election with their Twitter accounts and a random sample of their followers. <ref type="bibr" target="#b4">[5]</ref> collect over 171 M tweets in the English language, mentioning Donald Trump and Hillary Clinton during the 2016 U.S. Presidential election. <ref type="bibr" target="#b9">[10]</ref> and <ref type="bibr" target="#b23">[24]</ref> collect tweets discussing the 2018 U.S. Midterm election, both using a hashtag-based search (e.g. tweets sharing the hashtag "#ivoted" on election day) and querying Twitter APIs with general keywords related to the midterm election. <ref type="bibr" target="#b6">[7]</ref> provide a longitudinal dataset of over 1.2 billion U.S. politics-and election-related tweets shared around the period of the 2020 U.S. Presidential election. Related to the same election, <ref type="bibr" target="#b0">[1]</ref> release a multi-modal dataset of 7.6 M tweets and 25.6 M retweets from 2.6 M users related to voter fraud claims. They augmented the data with cluster labels, users' suspension status, and perceptual hashes of tweeted images as well as aggregate data from external links and YouTube videos shared on Twitter. Lastly, <ref type="bibr" target="#b1">[2]</ref> recently released a multi-platform dataset of public social media posts related to the 2022 US Election, which is very similar to the present resource.</p><p>Unlike most existing datasets that focused only on Twitter or other individual platforms, our dataset covers a diverse set of social media platforms. In addition, we provide access to political ads placed on Meta plaforms as well as social media handles of political representatives. Insofar, our resource enable researchers to gain a more comprehensive understanding of social media discourse during the Italian election.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">DATA COLLECTION</head><p>This section describes the data collection procedure(s) carried out to gather data from different social media platforms. We remark that we employed the same list of keywords related to the Italian election, which we obtained through a snowball sampling approach using Twitter data only, to query different APIs. Our dataset conforms with FAIR principles: it is Findable, Accessible and Reusable as it is publicly accessible in an online Github <ref type="foot" target="#foot_3">4</ref> and DataVerse repository <ref type="foot" target="#foot_4">5</ref> , where we provide the means to recreate it almost completely (see limitations discussed next). It is also Interoperable as the data files are released in ".csv" and ".txt" formats. We summarize some statistics of the dataset in Table <ref type="table" target="#tab_1">1</ref>.</p><p>We remark that, at the time of this writing, it is unclear whether Twitter APIs will be as easily accessible to researchers as they were during the collection of this dataset, and this might affect future usage of this resource. We encourage interested researchers in reaching out to us in case they find difficulties in accessing Twitter data.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Twitter</head><p>We collected all tweets in the Italian language related to the election by using tweepy Python library to query Twitter v1.1 Filter streaming API endpoint <ref type="foot" target="#foot_5">6</ref> in the period September 2nd, 2022 -October 20th, 2022. We also leveraged Twitter historical Search API v2 endpoint <ref type="foot" target="#foot_6">7</ref> to collect tweets retrospectively in the period July 1st, 2022 -September 1st, 2022. To query Twitter APIs we employed a snowball sampling approach, following existing work <ref type="bibr" target="#b10">[11,</ref><ref type="bibr" target="#b12">13]</ref>, and generated a list of relevant keywords starting with seed terms such as "elezioni2022" and "elezioni"(which means "elections" in  Table <ref type="table">2</ref>: A sample of Italian language keywords related to the 2022 election that were used to retrieve social media posts in our dataset.</p><p>Italian); the final list contains 62 keywords and it is available in the repository associated with this paper. A sample is provided in Table <ref type="table">2</ref>. The total collection of tweets contains 19,087,594 tweets shared by 618,089 unique users. We remark that to abide by Twitter's terms of service we only share tweet IDs publicly. These can be "re-hydrated" to retrieve tweet objects, with the exception of removed or protected tweets, by querying Twitter API directly or using tools like Hydrator 8 and twarc. 9</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Facebook and Instagram posts</head><p>We collected Facebook and Instagram data by employing Crowd-Tangle, a public tool owned and operated by Meta <ref type="bibr" target="#b7">[8]</ref> that allows retrieving posts shared by public pages and groups with a certain amount of followers or that were manually added by other researchers on the platform 10 . We queried the /posts/search endpoint 11 using the same list of keywords employed for collecting Twitter data. For each post, the API returns several attributes related to the post and the page or group (to which we refer as "account" in the following) that published it; the full list of attributes is available in the official documentation 12 . We retained only posts in the Italian language by filtering on the languageCode parameter: the final dataset contains  and comments). We provide access to the URLs and IDs of these posts in the repository associated with this paper <ref type="foot" target="#foot_7">13</ref> .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">TikTok and YouTube videos</head><p>We </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4">Facebook and Instagram ads</head><p>We leveraged Meta Ad Library API <ref type="foot" target="#foot_10">16</ref> to collect all ads about "social issues, elections or politics" that were active on Meta platforms (i.e., Facebook, Instagram, Messenger, and the Audience Network) during the period from July 1st, 2022 -October 20th, 2022. We provide an example of a sponsored ad in Figure <ref type="figure" target="#fig_0">1</ref>. We queried the API with the same set of keywords mentioned beforehand; the API allows to search ads using one keyword at a time, and we queried the endpoint multiple times eventually discarding duplicated ads. The resulting collection contains 29,211 unique ads paid by 3,750 unique sponsors. For each ad, the API provides several different attributes: date of creation, period when the ad is active, name of the sponsor, message, platform on which the ad is active, lower and upper bound for the amount spent and the number of impressions generated, etc. Each of these attributes is detailed in the API documentation, as referenced in the footnote above. In the repository associated with this dataset we provide access to the ID of ads, which can be then used to retrieve ads through Meta Ad Library interactive search console or API. In particular, to abide by Meta's terms of use, an identification procedure is required to access the API endpoint, whereas the interactive search console only requires a Meta account.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.5">Social media handles of political representatives</head><p>We compiled a list of Facebook, Instagram and Twitter handles of elected members in the Senate and Chamber of deputies based on the official list released by the Italian Ministry of Interior <ref type="foot" target="#foot_11">17</ref> . Specifically, for each representative, we manually checked whether their official account was present on the three platforms. In our dataset, we matched over 450 Twitter accounts and Facebook pages, and approximately 300 Instagram accounts. The full list is available in the repository associated with this paper. We refer the interested reader to a similar useful resource presented by <ref type="bibr" target="#b14">[15]</ref>, who provide an online running database of politicians' activity on social media (currently only Twitter is supported) spanning multiple countries.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">POTENTIAL APPLICATIONS</head><p>There are several potential applications for our dataset, which can consider a single platform or multiple ones at the same time.</p><p>Interested researchers could further current understanding of polarization processes taking place during election seasons by analyzing content shared on multiple social platforms at once. They could study whether "echo-chamber" effects take place on different platforms, highlighting similarities and differences in their formation process.</p><p>Other researchers might leverage the data in order to study how political candidates interacted with potential voters on social media platforms, thus analyzing in detail the political communication strategies put in place by different candidates. They could also investigate the presence of correlational effects between online signals and electoral outcomes, or detect the presence of toxic and hateful speech originating in specific communities of political supporters.</p><p>Some researchers could investigate the presence of mis/disinformation and astroturfing campaigns taking place in the run-up to the election, studying patterns of similarities and differences among different platforms. They could also analyze how fringe and harmful content spreads across communities present on different platforms, and whether influential accounts play a role in amplifying certain malicious narratives.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">CONCLUSIONS</head><p>We released ITA-ELECTION-2022, a large-scale dataset of social media posts in the Italian language discussing the 2022 Italian General election, which took place on 25th September 2022, spanning multiple online platforms and covering a period of four months. In addition to gathering posts shared on Twitter, Facebook and Instagram, we collected ads sponsored on Meta platforms, we extracted metadata for YouTube and TikTok videos shared on different platforms during the collection period, and we compiled a list of social media handles associated to political representatives that can be used to gather further data. We described in detail the collection procedures carried out to build the dataset, and we suggested potential directions for future research.</p><p>Our work is not without limitations. First, our keyword-based search might entail results that are not completely accurate, e.g., one of the terms employed for the query is "conte", which might refer both to former PM Giuseppe Conte and football manager Antonio Conte. From another perspective, election-related terms might have been employed for marketing campaigns and promoting content that is not pertinent to the election. However, while we are unable to address these issues, which would require nontrivial efforts, researchers can further refine our data collection to meet their needs. Moreover, we performed a backward search to retrieve Twitter, Facebook and Instagram posts shared from July to September 2022, and we missed those that were deleted or removed during the same period. Similarly, by providing access only to IDs and URLs of collected posts, posts that have been removed or made private by users cannot be retrieved, thus limiting reproducibility analyses. Furthermore, we did not filter out the activity of automated and inauthentic accounts that might have polluted organic conversations around the election. Another limitation concerns Meta which, as highlighted in <ref type="bibr" target="#b17">[18]</ref>, might not accurately label all political ads as such and our collection might be missing some data. Finally, the user base of different platforms analyzed in this work might not be fully representative of the actual Italian population, and this should be taken into consideration by future research.</p><p>Despite these limitations, we believe that our dataset provides fertile ground for a number of intriguing and interesting research applications. We hope that this resource can advance our understanding of the interplay between online social media and democratic processes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">ETHICAL CONSIDERATIONS</head><p>We performed our data collection and public release in complete agreement with the platforms' terms of service. We acknowledge that TikTok metadata was scraped from the platform, thus potentially violating the platform's terms of service, but this was due to the lack of an official API <ref type="bibr" target="#b13">[14]</ref>. We do not directly share the raw content of social media posts, but rather provide access to IDs and URLs that can be used to retrieve the original data, with the exception of posts that have been deleted by platforms, and removed or made private by their author. We did not cause any harm to nor expose information about individual users in the process of collecting and releasing the data, with the only exception of political representatives. We understand that disclosing their social media accounts might open up to potential abuse by malicious actors, but at the same time, it enables researchers, journalists and other stakeholders to put important public actors, such as the members of the Italian Parliament and Senate, to scrutiny in order to better understand the influence of social media platforms on the democratic process. Finally, we reckon that Twitter might limit access to its public APIs, and we encourage interested researchers in contacting us may they encounter difficulties in retrieving Twitter data.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Example of an ad run on Meta platforms along with the information provided by Meta Ad Library API.</figDesc><graphic coords="3,442.88,83.68,115.32,114.09" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head/><label/><figDesc>augmented our dataset of social media posts by extracting metadata for TikTok and YouTube videos shared in Facebook and Twitter messages present in our dataset. It is worth mentioning that no such links are shared in Instagram posts. For what concerns YouTube, we identified all external links to the platform and employed the official YouTube API14 to extract video information such as the author, channel ID, video title, description, top 10 popular comments, etc. The resulting collection yields metadata for 22,754 unique YouTube videos shared on Twitter and 17,401 unique YouTube videos shared on Facebook. For what concerns TikTok, given the lack of an official API, we employed pyktok Python library15 to collect metadata about TikTok videos such as the title, description, length as well as information about the author of the video. The resulting collection yields metadata for 1,903 unique TikTok videos shared on Twitter and 1,744 unique TikTok videos shared on Facebook. We provide full access to this metadata in the repository associated with the paper.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 1 :</head><label>1</label><figDesc>Statistics of the dataset.</figDesc><table><row><cell cols="3">elezioni partito democratico berlusconi</cell></row><row><cell>renzi</cell><cell>movimento 5 stelle</cell><cell>salvini</cell></row><row><cell cols="2">calenda di maio</cell><cell>politiche2022</cell></row><row><cell>meloni</cell><cell>elezioni2022</cell><cell>conte</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>www.statista.com/statistics/1311549/top-social-platforms-italy/</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_1"><p>datareportal.com/reports/digital-2022-italy</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3" xml:id="foot_2"><p>https://www.reuters.com/world/europe/italys-meloni-sworn-head-right-winggovernment-2022-10-22/</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4" xml:id="foot_3"><p>github.com/frapierri/ita-election-2022</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5" xml:id="foot_4"><p>doi.org/10.7910/DVN/EALXH2</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6" xml:id="foot_5"><p>developer.twitter.com/en/docs/twitter-api/v1/tweets/filter-realtime/overview</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="7" xml:id="foot_6"><p>developer.twitter.com/en/docs/twitter-api/tweets/search/introduction</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="13" xml:id="foot_7"><p>github.com/CrowdTangle/API/wiki/Posts#get-postid</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="14" xml:id="foot_8"><p>developers.google.com/youtube/v3</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="15" xml:id="foot_9"><p>github.com/dfreelon/pyktok</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="16" xml:id="foot_10"><p>www.facebook.com/ads/library/api</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="17" xml:id="foot_11"><p>github.com/ondata/elezioni-politiche-2022</p></note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">VoterFraud2020: a Multi-modal Dataset of Election Fraud Claims on Twitter</title>
+		<author>
+			<persName><forename type="first">Anton</forename><surname>Abilov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiqing</forename><surname>Hua</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hana</forename><surname>Matatov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ofra</forename><surname>Amir</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mor</forename><surname>Naaman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International AAAI Conference on Web and Social Media</title>
+		<meeting>the International AAAI Conference on Web and Social Media</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="page" from="901" to="912"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Anton Abilov, Yiqing Hua, Hana Matatov, Ofra Amir, and Mor Naaman. 2021. VoterFraud2020: a Multi-modal Dataset of Election Fraud Claims on Twitter. In Proceedings of the International AAAI Conference on Web and Social Media, Vol. 15. 901-912.</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">A multi-platform collection of social media posts about the 2022 US midterm elections</title>
+		<author>
+			<persName><forename type="first">Rachith</forename><surname>Aiyappa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manita</forename><surname>Matthew R Deverna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bao</forename><forename type="middle">Tran</forename><surname>Pote</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wanying</forename><surname>Truong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aria</forename><surname>Axelrod</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zoher</forename><surname>Pessianzadeh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Munjung</forename><surname>Kachwala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ozgur</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Can Seckin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International AAAI Conference on Web and Social Media</title>
+		<meeting>the International AAAI Conference on Web and Social Media</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="page" from="981" to="989"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Rachith Aiyappa, Matthew R DeVerna, Manita Pote, Bao Tran Truong, Wany- ing Zhao, David Axelrod, Aria Pessianzadeh, Zoher Kachwala, Munjung Kim, Ozgur Can Seckin, et al. 2023. A multi-platform collection of social media posts about the 2022 US midterm elections. In Proceedings of the International AAAI Conference on Web and Social Media, Vol. 17. 981-989.</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Social media and fake news in the 2016 election</title>
+		<author>
+			<persName><forename type="first">Hunt</forename><surname>Allcott</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthew</forename><surname>Gentzkow</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of economic perspectives</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="211" to="236"/>
+			<date type="published" when="2017">2017. 2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Hunt Allcott and Matthew Gentzkow. 2017. Social media and fake news in the 2016 election. Journal of economic perspectives 31, 2 (2017), 211-36.</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Long-term social media data collection at the university of turin</title>
+		<author>
+			<persName><forename type="first">Mirko</forename><surname>Valerio Basile</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manuela</forename><surname>Lai</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Sanguinetti</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Fifth Italian Conference on Computational Linguistics (CLiC-it 2018)</title>
+		<title level="s">CEUR-WS</title>
+		<meeting>the Fifth Italian Conference on Computational Linguistics (CLiC-it 2018)</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="1" to="6"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Valerio Basile, Mirko Lai, and Manuela Sanguinetti. 2018. Long-term social media data collection at the university of turin. In Proceedings of the Fifth Italian Conference on Computational Linguistics (CLiC-it 2018). CEUR-WS, 1-6.</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Influence of fake news in Twitter during the 2016 US presidential election</title>
+		<author>
+			<persName><forename type="first">Alexandre</forename><surname>Bovet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Hernán</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Makse</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature communications</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="1" to="14"/>
+			<date type="published" when="2019">2019. 2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Alexandre Bovet and Hernán A Makse. 2019. Influence of fake news in Twitter during the 2016 US presidential election. Nature communications 10, 1 (2019), 1-14.</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">The Long-Running Debate about Brexit on Social Media</title>
+		<author>
+			<persName><forename type="first">Emre</forename><surname>Calisir</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Brambilla</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International AAAI Conference on Web and Social Media</title>
+		<meeting>the International AAAI Conference on Web and Social Media</meeting>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="page" from="848" to="852"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Emre Calisir and Marco Brambilla. 2020. The Long-Running Debate about Brexit on Social Media. In Proceedings of the International AAAI Conference on Web and Social Media, Vol. 14. 848-852.</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main"># Election2020: The first public Twitter dataset on the 2020 US Presidential election</title>
+		<author>
+			<persName><forename type="first">Emily</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashok</forename><surname>Deb</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Emilio</forename><surname>Ferrara</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Computational Social Science</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="1" to="18"/>
+			<date type="published" when="2022">2022. 2022</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Emily Chen, Ashok Deb, and Emilio Ferrara. 2022. # Election2020: The first public Twitter dataset on the 2020 US Presidential election. Journal of Computational Social Science 5, 1 (2022), 1-18.</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<ptr target="https://crowdtangle.com/"/>
+		<title level="m">CrowdTangle</title>
+		<imprint>
+			<publisher>CrowdTangle Team</publisher>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">CrowdTangle Team. 2022. CrowdTangle. https://crowdtangle.com/</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Echoes through Time: Evolution of the Italian COVID-19 Vaccination Debate</title>
+		<author>
+			<persName><forename type="first">Giuseppe</forename><surname>Crupi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yelena</forename><surname>Mejova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michele</forename><surname>Tizzani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniela</forename><surname>Paolotti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">André</forename><surname>Panisson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International AAAI Conference on Web and Social Media</title>
+		<meeting>the International AAAI Conference on Web and Social Media</meeting>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="page" from="102" to="113"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Giuseppe Crupi, Yelena Mejova, Michele Tizzani, Daniela Paolotti, and André Panisson. 2022. Echoes through Time: Evolution of the Italian COVID-19 Vacci- nation Debate. In Proceedings of the International AAAI Conference on Web and Social Media, Vol. 16. 102-113.</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Perils and challenges of social media and election manipulation analysis: The 2018 us midterms</title>
+		<author>
+			<persName><forename type="first">Ashok</forename><surname>Deb</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luca</forename><surname>Luceri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adam</forename><surname>Badaway</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Emilio</forename><surname>Ferrara</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Companion proceedings of the 2019 world wide web conference</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="237" to="247"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Ashok Deb, Luca Luceri, Adam Badaway, and Emilio Ferrara. 2019. Perils and challenges of social media and election manipulation analysis: The 2018 us midterms. In Companion proceedings of the 2019 world wide web conference. 237- 247.</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">CoVaxxy: A global collection of English Twitter posts about COVID-19 vaccines</title>
+		<author>
+			<persName><forename type="first">Matthew</forename><surname>Deverna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francesco</forename><surname>Pierri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bao</forename><surname>Truong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><surname>Bollenbacher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Axelrod</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Niklas</forename><surname>Loynes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cristopher</forename><surname>Torres-Lugo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kai-Cheng</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fil</forename><surname>Menczer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><surname>Bryden</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International AAAI Conference on Web and Social Media</title>
+		<meeting>the International AAAI Conference on Web and Social Media</meeting>
+		<imprint>
+			<date type="published" when="2021">2021. 2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Matthew DeVerna, Francesco Pierri, Bao Truong, John Bollenbacher, David Axel- rod, Niklas Loynes, Cristopher Torres-Lugo, Kai-Cheng Yang, Fil Menczer, and John Bryden. 2021. CoVaxxy: A global collection of English Twitter posts about COVID-19 vaccines. Proceedings of the International AAAI Conference on Web and Social Media (2021).</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Content-based Stance Classification of Tweets about the 2020 Italian Constitutional Referendum</title>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Di</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Giovanni</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Brambilla</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">SocialNLP@ NAACL</title>
+		<imprint>
+			<date type="published" when="2021">2021. 2021</date>
+			<biblScope unit="page" from="14" to="23"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Marco Di Giovanni and Marco Brambilla. 2021. Content-based Stance Classifica- tion of Tweets about the 2020 Italian Constitutional Referendum. In SocialNLP@ NAACL 2021. 14-23.</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">VaccinEU: COVID-19 vaccine conversations on Twitter in French, German and Italian</title>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Di</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Giovanni</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francesco</forename><surname>Pierri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><surname>Torres-Lugo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Brambilla</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International AAAI Conference on Web and Social Media</title>
+		<meeting>the International AAAI Conference on Web and Social Media</meeting>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="page" from="1236" to="1244"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Marco Di Giovanni, Francesco Pierri, Christopher Torres-Lugo, and Marco Bram- billa. 2022. VaccinEU: COVID-19 vaccine conversations on Twitter in French, German and Italian. In Proceedings of the International AAAI Conference on Web and Social Media, Vol. 16. 1236-1244.</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Computational research in the post-API age</title>
+		<author>
+			<persName><forename type="first">Deen</forename><surname>Freelon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Political Communication</title>
+		<imprint>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="665" to="668"/>
+			<date type="published" when="2018">2018. 2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Deen Freelon. 2018. Computational research in the post-API age. Political Communication 35, 4 (2018), 665-668.</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Politicians on Social Media. The online database of members of national parliaments on Twitter</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Haman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Milan</forename><surname>Školník</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Profesional de la información</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="page">2</biblScope>
+			<date type="published" when="2021">2021. 2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Michael Haman and Milan Školník. 2021. Politicians on Social Media. The online database of members of national parliaments on Twitter. Profesional de la información 30, 2 (2021).</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Mapping the political Twitterverse: Candidates and their followers in the midterms</title>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Hanna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ben</forename><surname>Sayre</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Leticia</forename><surname>Bode</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junghwan</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dhavan</forename><surname>Shah</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International AAAI Conference on Web and Social Media</title>
+		<meeting>the International AAAI Conference on Web and Social Media</meeting>
+		<imprint>
+			<date type="published" when="2011">2011</date>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="page" from="510" to="513"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Alexander Hanna, Ben Sayre, Leticia Bode, JungHwan Yang, and Dhavan Shah. 2011. Mapping the political Twitterverse: Candidates and their followers in the midterms. In Proceedings of the International AAAI Conference on Web and Social Media, Vol. 5. 510-513.</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">First and second levels of intermedia agenda setting: Political advertising, newspapers, and Twitter during the 2012 US presidential election</title>
+		<author>
+			<persName><forename type="first">Yeojin</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">William</forename><forename type="middle">J</forename><surname>Gonzenbach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chris</forename><forename type="middle">J</forename><surname>Vargo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Youngju</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International Journal of Communication</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="page">20</biblScope>
+			<date type="published" when="2016">2016. 2016</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Yeojin Kim, William J Gonzenbach, Chris J Vargo, and Youngju Kim. 2016. First and second levels of intermedia agenda setting: Political advertising, newspapers, and Twitter during the 2012 US presidential election. International Journal of Communication 10 (2016), 20.</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">An Audit of Facebook's Political Ad Policy Enforcement</title>
+		<author>
+			<persName><forename type="first">Le</forename><surname>Victor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Laura</forename><surname>Pochat</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tom</forename><surname>Edelson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wouter</forename><surname>Van Goethem</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Damon</forename><surname>Joosen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tobias</forename><surname>Mccoy</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Lauinger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 31st USENIX Security Symposium</title>
+		<meeting>the 31st USENIX Security Symposium</meeting>
+		<imprint>
+			<publisher>USENIX Association</publisher>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Victor Le Pochat, Laura Edelson, Tom Van Goethem, Wouter Joosen, Damon McCoy, and Tobias Lauinger. 2022. An Audit of Facebook's Political Ad Policy Enforcement. In Proceedings of the 31st USENIX Security Symposium. USENIX Association.</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">The diffusion of mainstream and disinformation news on Twitter: the case of Italy and France</title>
+		<author>
+			<persName><forename type="first">Francesco</forename><surname>Pierri</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Companion proceedings of the web conference</title>
+		<imprint>
+			<date type="published" when="2020">2020. 2020</date>
+			<biblScope unit="page" from="617" to="622"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Francesco Pierri. 2020. The diffusion of mainstream and disinformation news on Twitter: the case of Italy and France. In Companion proceedings of the web conference 2020. 617-622.</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Investigating Italian disinformation spreading on Twitter in the context of 2019 European elections</title>
+		<author>
+			<persName><forename type="first">Francesco</forename><surname>Pierri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alessandro</forename><surname>Artoni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefano</forename><surname>Ceri</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">PloS one</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">227821</biblScope>
+			<date type="published" when="2020">2020. 2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Francesco Pierri, Alessandro Artoni, and Stefano Ceri. 2020. Investigating Italian disinformation spreading on Twitter in the context of 2019 European elections. PloS one 15, 1 (2020), e0227821.</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Nearly) Ten Years of Social Media and Political Elections in Italy: Questions, Platforms, and Methods</title>
+		<author>
+			<persName><forename type="first">Luca</forename><surname>Rossi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicola</forename><surname>Righetti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Giada</forename><surname>Marino</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Social Media+ Society</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page">20563051211063460</biblScope>
+			<date type="published" when="2021">2021. 2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Luca Rossi, Nicola Righetti, and Giada Marino. 2021. (Nearly) Ten Years of Social Media and Political Elections in Italy: Questions, Platforms, and Methods. Social Media+ Society 7, 4 (2021), 20563051211063460.</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Social media for political campaigns: An examination of Trump's and Clinton's frame building and its effect on audience engagement</title>
+		<author>
+			<persName><forename type="first">Abdulsamad</forename><surname>Sahly</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chun</forename><surname>Shao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hazel Kwon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Social Media+ Society</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page">2056305119855141</biblScope>
+			<date type="published" when="2019">2019. 2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Abdulsamad Sahly, Chun Shao, and K Hazel Kwon. 2019. Social media for political campaigns: An examination of Trump's and Clinton's frame building and its effect on audience engagement. Social Media+ Society 5, 2 (2019), 2056305119855141.</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">It's complicated: Facebook users' political participation in the 2008 election</title>
+		<author>
+			<persName><forename type="first">Jessica</forename><surname>Vitak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Paul</forename><surname>Zube</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Smock</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Caleb</forename><forename type="middle">T</forename><surname>Carr</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicole</forename><surname>Ellison</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cliff</forename><surname>Lampe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">CyberPsychology, behavior, and social networking</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="107" to="114"/>
+			<date type="published" when="2011">2011. 2011</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Jessica Vitak, Paul Zube, Andrew Smock, Caleb T Carr, Nicole Ellison, and Cliff Lampe. 2011. It's complicated: Facebook users' political participation in the 2008 election. CyberPsychology, behavior, and social networking 14, 3 (2011), 107-114.</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">How Twitter data sampling biases US voter behavior characterizations</title>
+		<author>
+			<persName><forename type="first">Kai-Cheng</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pik-Mai</forename><surname>Hui</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Filippo</forename><surname>Menczer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">PeerJ Computer Science</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page">1025</biblScope>
+			<date type="published" when="2022">2022. 2022</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Kai-Cheng Yang, Pik-Mai Hui, and Filippo Menczer. 2022. How Twitter data sampling biases US voter behavior characterizations. PeerJ Computer Science 8 (2022), e1025.</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,160 @@
+\begin{thebibliography}{24}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[{Abilov et~al.(2021)Abilov, Hua, Matatov, Amir, and
+  Naaman}]{abilov2021voterfraud2020}
+Abilov, A.; Hua, Y.; Matatov, H.; Amir, O.; and Naaman, M. 2021.
+\newblock VoterFraud2020: a Multi-modal Dataset of Election Fraud Claims on
+  Twitter.
+\newblock In \emph{Proceedings of the International AAAI Conference on Web and
+  Social Media}, volume~15, 901--912.
+
+\bibitem[{Allcott and Gentzkow(2017)}]{allcott2017social}
+Allcott, H.; and Gentzkow, M. 2017.
+\newblock Social media and fake news in the 2016 election.
+\newblock \emph{Journal of economic perspectives}, 31(2): 211--36.
+
+\bibitem[{Basile, Lai, and Sanguinetti(2018)}]{valerio2018long}
+Basile, V.; Lai, M.; and Sanguinetti, M. 2018.
+\newblock Long-term social media data collection at the university of turin.
+\newblock In \emph{Proceedings of the Fifth Italian Conference on Computational
+  Linguistics (CLiC-it 2018)}, 1--6. CEUR-WS.
+
+\bibitem[{Bovet and Makse(2019)}]{bovet2019influence}
+Bovet, A.; and Makse, H.~A. 2019.
+\newblock Influence of fake news in Twitter during the 2016 US presidential
+  election.
+\newblock \emph{Nature communications}, 10(1): 1--14.
+
+\bibitem[{Calisir and Brambilla(2020)}]{calisir2020long}
+Calisir, E.; and Brambilla, M. 2020.
+\newblock The Long-Running Debate about Brexit on Social Media.
+\newblock In \emph{Proceedings of the International AAAI Conference on Web and
+  Social Media}, volume~14, 848--852.
+
+\bibitem[{Chen, Deb, and Ferrara(2022)}]{chen2022election2020}
+Chen, E.; Deb, A.; and Ferrara, E. 2022.
+\newblock \# Election2020: The first public Twitter dataset on the 2020 US
+  Presidential election.
+\newblock \emph{Journal of Computational Social Science}, 5(1): 1--18.
+
+\bibitem[{{CrowdTangle Team}(2022)}]{crowdtangle}
+{CrowdTangle Team}. 2022.
+\newblock CrowdTangle.
+
+\bibitem[{Crupi et~al.(2022)Crupi, Mejova, Tizzani, Paolotti, and
+  Panisson}]{crupi2022echoes}
+Crupi, G.; Mejova, Y.; Tizzani, M.; Paolotti, D.; and Panisson, A. 2022.
+\newblock Echoes through Time: Evolution of the Italian COVID-19 Vaccination
+  Debate.
+\newblock In \emph{Proceedings of the International AAAI Conference on Web and
+  Social Media}, volume~16, 102--113.
+
+\bibitem[{Deb et~al.(2019)Deb, Luceri, Badaway, and Ferrara}]{deb2019perils}
+Deb, A.; Luceri, L.; Badaway, A.; and Ferrara, E. 2019.
+\newblock Perils and challenges of social media and election manipulation
+  analysis: The 2018 us midterms.
+\newblock In \emph{Companion proceedings of the 2019 world wide web
+  conference}, 237--247.
+
+\bibitem[{DeVerna et~al.(2021)DeVerna, Pierri, Truong, Bollenbacher, Axelrod,
+  Loynes, Torres-Lugo, Yang, Menczer, and Bryden}]{deverna2021covaxxy}
+DeVerna, M.; Pierri, F.; Truong, B.; Bollenbacher, J.; Axelrod, D.; Loynes, N.;
+  Torres-Lugo, C.; Yang, K.-C.; Menczer, F.; and Bryden, J. 2021.
+\newblock CoVaxxy: A global collection of English Twitter posts about COVID-19
+  vaccines.
+\newblock \emph{Proceedings of the International AAAI Conference on Web and
+  Social Media}.
+
+\bibitem[{Di~Giovanni and Brambilla(2021)}]{di2021content}
+Di~Giovanni, M.; and Brambilla, M. 2021.
+\newblock Content-based Stance Classification of Tweets about the 2020 Italian
+  Constitutional Referendum.
+\newblock In \emph{SocialNLP@ NAACL 2021}, 14--23.
+
+\bibitem[{Di~Giovanni et~al.(2022)Di~Giovanni, Pierri, Torres-Lugo, and
+  Brambilla}]{di2022vaccineu}
+Di~Giovanni, M.; Pierri, F.; Torres-Lugo, C.; and Brambilla, M. 2022.
+\newblock VaccinEU: COVID-19 vaccine conversations on Twitter in French, German
+  and Italian.
+\newblock In \emph{Proceedings of the International AAAI Conference on Web and
+  Social Media}, volume~16, 1236--1244.
+
+\bibitem[{Freelon(2018)}]{freelon2018computational}
+Freelon, D. 2018.
+\newblock Computational research in the post-API age.
+\newblock \emph{Political Communication}, 35(4): 665--668.
+
+\bibitem[{Haman and {\v{S}}koln{\'\i}k(2021)}]{haman2021politicians}
+Haman, M.; and {\v{S}}koln{\'\i}k, M. 2021.
+\newblock Politicians on Social Media. The online database of members of
+  national parliaments on Twitter.
+\newblock \emph{Profesional de la informaci{\'o}n}, 30(2).
+
+\bibitem[{Hanna et~al.(2011)Hanna, Sayre, Bode, Yang, and
+  Shah}]{hanna2011mapping}
+Hanna, A.; Sayre, B.; Bode, L.; Yang, J.; and Shah, D. 2011.
+\newblock Mapping the political Twitterverse: Candidates and their followers in
+  the midterms.
+\newblock In \emph{Proceedings of the International AAAI Conference on Web and
+  Social Media}, volume~5, 510--513.
+
+\bibitem[{Kim et~al.(2016)Kim, Gonzenbach, Vargo, and Kim}]{kim2016first}
+Kim, Y.; Gonzenbach, W.~J.; Vargo, C.~J.; and Kim, Y. 2016.
+\newblock First and second levels of intermedia agenda setting: Political
+  advertising, newspapers, and Twitter during the 2012 US presidential
+  election.
+\newblock \emph{International Journal of Communication}, 10: 20.
+
+\bibitem[{Le~Pochat et~al.(2022)Le~Pochat, Edelson, Van~Goethem, Joosen, McCoy,
+  and Lauinger}]{le2022audit}
+Le~Pochat, V.; Edelson, L.; Van~Goethem, T.; Joosen, W.; McCoy, D.; and
+  Lauinger, T. 2022.
+\newblock An Audit of Facebook’s Political Ad Policy Enforcement.
+\newblock In \emph{Proceedings of the 31st USENIX Security Symposium}. USENIX
+  Association.
+
+\bibitem[{Pierri(2020)}]{pierri2020diffusion}
+Pierri, F. 2020.
+\newblock The diffusion of mainstream and disinformation news on Twitter: the
+  case of Italy and France.
+\newblock In \emph{Companion proceedings of the web conference 2020}, 617--622.
+
+\bibitem[{Pierri(2022)}]{pierri2022political}
+Pierri, F. 2022.
+\newblock Political advertisement on Facebook and Instagram in the run-up to
+  2022 Italian general election.
+\newblock \emph{arXiv preprint arXiv:2212.08021}.
+
+\bibitem[{Pierri, Artoni, and Ceri(2020)}]{PierriArtoni2020}
+Pierri, F.; Artoni, A.; and Ceri, S. 2020.
+\newblock Investigating Italian disinformation spreading on Twitter in the
+  context of 2019 European elections.
+\newblock \emph{PloS one}, 15(1): e0227821.
+
+\bibitem[{Rossi, Righetti, and Marino(2021)}]{rossi2021nearly}
+Rossi, L.; Righetti, N.; and Marino, G. 2021.
+\newblock (Nearly) Ten Years of Social Media and Political Elections in Italy:
+  Questions, Platforms, and Methods.
+\newblock \emph{Social Media+ Society}, 7(4): 20563051211063460.
+
+\bibitem[{Sahly, Shao, and Kwon(2019)}]{sahly2019social}
+Sahly, A.; Shao, C.; and Kwon, K.~H. 2019.
+\newblock Social media for political campaigns: An examination of Trump’s and
+  Clinton’s frame building and its effect on audience engagement.
+\newblock \emph{Social Media+ Society}, 5(2): 2056305119855141.
+
+\bibitem[{Vitak et~al.(2011)Vitak, Zube, Smock, Carr, Ellison, and
+  Lampe}]{vitak2011s}
+Vitak, J.; Zube, P.; Smock, A.; Carr, C.~T.; Ellison, N.; and Lampe, C. 2011.
+\newblock It's complicated: Facebook users' political participation in the 2008
+  election.
+\newblock \emph{CyberPsychology, behavior, and social networking}, 14(3):
+  107--114.
+
+\bibitem[{Yang, Hui, and Menczer(2022)}]{yang2022twitter}
+Yang, K.-C.; Hui, P.-M.; and Menczer, F. 2022.
+\newblock How Twitter data sampling biases US voter behavior characterizations.
+\newblock \emph{PeerJ Computer Science}, 8: e1025.
+
+\end{thebibliography}

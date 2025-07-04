@@ -1,0 +1,4579 @@
+Weighted asymmetric least squares regression with
+ﬁxed-effects
+Amadou Barry* 1,2, Karim Oualkacha3, and Arthur Charpentier3
+1Departments of Epidemiology, Biostatistics and Occupational Health, McGill
+University, Montréal, Québec, Canada
+2Lady Davis Institute, Jewish General Hospital, Montréal, Québec, Canada
+3Department of Mathematics and Statistics, Université du Québec à Montréal,
+Montréal, Québec, Canada
+August 11, 2021
+Abstract
+The ﬁxed-effects model estimates the regressor effects on the mean of the response, which is in-
+adequate to summarize the variable relationships in the presence of heteroscedasticity. In this
+paper, we adapt the asymmetric least squares (expectile) regression to the ﬁxed-effects model
+and propose a new model: expectile regression with ﬁxed-effects (ERFE). The ERFE model
+applies the within transformation strategy to concentrate out the incidental parameter and es-
+timates the regressor effects on the expectiles of the response distribution. The ERFE model
+captures the data heteroscedasticity and eliminates any bias resulting from the correlation be-
+tween the regressors and the omitted factors. We derive the asymptotic properties of the ERFE
+estimators and suggest robust estimators of its covariance matrix. Our simulations show that
+the ERFE estimator is unbiased and outperforms its competitors. Our real data analysis shows
+its ability to capture data heteroscedasticity (see our R package, github.com/AmBarry/erfe).
+Keywords: Expectile regression, quantile regression, ﬁxed-effects, within-transformation, en-
+dogenous model, panel data.
+*Corresponding author: amadou.barry@mail.mcgill.ca.
+1
+arXiv:2108.04737v1  [econ.EM]  10 Aug 2021
+
+1
+Introduction
+The ﬁxed-effects (FE) model is commonly used in econometric to analyze panel data. The FE
+model has the ability to account for the correlation between the regressors and the omitted (un-
+measured) factors which is common in many applications. For example, in econometrics, the
+education level is known to be correlated with the individual unobserved ability (Card, 2001).
+In perinatal studies, the birth weight is inﬂuenced by maternal genetic (Warrington et al., 2019),
+which is usually a missing information. Therefore, in such context—where the unmeasured fac-
+tors are correlated with the regressors, the FE estimator (within-estimator) is unbiased, consistent
+and computationally efﬁcient (Cornwell and Rupert, 1988).
+Several quantile regression (QR)-based methods (Koenker, 2004; Galvao and Montes-Rojas, 2010;
+Lamarche, 2010) have been proposed to overcome the heteroscedasticity problem in the FE frame-
+work. However, they fail to extend the favorable properties of the within-estimator and suffer
+from two signiﬁcant limitations. First, the ﬁxed-effects QR-based methods do not extend the
+within-transformation strategy to solve the incidental parameter problem. Thus, the ﬁxed-effects
+QR-based methods simultaneously estimate the parameter of interest and the incidental parame-
+ter which results in a computationally demanding algorithm. Additionally, the covariance of the
+QR-based methods is based on the random error density function which further adds a compu-
+tational burden and certain numerical issues (Chen et al., 2004; Yin and Cai, 2005; Kocherginsky
+et al., 2005). Second, the ﬁxed-effects QR-based method do not control for the correlation be-
+tween the individual effects and the regressors. Thus, in the presence of such correlations, the
+ﬁxed-effects QR-based method yields biased and inconsistent estimates.
+In this paper, we rely on expectiles to successfully generalize the within-estimator and take into
+account the heteroscedasticity present in the panel data under the FE framework. To the best of
+our knowledge, this is the ﬁrst approach that estimates the marginal effect of the regressors on the
+response distribution, and generalizes the within transformation strategy in the FE framework.
+The expectiles are statistics that characterize the distribution function of a random variable (Gi-
+rard et al., 2021). The expectiles and the expectile regression (ER) were introduced in the seminal
+paper by Newey and Powell (1987). The expectiles and quantiles play similar statistical roles,
+except that expectiles are weighted averages while quantiles are order statistics. This interpreta-
+tion difference offers signiﬁcant computational advantages. In other words, quantiles focus on
+the ordering of the observations while the expectiles target their values. For instance, the mean
+2
+
+is a particular expectile as the median is a particular quantile. The research on expectiles is very
+active and for further details we refer to Barry et al. (2020).
+Typically quantiles are more robust than expectiles, but as mentioned earlier, the proposed QR-
+based ﬁxed-effects models can not extend the within transformation strategy to solve the compu-
+tational challenges raised by the incidental parameter problem efﬁciently. Further, the QR-based
+ﬁxed-effects models fail to control for the correlation between the individual effects and the re-
+gressors. Therefore, the expectile-based approach could be an effective alternative for inference
+in the FE framework.
+In this paper, we combine the weighted asymmetric least squares regression (ER) and the FE
+model to propose a new panel model that we call: expectile regression for ﬁxed-effects model
+(ERFE). The ERFE model retains the attractive properties of the FE model, while accounting
+for the heteroskedasticity present in the panel data. We derive its asymptotic properties and
+propose a heterogeneous, consistent, and robust estimator of its variance-covariance matrix. We
+share our code as a free R package available on GitHub (github.com/AmBarry/erfe) to simplify
+its implementation.
+Our main contributions are: i. Extension of the within-transformation strategy in the ER frame-
+work to solve the incidental parameter problem, offering a signiﬁcant computational advantage
+particularly with the advent of high dimensional data, where the sample size can be very large; ii.
+Elimination of any bias that might result from the correlation between the individual effects and
+the regressors; iii. Derivation of the asymptotic properties of the ERFE estimators; iv. Proposition
+of an estimator of its variance-covariance matrix for inference.
+Our ERFE model accounts for the omitted time-invariant factors and their correlation with the
+regressors present in the model. It also captures the heteroskedasticity present in the panel data
+by estimating the effects of the regressors at the conditional expectiles of the response distribu-
+tion. Indeed, in the presence of heteroskedasticity, the parameters of the model are function of
+the asymmetric points, and in this case the ERFE model captures the heteroskedasticity by es-
+timating several regression coefﬁcient vectors at different locations of the conditional response
+distribution. The ERFE model provides a detailed overview of the regressor effects on the re-
+sponse distribution without making any assumption about the random error distribution. Our
+ERFE model is computationally efﬁcient and easy to implement, with its available R package.
+We believe that it will be a useful tool for addressing the heteroskedasticity present in the panel
+data.
+3
+
+In Section 2, we introduce the expectile function and the expectile regression model, and then
+present the expectile regression with ﬁxed-effects (ERFE) model. In Section 3, we derive the
+asymptotic properties of the ERFE estimator, and propose an estimator of its variance-covariance
+(VC) matrix. We present the sample performance of the ERFE estimator in Section 4 and its
+application to a real dataset in Section 5. The conclusions is in Section 6 and detail of the proofs
+are in the Supplementary material.
+2
+Models and Methods
+2.1
+Expectile and expectile regression
+The expectile of level τ ∈[0, 1] of a random variable Y is deﬁned as the unique solution of
+µτ(Y) = argmin
+θ ∈R
+E{ρτ(Y −θ)},
+(1)
+where ρτ(t) = |τ −1(t ≤0)| · t2 is the asymmetric square loss function that assigns weights τ
+and 1 −τ to positive and negative deviations, respectively.
+The expectiles summarize the cumulative distribution function of a random variable. In this
+regard, the expectiles play a similar statistical role to the quantiles, except that quantiles are
+order statistics while expectiles are weighted averages, and this interpretation difference is ac-
+companied by signiﬁcant computational advantages. The expectiles generalize the mean which
+corresponds to the expectile of level τ = 0.5 and assigns the same weight to positive and neg-
+ative deviations. The expectiles are location and scale equivariant, that is for s > 0 and t ∈
+R, µτ(sY + t) = sµτ(Y) + t. A detailed study of the expectiles can be found in (Newey and
+Powell, 1987).
+Once the optimization problem of equation (1) is solved, for a ﬁxed τ, the expectile of the random
+variable Y can be deﬁned as a weighted average:
+µτ(Y) = µτ = E
+"
+ψτ(Y −µτ)
+E
+
+ψτ(Y −µτ)
+Y
+#
+,
+where ψτ(t) = |τ −1(t ≤0)| is the check function. The only subtlety is that the weights are
+4
+
+random. Given a random sample, {(yi)}n
+i=1, the corresponding τ-th sample expectile
+bµτ =
+n
+∑
+i=1
+ψτ(yi −bµτ)
+∑n
+l=1 ψτ(yl −bµτ)yi
+(2)
+is the weighted mean, where the weights depend on the sample data. For a ﬁxed θ, equation (2)
+is derived as the solution which minimizes the following empirical risk function:
+1
+n
+n
+∑
+i=1
+ρτ(yi −θ).
+(3)
+In addition to the expectiles, Newey and Powell (1987) introduced the expectile linear regres-
+sion (ER) as a tool to study the regressor effects on the response distribution and capture the
+heteroscedasticity present in the data. Consider the following linear regression model
+yi = xiTβ + εi with µτ(εi) = 0,
+(4)
+where xi is a p × 1 vector of regressors, yi and εi are respectively the response variable and
+the random error with unspeciﬁed distribution function. The parameter of interest β ∈Rp is
+unknown and needs to be estimated. The assumption, µτ(εi) = 0, ensures that the random error
+is centered on the τ-th expectile. The corresponding ER model, for a ﬁxed τ ∈(0, 1), is given as:
+µτ(yi|xi) = xiTβτ.
+(5)
+Therefore, the ER estimator bβτ, for a ﬁxed τ ∈(0, 1), can be derived by minimizing the following
+objective function:
+n
+∑
+i=1
+ρτ
+
+yi −xiTβτ
+
+over βτ ∈Rp. Since the loss function ρτ(t) is continuously differentiable, we have through the
+ﬁrst order condition:
+5
+
+bβτ =
+"
+n
+∑
+i=1
+ψτ(yi −xiTbβτ)xixiT
+#−1
+n
+∑
+i=1
+ψτ(yi −xiTbβτ)xiyi,
+(6)
+where ψτ(t) = |τ −1(t ≤0)| is the check function. The ER estimator can be computed as an
+iterated weighted least squares estimators. For the special case of τ = 0.5, bβ0.5 is the classical
+ordinary least squares (OLS) estimator and this makes the ER a natural complement of the OLS
+regression.
+2.2
+Fixed-effects model for panel data
+Consider the standard linear ﬁxed-effects model for panel data
+yij = xijTβ + αi + εij,
+(7)
+where yij is the scalar response variable, the vector xij = (x1
+ij, x2
+ij, . . . , xp
+ij)T ∈Rp is the vector of
+regressors measured on subject i at time j, the parameter αi is the subject-speciﬁc effects param-
+eter, and the variable εij is a random error with unspeciﬁed distribution function. The equation
+model (7) is conveniently represented in individual notation as:
+yi = Xiβ + Ziα + εi,
+(8)
+where yi and εi are m × 1 vectors, Xi is an m × p design matrix and Zi is an m × n incidence matrix
+and α is an n × 1 subject-speciﬁc effects vector. We can also stack all the data and represent the
+equation model (8) as:
+y = Xβ + Zα + ε,
+(9)
+where y and ε are N × 1 vectors, X and Z are respectively N × p and N × n matrices with N =
+mn. The incidence matrix Z identiﬁes the n distinct subjects of the sample.
+The ﬁxed-effects Zα of model equation (9) is inﬁnite in nature and is potentially correlated with
+the regressors of the model. The traditional estimation method used to overcome this issue
+6
+
+is the within-transformation strategy. This technique consists of pre-multiplying both sides of
+equation model (9) by the idempotent matrix MZ = IN −Z(ZTZ)−1ZT to eliminate the inﬁnite-
+dimensional parameter, and then applies the ordinary least squares (OLS) regression to the trans-
+formed data. The model that results from this transformation is represented as:
+y∗= X∗β + ε∗,
+(10)
+where y∗= MZy and X∗and ε∗are deﬁned similarly. The OLS estimator of the ﬁxed-effects
+model, known as the within-transformation estimator, is given as:
+bβ = (X∗TX∗)−1X∗Ty∗.
+(11)
+The within-transformation estimator is consistent and asymptotically normally distributed (Greene,
+2011). The within-transformation estimator is computationally efﬁcient and is not affected by any
+bias resulting from the correlation between the individual effects and the regressors. The within-
+transformation technique does not allow estimation of the time-invariant regressors which could
+be seen as a limitation. However, this can be a strength when the number of time-invariant con-
+founders is large, and when the collection of some of these variables (genetic factor) is complex
+and costly (Brüderl and Ludwig, 2014). In the following subsection, we present the expectile
+regression for ﬁxed-effects (ERFE) model and derive the iterative-within-transformation ERFE
+estimator.
+2.3
+ERFE model for panel data
+The ERFE model of the linear ﬁxed-effects model is deﬁned, for ﬁxed τ ∈(0, 1), as:
+µτ(yij|αi, xij) = xijTβτ + zijTα.
+(12)
+In this setting the parameter βτ ∈Rp captures the inﬂuence of the regressors xij on the location,
+scale, and shape of the conditional distribution of the response variable yij. The subject-speciﬁc
+effects α is assumed to be independent of τ across the percentiles and to have a pure location-
+shift effect on the conditional expectile of the response. Assuming a τ-dependency of the subject-
+7
+
+speciﬁc effects implies estimating its distribution with m number of within-subject observations,
+which is relatively small in most applications. Take note that no assumption is made about the
+shape of the response distribution.
+The corresponding ERFE estimator of model equation (12) is deﬁned as the vector minimizing
+the following objective function:
+n
+∑
+i=1
+m
+∑
+j=1
+ρτ
+ yij −xijTβτ −zijTα
+
+.
+(13)
+Since the loss function ρτ(·) is continuously differentiable, we can apply the ﬁrst-order condition
+and derive the resulting ERFE estimator bβτ, which is deﬁned as:
+bβτ =
+n
+XTΨτ
+
+y −Xbβτ −Zbα
+c
+MZ(τ)X
+o−1
+XTΨτ
+
+y −Xbβτ −Zbα
+c
+MZ(τ)y,
+(14)
+where the diagonal check function matrix is:
+Ψτ
+
+y −Xbβτ −Zbα
+ = diag
+
+ψτ(y11 −x11Tbβτ −z11Tbα), . . . , ψτ(ynm −xnmTbβτ −znmTbα)
+
+. (15)
+The projection matrix c
+MZ(τ) and its complement bPZ(τ) are idempotent matrices and are deﬁned
+as:
+c
+MZ(τ) = IN −bPZ(τ), bPZ(τ) = Z(ZTΨτZ)−1ZTΨτ.
+The function Ψτ(·) deﬁned in equation (15) depends on the subject-speciﬁc parameter estimator
+bα which, by the ﬁrst-order condition of equation (13), veriﬁes the relationship:
+Zbα = bPZ(τ)(y −Xbβτ).
+(16)
+Now, using equation (16), the argument of the check function matrix can be written as
+8
+
+y −Xbβτ −Zbα = c
+MZ(τ)(y −Xbβτ).
+(17)
+Therefore, the incidental parameter estimate is eliminated from the expression of equation (14)
+of the ERFE estimator. Now, using the following relationship:
+Ψτ
+c
+MZ(τ)(y −Xbβτ)
+c
+MZ(τ) = c
+MZT(τ)Ψτ
+c
+MZ(τ)(y −Xbβτ)
+
+,
+and the idempotent property of the projection matrix c
+MZ(τ), we can rewrite the ERFE estimator
+as:
+bβτ =
+n
+XTc
+MZ(τ)TΨτ
+c
+MZ(τ)(y −Xbβτ)
+c
+MZ(τ)X
+o−1
+× XTc
+MZ(τ)TΨτ
+c
+MZ(τ)(y −Xbβτ)
+c
+MZ(τ)y.
+(18)
+In summary, the within-estimator is extended to the ER framework. The strategy is derived by
+applying the projection matrix c
+MZ(τ) to the initial data [y, X], to eliminate the subject-speciﬁc
+effects parameter. Additionally, like the ER estimator in equation (6), the within ERFE estimator
+can be computed iteratively using the iterative weighted least squares algorithm. The detailed
+algorithm for computing the iterative-within-transformation ERFE estimator is summarized in
+9
+
+the following stepwise procedures.
+Algorithm 1: The iterative within-transformation ERFE algorithm
+Input: Let, for a ﬁxed τ, eβ
+(0)
+τ
+= bβτ, the ER estimator and bε(0)
+ijτ = ey(0)
+ij −ex(0)
+ij
+Teβ
+(0)
+τ .
+while
+bβ
+(r)
+τ −bβ
+(r−1)
+τ
+
+∞
+≤ζ
+do
+Given eβ
+(r−1)
+τ
+at the (r −1)-th step, update:
+1. bP
+(r)
+Z (τ) ←Z(ZTΨτ( bετ∗(r−1))Z)−1ZTΨτ( bετ∗(r−1)),
+bετ∗(r−1) = ey∗(r−1) −eX
+∗(r−1)eβ
+(r−1)
+τ
+2. f
+y∗(r) ←c
+M
+(r)
+Z (τ)y
+3. f
+X∗(r) ←c
+M
+(r)
+Z (τ)X
+4. bβ
+(r)
+τ
+←bβ
+(r−1)
+τ
++
+h
+eX
+∗(r−1)TΨτ( bετ∗(r−1))eX
+∗(r−1)i−1 eX
+∗(r−1)TΨτ( bετ∗(r−1)) bετ∗(r−1)
+5.
+bε∗τ
+(r) ←f
+y∗(r) −f
+X∗(r)bβτ
+end
+Return bβτ
+The parameter ζ is the convergence tolerance and the default value in our code implementation
+is set to 10−7. In practice, Algorithm 1 is computationally efﬁcient and usually the number of
+iterations required to achieve convergence is between 3 and 5. Note that when τ = 0.5 we have
+Ψτ = 0.5IN and the iterative within-transformation ERFE estimator is nothing else than the OLS
+within-transformation estimator.
+From the above development, the multiplication of a vector (say y) by the matrix c
+MZ(τ) deviates
+that vector from its expectile as shown by the following expression:
+c
+MZ(τ)y =
+
+y11 −
+m
+∑
+j=1
+ψτ(bε1j)
+∑m
+k=1 ψτ(bε1k)y1j, . . . , y1m −
+m
+∑
+j=1
+ψτ(bε1j)
+∑m
+k=1 ψτ(bε1k)y1j, . . . ,
+yn1 −
+m
+∑
+j=1
+ψτ(bεnj)
+∑m
+k=1 ψτ(bεnk)ynj, . . . , ynm −
+m
+∑
+j=1
+ψτ(bεnj)
+∑m
+k=1 ψτ(bεnk)ynj
+
+T.
+We can see, from this expression, how the projection matrix c
+MZ(τ) eliminates the subject-speciﬁc
+effects parameter and any other time-invariant regressors from the initial model. For a matrix,
+like the design matrix X, the transformation is applied column-wise.
+ERFE model for a sequence of expectiles
+10
+
+The preceding development shows that the classical within-transformation strategy can be gener-
+alized in the ERFE framework. Now, we present the ERFE estimator for a sequence of expectiles
+using the transformed data. The sequence of expectiles, for example the mean and a few ex-
+pectiles above and below it, is necessary in the description of the conditional distribution of the
+response variable and for capturing the data heteroscedasticity. In addition, the simultaneous
+estimation allows the multiple expectiles to share strength among each other and to gain better
+estimation accuracy than individually estimated expectile functions (Liu and Wu, 2011).
+The iterative within-transformation ERFE estimator bβτ = [bβτ1
+T, . . . , bβτq
+T]T for a sequence of
+asymmetric points τ = (τ1, . . . , τq)T is deﬁned as the minimum of the following objective func-
+tion:
+q
+∑
+k=1
+n
+∑
+i=1
+m
+∑
+j=1
+vkρτk
+
+yij −xijTβτk −zijTα
+
+.
+(19)
+The vector v = (v1, . . . , vq)T is the vector of weights controlling the relative inﬂuence of the q
+asymmetric points {τ1, . . . , τq} and it choice depends on the research question. For a sequence of
+expectiles, the iterative within-transformation ERFE estimator is deﬁned as:
+bβτ =
+h
+(Iq ⊗c
+X∗)TΨτ(c
+ε∗τ)(V ⊗c
+X∗)
+i−1
+(V ⊗c
+X∗)TΨτ(c
+ε∗τ)(1q ⊗c
+y∗)
+(20)
+where Ψτ(c
+ε∗τ) =
+h
+diag
+ Ψτk(c
+y∗−c
+X∗bβτk)
+iq
+k=1, V = [diag(vk)]q
+k=1 and the transformed data
+[(1q ⊗c
+y∗), (Iq ⊗c
+X∗)] is obtained by pre-multiplying the matrix c
+MZ(τ) to the initial data [y, X].
+The projection matrix is deﬁned as c
+MZ(τ) = Inmq −bPZ(τ) and
+bPZ(τ) = (v ⊗Z)
+h
+(v ⊗Z)TΨτ(c
+ε∗τ)(1q ⊗Z)
+i−1
+(1q ⊗Z)TΨτ(c
+ε∗τ).
+3
+Asymptotic
+In this section, the asymptotic properties of the ERFE estimator are presented. As stated by
+Koenker (2004), the presence of the incidence parameter, which has an inﬁnite dimension, can
+11
+
+raise some challenges. For this reason, we present ﬁrst the asymptotic results of the ERFE es-
+timator in the simplest case, namely for a single τ. We then present the asymptotic properties
+of the ERFE estimator for a simultaneous sequence of asymmetric points τ = (τ1, . . . , τq). The
+section ends with the suggestion of an estimator of the covariance matrix for the ERFE estimator.
+All the proofs are available in the Supplementary ﬁle.
+3.1
+Asymptotics for the ERFE estimator
+Asymptotics for a single expectile
+In the following, the asymmetric square-loss function of the ERFE model,
+ρτ
+
+yij −xijTβτ −zijTα
+
+,
+is replaced in term of optimization by the equivalent loss function
+ρτ
+
+yij −µijτ −xijTδ1τ/√
+nm −zijTδ0/√
+m
+
+−ρτ(yij −µijτ),
+where µijτ = xijTβτ + zijTα. Now, observe that the following estimator
+bδ =
+
+
+
+bδ0
+bδ1τ
+
+
+=
+
+
+
+√m(bα −α)
+√nm
+h
+bβτ −βτ
+i
+
+
+
+minimizes the new objective function
+Rnm(δ) =
+n
+∑
+i=1
+m
+∑
+j=1
+ρτ
+
+yij −µijτ −xijTδ1τ/√
+nm −zijTδ0/√
+m
+
+−ρτ(yij −µijτ).
+(21)
+The asymptotic theory of the ERFE estimator is derived using this new objective function (21)
+and under the following assumptions.
+A1. The data {(yi, Xi)}n
+i=1 are independent across i, and,
+12
+
+Var
+h
+Ψτ(εiτ)εiτ
+i
+= E
+h
+Ψτ(εiτ)εiτεiτTΨτ(εiτ)
+i
+= Σiτ,
+where εiτ = (εi1τ, . . . , εimτ)T, εijτ = yij −xijTβτ and Ψτ(εiτ) =
+h
+diag(ψτ(εijτ))
+im
+j=1.
+A2. The limiting forms of the following matrices are positive deﬁnite
+D0(τ) =
+lim
+m→∞
+n→∞
+m−1
+
+
+
+ZTΣτZ
+ZTΣτX/√n
+XTΣτZ/√n
+XTΣτX/n
+
+
+,
+D1(τ) =
+lim
+m→∞
+n→∞
+m−1
+
+
+
+ZT E[Ψτ(ετ)]Z
+ZT E[Ψτ(ετ)]X/√n
+XT E[Ψτ(ετ)]Z/√n
+XT E[Ψτ(ετ)]X/n
+
+
+,
+where Στ = Var[Ψτ(ετ)ετ] = diag[Σiτ]n
+i=1.
+A3. The norm of the regressors is bounded by a positive constant M, maxi,j
+xij
+ < M.
+The stated assumptions A1-A3 are standard for panel data models (Koenker, 2004). Condition
+A1 ensures independence across individuals, but allows a within-subject dependency and het-
+erogeneity across individuals. Condition A2 is a full rank condition and is used to invoke the
+Lindeberg-Feller Central Limit Theorem. We observe that, when τ = 1/2 then D1(τ) simpliﬁes
+and Condition A2 reduces to a condition on the matrices XTX/nm and ZTZ/m. Condition A3
+is useful both for the application of the Lindeberg-Feller Central Limit Theorem and for ensuring
+the ﬁnite dimensional convergence of the objective function.
+Theorem 1. Assume conditions A1-A3 are met, with n, m →∞, and E|ψτ(εijτ)|4+ν < ∆< ∞and E|εijτ|4+ν <
+∆< ∞for some ν > 0. Then bδ1τ the components of the minimizer, bδ, converge in distribution to a Gaus-
+sian random vector with mean zero and variance-covariance matrix given by the lower right p × p block
+of the matrix D−1
+1 (τ)D0(τ)D−1
+1 (τ). In others words
+√
+nm
+ bβτ −βτ
+ d−→N
+
+0,
+h
+D−1
+1 (τ)D0(τ)D−1
+1 (τ)
+i
+22
+
+.
+To show the closed form of the above matrix
+h
+D−1
+1 (τ)D0(τ)D−1
+1 (τ)
+i
+22 assume that the limiting
+forms of the following matrices are positive deﬁnite
+13
+
+eD0(τ) = lim
+m→∞
+n→∞
+XTMZ(τ)TΣτMZ(τ)X,
+eD1(τ) = lim
+m→∞
+n→∞
+XTMZT(τ) E[Ψτ(ε)]MZ(τ)X
+where MZ(τ) = I −PZ(τ) and PZ(τ) = Z
+h
+ZT E[Ψτ(ε)]Z
+i−1
+ZT E[Ψτ(ε)].
+Under the above conditions and the conditions of Theorem 1 it follows that:
+Lemma 1.
+h
+D−1
+1 (τ)D0(τ)D−1
+1 (τ)
+i
+22 = eD
+−1
+1 (τ) eD0(τ) eD
+−1
+1 (τ).
+Asymptotics for several expectiles
+The asymptotic properties of the ERFE estimator for a sequence of asymmetric points τ =
+(τ1, · · · , τq) are derived using the transformed data, [y∗; X∗], where X∗= MZ(τ)X and y∗=
+MZ(τ)y. Both projection matrices MZ(τ) and PZ(τ) are idempotent and are deﬁned as:
+MZ(τ) = IN −PZ(τ),
+PZ(τ) = Z(ZT E[Ψτ(ε∗
+τ)]Z)−1ZT E[Ψτ(ε∗
+τ)],
+where ε∗
+τ = y∗−X∗βτ.
+A robust estimator of the covariance matrix is also proposed. Assume the following conditions.
+B1. The data {(yi, Xi)}n
+i=1 are independent across i and,
+Var
+h
+Ψτ(ε∗
+iτ)ε∗
+iτ
+i
+= E
+h
+Ψτ(ε∗
+iτ)ε∗
+iτε∗
+iτ
+TΨτ(ε∗
+iτ)
+i
+= Σ∗
+iτ,
+where ε∗
+iτ =
+
+ε∗
+iτ1
+T, . . . , ε∗
+iτq
+T
+T, ε∗
+iτk = (ε∗
+i1τk, . . . , ε∗
+imτk)T, ε∗
+ijτk = y∗
+ij −x∗
+ij
+Tβτk and Ψτ(ε∗
+iτ) =
+[diag(Ψτk(ε∗
+iτk))]q
+k=1.
+B2. The limiting forms of the following matrices are positive deﬁnite
+14
+
+D0(τ) = lim
+n→∞(V ⊗X∗)T E[Ψτ(ε∗
+τ)ε∗
+τε∗
+τ
+TΨτ(ε∗
+τ)](V ⊗X∗)/nm.
+D1(τ) = lim
+n→∞(Iq ⊗X∗)T E[Ψτ(ε∗
+τ)](V ⊗X∗)/nm
+B3. The norm of the regressors is bounded by a positive constant M, max1≤i≤n
+1≤j≤m
+x∗
+ij
+ < M.
+Theorem 2. Suppose conditions B1-B3 are satisﬁed, and that n, m →∞. If E|ψτ(ε∗
+ijτ)|4+ν < ∆<
+∞and E|ε∗
+ijτ|4+ν < ∆< ∞then
+√
+nm
+ bβτ −βτ
+ d−→N
+
+0, D−1
+1 (τ)D0(τ)D−1
+1 (τ)
+
+.
+In order to use the ERFE estimator to make inference, an estimator of its covariance matrix is
+presented in Theorem 3. This will make it possible to construct large sample conﬁdence intervals
+or hypothesis tests. The proposed covariance matrix estimator is robust and consistent, and is
+a generalization of the commonly advocated covariance matrix estimator proposed by White
+(1980).
+Theorem 3. Let the matrices bD0(τ) and bD1(τ) deﬁned as:
+bD0(τ) =
+1
+nm(V ⊗c
+X∗)TΨτ(c
+ε∗τ)c
+ε∗τc
+ε∗τ
+TΨτ(c
+ε∗τ)(V ⊗c
+X∗),
+bD1(τ) =
+1
+nm(Iq ⊗c
+X∗)TΨτ(c
+ε∗τ)(V ⊗c
+X∗),
+where the transformed data is obtained by pre-multiplying the initial data with the projection matrix
+c
+MZ(τ) = Inmq −bPZ(τ) and
+bPZ(τ) = (v ⊗Z)
+h
+(v ⊗Z)TΨτ(c
+ε∗τ)(1q ⊗Z)
+i−1
+(1q ⊗Z)TΨτ(c
+ε∗τ).
+Then, for every ﬁxed, τ we have:
+bD
+−1
+1 (τ) bD0(τ) bD
+−1
+1 (τ)
+p−→D−1
+1 (τ)D0(τ)D−1
+1 (τ).
+We end this section with the result for a single τ.
+15
+
+Corollary 1. Let the matrices bD0(τ) and bD1(τ) deﬁned as:
+bD0(τ) =
+1
+nm
+n
+∑
+i=1
+c
+X∗
+i
+TΨτ(c
+ε∗
+iτ)c
+ε∗
+iτ c
+ε∗
+iτ
+TΨτ(c
+ε∗
+iτ) c
+X∗
+i ,
+bD1(τ) =
+1
+nm
+n
+∑
+i=1
+c
+X∗
+i
+TΨτ(c
+ε∗
+iτ) c
+X∗
+i
+with the corresponding projection matrices
+c
+MZ(τ) = IN −bPZ(τ) and bPZ(τ) = Z(ZTΨτ( bε∗τ)Z)−1ZTΨτ( bε∗τ).
+Then, under the above conditions and for every ﬁxed τ, we have
+bD
+−1
+1 (τ) bD0(τ) bD
+−1
+1 (τ)
+p−→D−1
+1 (τ)D0(τ)D−1
+1 (τ).
+4
+Simulations
+In this section we conducted a simulation study to evaluate the performance of the ERFE estima-
+tor. We started by presenting the simulation design, then the metrics to evaluate the estimators
+and the results.
+4.1
+Design
+The random samples were generated from the following linear model:
+yij = xij1β1 + xij2β2 + αi + (1 + γxij2)εij,
+i ∈{1, . . . , n} and j ∈{1, . . . , m}.
+(22)
+We considered two versions of model equation (22) according to the heteroscedastic parameter
+γ ∈{0, 3/10}. The value of γ = 0 corresponds to a location shift model (M0) where the regres-
+sors are uncorrelated to the random error. The model (M0) is used to assess the performance
+of the estimators for a homoscedastic scenario. In contrast, when the value of γ = 3/10, then
+16
+
+there is a correlation between the predictor x2 and the random error. In that case, the model is
+a location-scale shift model (M3/10) and is set to assess the performance of the estimators in the
+presence of heteroscedasticity.
+In the location shift scenario, the ERFE model corresponds to µτ(yij) = xij1β1 + xij2β2 + αi +
+µτ(εij) where only the intercept term, β0τ = αi + µτ(εij), varies with τ and the expectile func-
+tions are parallel lines. In the location-scale shift scenario, the related ERFE model is deﬁned
+as: µτ(yij) = xij1β1 + xij2β2τ + αi + µτ(εij) where the intercept β0τ = αi + µτ(εij) and β2τ =
+β2 + γµτ(εij). Therefore, in the presence of heteroscedasticity both the intercept and the slope of
+the predictor x2 vary with τ.
+The parameters are set to β1 = 0.6 and β2 = 1, and the corresponding regressors are generated
+from a non-central student distribution with 3 degree of freedom (T2(1.3)) and a normal distri-
+bution (N (2, 1.5)), respectively. The individual-speciﬁc effects parameter α is generated from a
+normal distribution (N (1, 1)), and is correlated (ρ = 0.5) to the predictor x2. Indeed, in real data
+applications it is more likely that omitted factors are correlated with regressors in the model. The
+random error ε of the model equation (22) is generated from three different distributions: nor-
+mal distribution (N (0, 1)), Student distribution (T3) with 3 degrees of freedom, and chi-squared
+distribution (χ2
+3) with 3 degrees of freedom. We have set the sample size and the repeated mea-
+surements to n × m ∈{100, 250, 500} × {5, 15, 30}. The extensive simulation was carried out
+with 400 replications. In each case the focus is on the regressor effects at the asymmetric points
+τ ∈{0.1, 0.3, 0.5, 0.8, 0.9}.
+All simulations were conducted using high performance computing clusters provided by Calcul
+Quebec and Compute Canada. All computations were performed with the R (v3.6.0) statistical
+programming language R Core Team (2021). The implemented R package erfe that comes with
+this manuscript is publicly available on GitHub at https://github.com/AmBarry/erfe.
+4.2
+Performance measures
+We compared our ERFE model to the quantile regression with ﬁxed-effects (QRFE) model pro-
+posed by Koenker (2004). The QRFE model estimated the parameter of interest and the nui-
+sance parameter of the model which could be computationally demanding as the sample size
+increased. We also considered the expectile regression model (ER) and the quantile regression
+model (QR), which ignored the individual ﬁxed-effects parameter. Given that expectile and
+17
+
+quantile of the same level τ were generally different, we carried out the appropriate conversions
+between the asymmetric points and the percentiles to ensure that the expectile-based regressions
+and the quantile-based regressions estimated the same statistics (that is quantiles and expectiles
+are identical). For example, the Gaussian quantiles of level τ = (0.33, 0.5, 0.67) are identical to
+the Gaussian expectiles of level τ = (0.25, 0.5, 0.75). In other words, the ER based-model and
+the QR based-model estimate the same locations of the response distribution.
+We evaluated the quality of the estimators by reporting the distribution of their coefﬁcient es-
+timate as box-plots. We also evaluated the performance of the asymptotic standard error (SE)
+presented in Theorem 3 by reporting the distribution of the ratio between the asymptotic stan-
+dard error (SE) and the Monte Carlo standard deviation (SD) deﬁned as:
+SD2(βkτ) =
+1
+400
+400
+∑
+j=1
+
+bβ(j)
+kτ −bβkτ
+2
+,
+k ∈{1, 2},
+where bβkτ =
+1
+400 ∑400
+j=1 bβ(j)
+kτ .
+We estimated the ERFE model with the erfe package and the QRFE model with the rqpd package
+(Koenker and Bache, 2014). The ER model and the QR model was obtained from the well-known
+packages: expectreg (Sobotka et al., 2014) and quantreg (Koenker, 2018), respectively.
+4.3
+Results
+We present here the results related to the Gaussian random error and we brought the results
+for the Student and Chi-square random errors in the Supplementary ﬁle. Figure 1 and Figure
+2 report the distribution of the coefﬁcient estimates in the location-shift and location-scale-shift
+scenarios, respectively.
+In the location-shift scenario, we observe that the coefﬁcient estimates of our ERFE model are cen-
+tered around the true value of the parameters with a small interquartile range. We also observe
+that the coefﬁcient estimate of the ER and QR models are centered around the true value for the
+parameter β1 only. We notice that the coefﬁcient estimates of the QRFE model are not close to the
+true value of the parameters except when τ = 0.5 for the parameter β1 only. In other words our
+ERFE model performs well in estimating the parameter coefﬁcients of the model in the location-
+shift scenario. The ER and QR models perform similarly in the location-shift scenario, with an
+18
+
+unbiased estimator for the parameter β1 and a biased estimator for the parameter β2. The ER and
+QR models do not account for the individual ﬁxed-effects which are correlated to the regressor
+x2, which could explain the bias for the parameter β2. In contrast, the QRFE model performed
+poorly in estimating the parameter coefﬁcients of the model in the location-shift scenario. The
+QRFE model includes the individual ﬁxed-effects in its speciﬁcation but, similarly to the random-
+effect model, it did not account for the dependence between the individual ﬁxed-effects and the
+regressors of the model. This could explained the poor performance of the QRFE .
+Indeed, similar to the within-estimator, the ERFE model transforms the data by subtracting the
+person-speciﬁc expectile of level τ from the observed values of each variable and then applied
+the ER method to the de-expectilized model given by:
+y∗
+ij = x∗
+ij1β1 + x∗
+ij2β2 + ε∗
+ij,
+(23)
+where y∗
+ij = yij −bµτ(yij), x∗
+ij and ε∗
+ij are deﬁned similarly. This transformation concentrated out
+the individual ﬁxed-effects and any bias that could result from its association with the regressors.
+The ER and QR models do not take into account the individual ﬁxed-effects parameter, which is
+included in the random error component. Since, the individual ﬁxed-effects parameter is corre-
+lated to the predictor x2, then the random error of the model equation (22) is also correlated to
+the predictor x2 of the model. Hence, the coefﬁcient estimate of the ER and QR methods for the
+parameter β2 is biased.
+Consider, the reformulation of model equation (22) in the location-shift scenario:
+yij = xij1β1 + xij2β2 + Qτ(αi|xij1, xij2) + (αi −Qτ(αi|xij1, xij2)) + εij
+= xij1β1 + xij2β2 + Qτ(αi|xij1, xij2) + ηij,
+ηij = (αi −Qτ(αi|xij1, xij2)) + εij,
+where Qτ(αi|xij1, xij2) is the quantile of the individual ﬁxed-effects αi of level τ and ηij the new
+random variable. The corresponding QRFE model, for a ﬁxed τ, can be speciﬁed as: Qτ(yij|xij1, xij2) =
+xij1β1 + xij2β2 + f (xij1, xij2), where
+f (xij1, xij2) = Qτ(αi|xij1, xij2) (since the individual ﬁxed-
+effects are correlated to the regressors). Thus, in this context, the coefﬁcient estimates of the
+QRFE model would be biased.
+19
+
+Figure 2 report the distribution of the coefﬁcient estimates in the location-scale-shift scenario.
+Again, we observe that the ERFE model performs well in estimating the parameter coefﬁcients
+of the model and outperformed its competitors. The apparent bias of the ERFE estimator for the
+parameter β2 is due to the effect of the heteroscedasticity in this formulation of the model and is
+not surprising. Indeed, in the location-scale-shift scenario, because of the correlation between the
+predictor x2 and the error term, the parameter of the predictor x2 is function of the asymmetric
+point and then different to β2 except when τ = 0.5 for the symmetric distributions (Normal and
+Student), where the expectile of level τ = 0.5 is zero. The same remark could be applied to the
+other methods which in addition did not account for the individual ﬁxed-effects (ER and QR)
+or its correlation with the regressors (QRFE). We observed similar results for the Student and
+Chi-square random errors (results are available in the Supplementary ﬁle).
+Overall, the ERFE model outperforms its competitor and extends the favorable properties of the
+ﬁxed-effects model. The ERFE model accounts for the time-invariant omitted variables and for
+the heteroscedasticity present in the data.
+To evaluate the asymptotic standard error (SE) of the ERFE parameter estimates, we use the
+Monte Carlo standard deviation (SD) as a benchmark and present the distribution of the ratio
+SE
+SD as an error plot centered at the mean, Figure 3 and Figure 4. In general the error plots of
+the ERFE model and the QRFE model are centered around 1, which means that on average the
+asymptotic standard error SE and the Monte Carlo standard deviation SD are identical. How-
+ever, we observe that the error plots of the ER model and the QR model are not centered around
+the mean for the β2 parameter and the range of their error plot is generally larger. Similar per-
+formances were observed for the Student and Chi-Squared random error which results can be
+found in the Supplementary ﬁle.
+We end this section by comparing the run-times of the ER-based algorithms and the QR-based
+algorithms. We ﬁtted the methods to a dataset (n = 300, m = 10) generated by a location-shift
+model with a Gaussian random error. We used the microbenchmark package (Mersmann, 2019)
+with 100 replications to evaluate the computation time of the different algorithm. The results
+in Figure 5 show that the cross-sectional algorithms ER and QR are the fastest algorithms, and
+our ERFE algorithm is faster than the QRFE algorithm. We also performed the comparison for a
+larger sample size (n > 2500), but the algorithm stopped due to a shortage of memory for the
+QRFE algorithm. This problem has also been reported by Canay (2011).
+20
+
+5
+Application
+Returns to schooling also known as returns to education is a topic widely studied in empirical
+economics. It is often presented in standard econometric textbooks (Baltagi, 2008; Greene, 2011;
+Cameron and Trivedi, 2005) as an example of an endogeneity model. Indeed, there is a poten-
+tial correlation between individual’s ability and the other regressors such as education. In the
+presence of endogeneity, the FE model is often preferred than other mean regression models for
+panel data. Despite the fact that it does not estimate the effect of the time-invariant regressors,
+the FE estimator is consistent even if the individual effects are correlated with the regressors of
+the model (Baltagi, 2008).
+In this section, we replicated Baltagi and Khanti-Akom (1990)’s study using the Panel Study of
+Income Dynamics (PSID) dataset. The dataset is a cohort of 595 individuals observed over the
+period 1976–1982. The respondents, aged between 18 and 65 in 1976, are those who reported a
+positive wage in private non-farm employment for all 7 years, (Cornwell and Rupert, 1988).
+The log wage is the dependent variable and is regressed on weeks worked (WKS), years of full-
+time work experience (EXP), occupation (OCC=1, if the individual is in a blue-collar occupa-
+tion), residence (SOUTH = 1, SMSA = 1, if the individual resides in the South, or in a standard
+metropolitan statistical area), marital status (MS = 1, if the individual is married), industry (IND
+= 1, if the individual works in a manufacturing industry), and union coverage (UNION = 1, if
+the individual’s wage is set by a union contract).
+We ﬁtted the ERFE model to the PSID dataset. In addition to the regressor effects on the aver-
+age salary (Baltagi, 2008; Baltagi and Khanti-Akom, 1990; Cornwell and Rupert, 1988), the ERFE
+model captures the regressor effects on the entire wage distribution. Consequently, the ERFE
+model controls for the endogeneity resulting from unmeasured factors and captures the hetero-
+geneity present in the data. The corresponding Mincer equation of the ERFE model, for a ﬁxed
+τ ∈(0, 1), is speciﬁed as:
+µτ(log(Wageij)∗) = β1τWKS∗
+ij + β2τEXP∗
+ij + β3τEXP2∗
+ij
++ β4τUNION∗
+ij + β5τIND∗
+ij + β6τMS∗
+ij + β7τOCC∗
+ij
++ β8τSOUTH∗
+ij + β9τSMSA∗
+ij,
+21
+
+where the initial model is transformed to eliminate the individual effects.
+We estimated the conditional expectiles of the log wage distribution using 91 asymmetric points
+(τ ∈(0.05, 0.06, 0.07, . . . , 0.95)). We generated the conﬁdence intervals using the asymptotic
+standard error of the ERFE model. For comparison, we also ﬁtted the ER model, the QR model
+and the QRFE model. Notice that the covariance matrix of the QR-based method depends on the
+random error density function which add a computational burden and some numerical issues
+(Chen et al., 2004; Yin and Cai, 2005; Kocherginsky et al., 2005). We used a kernel estimate of the
+sandwich as proposed by Barnett et al. (1991) to compute the standard error of the QR estimates
+and the generalized bootstrap of Bose and Chatterjee (2003) to compute the standard error of the
+QRFE estimates. Moreover, since an expectile of level τ is not necessarily equal to a quantile of
+the same level, the comparison between the ER-based results and the QR-based results must be
+done globally.
+Figure 6a and Figure 6b display the coefﬁcient estimates of the regressors obtained by ﬁtting the
+ER-based methods while Figure 7a and Figure 7b display the coefﬁcient estimates of the regres-
+sors obtained by ﬁtting the QR-based methods. The overall results show the potential of both
+ER-based and QR-based methods to reveal the heterogeneous regressor effects on the response
+distribution and therefore to capture the heteroscedasticity present in the data. We observe that
+the parameter estimates of some regressors (UNION, IND and SOUTH, for example) vary with
+respect to the asymmetric points or percentiles suggesting the presence of heteroscedasticity in
+the data. For example, we observe that the parameter estimates of the UNION variable decrease
+with respect to the asymmetric points or percentiles suggesting that individuals with low salary
+have more advantage of being unionized than individuals with high salary. We also observe that
+the parameter estimates of some regressors may vary a little or not at all with respect to the asym-
+metric points, suggesting that the mean effect of these regressors would be enough to summarize
+their relationship with the response variable.
+We also observe that the curves of the ER-based results are smoother than those from the QR-
+based method which seem to be more wiggly and unstable. Indeed, the QR-based results is more
+volatile and it is more difﬁcult to identify an overall trend of the heterogeneity of the regressor
+effects. For example, the QRFE parameter estimates of the IND variable is decreasing between
+the percentiles 0.1 and 0.25, and then increasing between the percentiles 0.25 and 0.9.
+Despite the similar trend, the parameter estimates of the different methods have different sta-
+tistical properties. The coefﬁcient estimates of the ER and QR have similar range and are biased
+22
+
+upward. For example, the ER and QR coefﬁcient estimates of the WKS variable ﬂuctuate between
+0.0025 and 0.005. While the QRFE coefﬁcient estimates of the WKS variable vary between 0.06
+and 0.07, 10 times higher than that of the ERFE parameter estimates. Therefore, the QRFE coef-
+ﬁcient estimates is severely biased because of its inability to account for the correlation between
+the individual ﬁxed-effects and some regressors in the model.
+This results are in line with the simulation results, where we observed that the ER and the QR es-
+timates have similar and lower bias than the QRFE estimates which have higher bias particularly
+when the individual ﬁxed-effects is correlated to the regressors in the model.
+In summary, the data analysis shows that some parameter estimates vary according to the asym-
+metric points or the percentiles. Therefore, we need to consider beyond the mean or median
+regression in order to capture the heterogeneity present in the data. The FE model, like other
+methods that estimate the mean effect, is not sufﬁcient to analyze the returns to schooling be-
+cause the impact of most of the regressors vary across the wage distribution.
+6
+Conclusion
+We introduced the ERFE model which inherits the attractive properties of the weighted asym-
+metric least squares regression (ER) and the FE model. As with the FE model, the ERFE model
+is an endogenous model that takes into account the possible correlation between the omitted
+time-invariant variables and the regressors included in the model. In addition, the ERFE model
+estimates the regressor effects on the conditional expectiles of the response distribution allow-
+ing to study the inﬂuence of the regressors on the location, scale, and shape of the conditional
+response distribution.
+We derived the asymptotic properties of the ERFE estimator and suggest an estimator of its vari-
+ance covariance matrix. We showed that the ERFE estimator is an iterative-within-transformation
+estimator. That is, the ERFE estimator can be derived by using iteratively the within-transformation
+strategy to concentrate out the incidental parameter from the model. The ERFE model is com-
+putationally efﬁcient and easy to implement. See our GitHub for a free R package that simpliﬁes
+the implementation (github.com/AmBarry/erfe).
+The exhaustive simulations showed that the ERFE estimator outperformed its competitors, in-
+cluding the QRFE estimator in the location-shift and location-scale-shift scenarios. These results
+23
+
+are not surprising because our ERFE estimator inherits the properties of the within-estimator
+which is simply an ERFE estimator of level τ = 0.5. The real data application showed that
+some parameter estimates vary according to the asymmetric points signaling the presence of
+heteroscedasticity in the data. Therefore we need to go beyond the mean regression to capture
+unobserved heterogeneity of the data and provide an overview of the relationship between the
+regressors and the dependent variables for a better decision making.
+Our ERFE model suffers from the same limitations as the FE model which corresponds to the
+ERFE model of level τ = 0.5. The ERFE model estimates only the effects of the time-variant
+regressors. The ERFE model ignores also the between-subject variations which can affect the
+efﬁciency of its standard error. The ERFE model is a weighted mean regression and as such it is
+sensitive to aberrant values. Fortunately, there is a large number of regression diagnostic tools
+available to mitigate their inﬂuence.
+There are alternatives in the literature that have been proposed to circumvent the lack of inference
+for the time-invariant regressors (Cornwell and Rupert, 1988; Baltagi and Khanti-Akom, 1990),
+while keeping the favorable properties of the FE model. Future research should investigate the
+possibility of adapting these methods to the ERFE framework.
+In addition to the research avenues mentioned above we are currently exploring different alterna-
+tives such as penalizing the individual ﬁxed-effects parameter to solve the incidental parameter
+problem while allowing inference on the time-invariant regressors.
+24
+
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+1.0
+1.2
+1.4
+1.6
+1.0
+1.2
+1.4
+1.6
+1.0
+1.2
+1.4
+1.6
+τ
+β^
+2
+b
+Figure 1: Distribution of the coefﬁcient estimates of the parameter β1 (Figure 1a) and the param-
+eter β2 (Figure 1b) represented as boxplot according to the sample size n ∈(100, 250, 500), the
+repeated measurements m = (5, 15, 30), the asymmetric points τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and
+the error term ε ∼N (0, 1) in the location-shift scenario.
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.0
+0.5
+1.0
+0.0
+0.5
+1.0
+0.0
+0.5
+1.0
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+τ
+β^
+2
+b
+Figure 2: Distribution of the coefﬁcient estimates of the parameter β1 (Figure 2a) and the param-
+eter β2 (Figure 2b) represented as boxplot according to the sample size n ∈(100, 250, 500), the
+repeated measurements m = (5, 15, 30), the asymmetric points τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and
+the error term ε ∼N (0, 1) in the location-scale-shift scenario.
+
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+−2.5
+0.0
+2.5
+5.0
+−2.5
+0.0
+2.5
+5.0
+−2.5
+0.0
+2.5
+5.0
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.0
+0.5
+1.0
+1.5
+2.0
+0.0
+0.5
+1.0
+1.5
+2.0
+0.0
+0.5
+1.0
+1.5
+2.0
+τ
+β^
+2
+b
+Figure 3: Distribution of the ratio SE
+SD for the parameter estimate bβ1 (Figure 3a) and the pa-
+rameter estimate bβ2 (Figure 3b) represented as an error plot with respect to the sample size
+n ∈(100, 250, 500), the repeated measurements m = (5, 15, 30), the asymmetric points
+τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and the error term ε ∼N (0, 1) in the location-shift scenario.
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+−4
+−2
+0
+2
+4
+6
+−4
+−2
+0
+2
+4
+6
+−4
+−2
+0
+2
+4
+6
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0
+1
+2
+0
+1
+2
+0
+1
+2
+τ
+β^
+2
+b
+Figure 4: Distribution of the ratio SE
+SD for the parameter estimate bβ1 (Figure 4a) and the pa-
+rameter estimate bβ2 (Figure 4b) represented as an error plot with respect to the sample size
+n ∈(100, 250, 500), the repeated measurements m = (5, 15, 30), the asymmetric points
+τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and the error term ε ∼N (0, 1) in the location-scale-shift scenario.
+
+QR
+ERFE
+QRFE
+ER
+16
+18
+20
+22
+Time (seconds)
+Figure 5: Distribution of the computation time (in seconds) of the ER-based algorithms and the
+QR-based algorithms. The algorithms are ﬁtted to a dataset (n = 300, m = 10) generated by a
+location-shift model with a Gaussian random error. All other settings are identical to those used
+in the simulation.
+−8e−04
+−7e−04
+−6e−04
+−5e−04
+−4e−04
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+EXPSQ
+ER
+−6e−04
+−5e−04
+−4e−04
+−3e−04
+−2e−04
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+ERFE
+0.030
+0.035
+0.040
+0.045
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+EXP
+0.100
+0.105
+0.110
+0.115
+0.120
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+0.04
+0.08
+0.12
+0.16
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+UNION
+0.00
+0.05
+0.10
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+−0.004
+0.000
+0.004
+0.008
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+τ
+WKS
+−0.002
+0.000
+0.002
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+τ
+(a)
+0.00
+0.05
+0.10
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+IND
+ER
+0.00
+0.05
+0.10
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+ERFE
+0.00
+0.05
+0.10
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+MS
+−0.12
+−0.08
+−0.04
+0.00
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+−0.200
+−0.175
+−0.150
+−0.125
+−0.100
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+OCC
+−0.050
+−0.025
+0.000
+0.025
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+0.12
+0.14
+0.16
+0.18
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+SMSA
+−0.15
+−0.10
+−0.05
+0.00
+0.05
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+−0.08
+−0.04
+0.00
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+τ
+SOUTH
+−0.2
+−0.1
+0.0
+0.1
+0.2
+0.3
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+τ
+(b)
+Figure 6: ER and ERFE coefﬁcient estimates. Fig. (a) displays coefﬁcient estimates of the regres-
+sors: EXPSQ, EXP, UNION and WKS, with their estimated conﬁdence intervals. Fig. (b) displays
+coefﬁcient estimates of the regressors: IND, MS, OCC, SMSA and SOUTH, with their estimated
+conﬁdence intervals. The EXPSQ variable is the square of the experience variable (EXP) and the
+log of wage is the dependent variable.
+−8e−04
+−6e−04
+−4e−04
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+EXPSQ
+QR
+−0.0020
+−0.0016
+−0.0012
+−0.0008
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+QRFE
+0.030
+0.035
+0.040
+0.045
+0.050
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+EXP
+0.05
+0.07
+0.09
+0.11
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+0.00
+0.05
+0.10
+0.15
+0.20
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+UNION
+0.2
+0.4
+0.6
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+−0.0025
+0.0000
+0.0025
+0.0050
+0.0075
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+τ
+WKS
+0.05
+0.06
+0.07
+0.08
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+τ
+(a)
+0.00
+0.05
+0.10
+0.15
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+IND
+QR
+0.0
+0.1
+0.2
+0.3
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+QRFE
+0.0
+0.1
+0.2
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+MS
+0.0
+0.2
+0.4
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+−0.20
+−0.15
+−0.10
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+OCC
+0.00
+0.25
+0.50
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+0.05
+0.10
+0.15
+0.20
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+SMSA
+0.1
+0.2
+0.3
+0.4
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+−0.15
+−0.10
+−0.05
+0.00
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+τ
+SOUTH
+−0.2
+0.0
+0.2
+0.4
+0.05
+0.20
+0.40
+0.60
+0.80
+0.95
+τ
+(b)
+Figure 7: QR and QRFE coefﬁcient estimates. Fig. (a) displays coefﬁcient estimates of the regres-
+sors: EXPSQ, EXP, UNION and WKS, with their estimated conﬁdence intervals. Fig. (b) displays
+coefﬁcient estimates of the regressors: IND, MS, OCC, SMSA and SOUTH, with their estimated
+conﬁdence intervals. The EXPSQ variable is the square of the experience variable (EXP) and the
+log of wage is the dependent variable.
+
+References
+Baltagi, B. (2008). Econometric Analysis of Panel Data. John Wiley & Sons.
+Baltagi, B. and Khanti-Akom, S. (1990). On efﬁcient estimation with panel data: An empirical
+comparison of instrumental variables estimators. Journal of Applied Econometrics, 5(4):401–06.
+Barnett, W. A., Powell, J., and Tauchen, G. E. (1991). Nonparametric and Semiparametric Methods
+in Econometrics and Statistics: Proceedings of the Fifth International Symposium in Economic Theory
+and Econometrics. Cambridge University Press. Google-Books-ID: wHTszJdi2H0C.
+Barry, A., Oualkacha, K., and Charpentier, A. (2020). A new GEE method to account for het-
+eroscedasticity, using asymmetric least-square regressions.
+arXiv:1810.09214 [stat].
+arXiv:
+1810.09214.
+Bose, A. and Chatterjee, S. (2003). Generalized bootstrap for estimators of minimizers of convex
+functions. Journal of Statistical Planning and Inference, 117(2):225–239.
+Brüderl, J. and Ludwig, V. (2014). Fixed-Effects Panel Regression. In The SAGE Handbook of
+Regression Analysis and Causal Inference, pages 327–358. SAGE Publications Ltd.
+Cameron, A. and Trivedi, P. (2005). Microeconometrics. Cambridge University Press.
+Canay, I. A. (2011). A simple approach to quantile regression for panel data. The Econometrics
+Journal, 14(3):368–386. Publisher: Wiley.
+Card, D. (2001). Estimating the Return to Schooling: Progress on Some Persistent Econometric
+Problems. Econometrica, 69(5).
+Chen, L., Wei, L.-J., and Parzen, M. I. (2004). Quantile Regression for Correlated Observations, pages
+51–69. Springer New York, New York, NY.
+Cornwell, C. and Rupert, P. (1988). Efﬁcient estimation with panel data: An empirical comparison
+of instrumental variables estimators. Journal of Applied Econometrics, 3(2):149–55.
+Galvao, A. and Montes-Rojas, G. (2010). Penalized quantile regression for dynamic panel data.
+Journal of Statistical Planning and Inference, 140(11):3476–3497. cited By (since 1996)5.
+Girard, S., Stupﬂer, G., and Usseglio-Carleve, A. (2021). Functional estimation of extreme condi-
+tional expectiles. Econometrics and Statistics.
+Greene, W. H. (2011).
+Econometric analysis.
+Prentice Hall, Upper Saddle River, N.J., 7th ed..
+edition.
+28
+
+Kocherginsky, M., He, X., and Mu, Y. (2005). Practical Conﬁdence Intervals for Regression Quan-
+tiles. Journal of Computational and Graphical Statistics, 14(1):41–55.
+Koenker, R. (2004). Quantile regression for longitudinal data. Journal of Multivariate Analysis,
+91(1):74–89.
+Koenker, R. (2018). quantreg: Quantile Regression. R package version 5.36.
+Koenker, R. and Bache, S. H. (2014). rqpd: Regression Quantiles for Panel Data. R package version
+0.6/r10.
+Lamarche, C. (2010). Robust penalized quantile regression estimation for panel data. Journal of
+Econometrics, 157(2):396–408.
+Liu, Y. and Wu, Y. (2011). Simultaneous multiple non-crossing quantile regression estimation
+using kernel constraints. Journal of Nonparametric Statistics, 23(2):415–437.
+Mersmann, O. (2019). microbenchmark: Accurate Timing Functions. R package version 1.4-7.
+Newey, W. K. and Powell, J. L. (1987). Asymmetric least squares estimation and testing. Econo-
+metrica, 55(4):819–47.
+R Core Team (2021). R: A Language and Environment for Statistical Computing. R Foundation for
+Statistical Computing, Vienna, Austria.
+Sobotka, F., Schnabel, S., Waltrup, L. S., Eilers, P., Kneib, T., and Kauermann, G. (2014). expectreg:
+Expectile and Quantile Regression. R package version 0.39.
+Warrington, N. M., Beaumont, R. N., and al. (2019). Maternal and fetal genetic effects on birth
+weight and their relevance to cardio-metabolic risk factors. Nature Genetics, 51(5):804–814.
+White, H. (1980). A heteroskedasticity-consistent covariance matrix estimator and a direct test
+for heteroskedasticity. Econometrica, 48(4):817–38.
+Yin, G. and Cai, J. (2005).
+Quantile Regression Models with Multivariate Failure Time Data.
+Biometrics, 61(1):151–161. _eprint: https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.0006-
+341X.2005.030815.x.
+29
+
+Weighted asymmetric least squares regression with
+ﬁxed-effects
+Amadou Barry* 1,2, Karim Oualkacha3, and Arthur Charpentier3
+1Departments of Epidemiology, Biostatistics and Occupational Health, McGill
+University, Montréal, Québec, Canada
+2Lady Davis Institute, Jewish General Hospital, Montréal, Québec, Canada
+3Department of Mathematics and Statistics, Université du Québec à Montréal,
+Montréal, Québec, Canada
+August 11, 2021
+1
+Proof
+Proof of Theorem ??.
+The proof of Theorem ?? is adapted from a proof of ?. First, we present a philosophical ap-
+proach and, secondly, a thorough one. We adopt a purely heuristic approach and ignore the
+complications introduced by the inﬁnite dimensional nature of the incidental parameter. In the
+completed version, we explicitly concentrate out the incidental parameter before showing the
+asymptotic property of the parameter estimator of interest. The Lemma ?? establishes the equiv-
+alence between the two approaches.
+*Corresponding author: amadou.barry@mcgill.ca.
+1
+arXiv:2108.04737v1  [econ.EM]  10 Aug 2021
+
+Part 1. Let µijτ = xijTβτ + zijTα and consider the following objective function
+Rnm(δ) =
+n
+∑
+i=1
+m
+∑
+j=1
+ρτ
+
+yij −µijτ −zijTδ0/√
+m −xijTδ1/√
+nm
+
+−ρτ{yij −µijτ}.
+(1)
+The above objective function is a convex function of δ that is minimized by
+bδ =
+
+
+
+bδ0
+bδ1
+
+
+=
+
+
+
+√m(bα −α)
+√nm(bβτ −βτ)
+
+
+.
+(2)
+Our goal is to approximate Rnm by a quadratic function with a unique minimizing value, and
+use results from ? to show that bδ has the same asymptotic distribution of that minimizing value.
+This quadratic approximation is mainly composed by the Taylor expansion of the expected value
+and by a linear approximation function.
+Let
+f
+xij = (zijT, xijT)T,
+eδ = (δ0T/√m, δ1T/√nm)T
+and
+εijτ = yij −µijτ. The func-
+tion E(ρτ(εijτ −f
+xijTeδ) −ρτ(εijτ)) is convex, twice continuously differentiable and reaches its
+minimum at eδ = 0. It can be represented in the neighbourhood of eδ = 0 as
+E
+
+ρτ(εijτ −f
+xijTeδ) −ρτ(εijτ)
+ = eδTf
+xij E[ψτ(εijτ)]f
+xijTeδ
+−2eδTf
+xij E[ψτ(εijτ).εijτ] + o
+eδ
+
+2
+,
+(3)
+where ψτ(λ) = τ −1(λ < 0). Since
+argmin
+δ ∈Rn+p
+E
+
+ρτ(εijτ −f
+xijTeδ) −ρτ(εijτ)
+ = 0
+we have by the ﬁrst order condition
+E[ψτ(εijτ).εijτ] = 0,
+(4)
+and equation (3) can be reduced to:
+E
+
+ρτ(εijτ −f
+xijTeδ) −ρτ(εijτ)
+ = eδTf
+xij E[ψτ(εijτ)]f
+xijTeδ + o
+eδ
+
+2
+.
+(5)
+2
+
+The linear approximation function can be seen as a sort of Taylor expansion of Rnm(δ) around
+δ = 0, see (?). Deﬁne
+Dij(εijτ) = −2ψτ(εijτ).εijτ.
+(6)
+Notice that by (4), E(Dij(εijτ)) = 0. Deﬁne
+rij(eδ) = ρτ(εijτ −f
+xijTeδ) −ρτ(εijτ) −eδTf
+xijDij(εijτ).
+Then
+Rnm(eδ) =
+n
+∑
+i=1
+m
+∑
+j=1
+
+E
+
+ρτ(εijτ −f
+xijTeδ) −ρτ(εijτ)
+
++
+n
+∑
+i=1
+m
+∑
+j=1
+eδTf
+xijDij(εijτ) +
+n
+∑
+i=1
+m
+∑
+j=1
+
+rij(eδ) −E
+
+rij(eδ)
+
+.
+Using Lemma ??, the objective function Rnm(eδ) reduce to
+Rnm(eδ) = eδT
+n
+∑
+i=1
+m
+∑
+j=1
+
+f
+xij E[ψτ(εijτ)]f
+xijT
+
+eδ + eδT
+n
+∑
+i=1
+m
+∑
+j=1
+f
+xijDij(εijτ) + O
+eδ
+
+2
++ o
+eδ
+
+2
+= eδT
+n
+∑
+i=1
+m
+∑
+j=1
+
+f
+xij E[ψτ(εijτ)]f
+xijT
+
+eδ + eδT
+n
+∑
+i=1
+m
+∑
+j=1
+f
+xijDij(εijτ) + op(1)
+≃eδT
+n
+∑
+i=1
+m
+∑
+j=1
+
+f
+xij E[ψτ(εijτ)]f
+xijT
+
+eδ + eδT
+n
+∑
+i=1
+m
+∑
+j=1
+f
+xijDij(εijτ).
+(7)
+By replacing f
+xij = (zijT, xijT)T and eδ = (δ0T/√m, δ1T/√nm)T by their initial value, we have
+Rnm(δ) =
+−2 1
+√m
+n
+∑
+i=1
+m
+∑
+j=1
+(zijTδ0 + xijTδ1/√
+n)ψτ(yij −µijτ).(yij −µijτ)
++ 1
+m
+n
+∑
+i=1
+m
+∑
+j=1
+E[ψτ(yij −µijτ)](zijTδ0 + xijTδ1/√
+n)2
+= −2 1
+√m
+
+δ0TZTΨτ(ετ)ετ + δ1T/√
+nXTΨτ(ετ)ετ
+
++ 1
+m
+
+δ0TZT E[Ψτ(ετ)]Zδ0 + 2δ0TZT E[Ψτ(ετ)]Xδ1/√
+n + δ1TXT E[Ψτ(ετ)]Xδ1/n
+
+= R(1)
+nm(δ) + R(2)
+nm(δ)
+3
+
+The condition A2 and A3 imply a Lindberg condition and we have
+R(1)
+nm(δ) = −2 1
+√m
+h
+δ0TZT + δ1T/√
+nXTi
+Ψτ(ετ)ετ
+d−→−2δTB.
+While by condition A2
+R(2)
+nm(δ) = 1
+m
+
+δ0TZT E[Ψτ(ετ)]Zδ0 + 2δ0TZT E[Ψτ(ετ)]Xδ1/√
+n + δ1TXT E[Ψτ(ετ)]Xδ1/n
+
+→δTD1δ.
+Thus the limiting form of the objective function is
+R0(δ) = −2δTB + δTD1δ
+where B is a zero mean Gaussian vector with covariance matrix D0. The objective function Rnm
+is convex and its limiting form R0 has a unique minimum. Therefore, by Theorem??, bδ converge
+to the argmin of R0.
+Part 2. In the precedent proof we overlook the complications related to the inﬁnite dimensional
+nature of α. ?, following (??), used the Bahadur-Kiefer representation of the incidental parameter
+in order to concentrate out its effect and express the objective function solely in terms of the ﬁ-
+nite dimensional parameter β. With the smoothness of the asymmetric least square loss, we can
+use the ﬁrst order condition to represent the incidental parameter as a function of the structural
+parameter.
+Consider the following objective function
+Rnm(δ) = −2 1
+√m
+n
+∑
+i=1
+m
+∑
+j=1
+(zijTδ0 + xijTδ1/√
+n)ψτ(yij −µijτ).(yij −µijτ)
++ 1
+m
+n
+∑
+i=1
+m
+∑
+j=1
+E[ψτ(yij −µijτ)](zijTδ0 + xijTδ1/√
+n)2.
+4
+
+This function is twice derivable and the ﬁrst order condition gives us the exact representation of
+the incidental parameter
+bδ0i
+√m =
+1
+mψi
+m
+∑
+k=1
+ψτ(yik −µikτ)(yik −µikτ) −
+1
+mψi
+m
+∑
+k=1
+E
+
+ψτ(yik −µikτ)
+
+xikT
+δ1
+√nm,
+where ψi = m−1 ∑m
+k=1 E
+h
+ψτ
+ yik −µikτ
+i
+. Substituting
+bδ0i
+√m we have
+bδ1
+√mn =
+ n
+∑
+i=1
+m
+∑
+j=1
+xij E[ψτ(yij −µijτ)]
+h
+xijT −
+1
+mψi
+m
+∑
+k=1
+E
+
+ψτ(yik −µikτ)
+
+xikTi−1
+×
+ n
+∑
+i=1
+m
+∑
+j=1
+xijψτ(yij −µijτ)(yij −µijτ)
+−
+n
+∑
+i=1
+m
+∑
+j=1
+xij E[ψτ(yij −µijτ)]
+h
+1
+mψi
+m
+∑
+k=1
+ψτ(yik −µik)(yik −µik)
+i
+.
+Note that,
+n
+∑
+i=1
+m
+∑
+j=1
+xij E[ψτ(yij −µijτ)]
+h
+xijT −
+1
+mψi
+m
+∑
+k=1
+E
+
+ψτ(yik −µik)
+
+xikTi
+= XT E[Ψτ(ετ)]X −XTPZT E[Ψτ(ετ)]X
+= XT[I −PZ] E[Ψτ(ετ)]X
+= XTMZT E[Ψτ(ετ)]X
+= XTMZTMZT E[Ψτ(ετ)]X
+= XTMZT E[Ψτ(ετ)]MZX
+and
+n
+∑
+i=1
+m
+∑
+j=1
+xijψτ(yij −µijτ)(yij −µijτ) −
+n
+∑
+i=1
+m
+∑
+j=1
+xij E[ψτ(yij −µijτ)]×
+1
+mψi
+m
+∑
+k=1
+ψτ(yik −µikτ)(yik −µikτ) = XTΨτ(ετ)ετ −XTPZTΨτ(ετ)ετ = XTMZTΨτ(ετ)ετ.
+Consequently,
+bδ1
+√mn =
+
+XTMZT E[Ψτ(ετ)]MZX
+−1
+XTMZTΨτ(ετ)ετ
+=
+
+XTMZT E[Ψτ(ετ)]MZX/m
+−1
+m−1XTMZTΨτ(ετ)ετ.
+(8)
+5
+
+Let XZ = MZX then we have m−1XZTΨτ(ετ)ετ = ∑n
+i=1 ∑m
+j=1 xijZψτ(εijτ)εijτ/m. Let Tni =
+∑m
+j=1 m−1λTxijZψτ(εijτ)εijτ and consider n−1/2 ∑n
+i=1 Tni, where λ is a p × 1 unit vector, λTλ = 1.
+The summands Tni are independent with E[Tni] = 0 and Var
+h
+n−1/2 ∑n
+i=1 Tni
+i
+> ν′ > 0, by
+condition A2. By application of the Minkowski’s inequality, we have
+E|Tni|2+ν = E
+
+m
+∑
+j=1
+p
+∑
+k=1
+m−1λkxk
+ijZψτ(εijτ)εijτ
+
+2+ν
+≤
+ m
+∑
+j=1
+p
+∑
+k=1
+
+E
+m−1λkxk
+ijZψτ(εijτ)εijτ
+
+2+ν
+1
+2+ν 2+ν
+≤
+ m
+∑
+j=1
+p
+∑
+k=1
+m−1|λkxk
+ijZ|
+
+E
+ψτ(εijτ)εijτ
+
+2+ν
+1
+2+ν 2+ν
+≤M∆p1+ν,
+where the last inequality follows by E|ψτ(εijτ)|4+ν < ∆and E|εijτ|4+ν < ∆.
+Then by the Liapounov CLT XTMZTΨτ(ετ)ετ
+is Gaussian and by condition A2, bδ1 is zero
+mean Gaussian vector with covariance matrix Var(bβτ) = eD
+−1
+1
+eD0 eD
+−1
+1 .
+■
+Proof of Lemma ??.
+we intend to show that this new covariance matrix eD
+−1
+1
+eD0 eD
+−1
+1
+is identical to the lower right
+diagonal block matrix D−1
+1 D0D−1
+1 .
+We have (D−1
+1 D0D−1
+1 )22 = (D−1
+1 )2.D0(D−1
+1 )2.T. Using the standard partitioned inverse formula
+for a general 2 × 2 partitioned matrix, we have
+mn(D−1
+1 D0D−1
+1 )22 =
+
+−FE−1
+E−1
+
+
+
+
+ZTΣτZ
+ZTΣτX
+XTΣτZ
+XTΣτX
+
+
+
+
+
+
+−FE−1
+E−1
+
+
+
+= E−1[FTZTΣτZF −XTΣτZF −FTZTΣτX + XTΣτX]E−1
+where E = XT E[Ψτ(ετ)]X −XT E[Ψτ(ετ)]Z(ZT E[Ψτ(ετ)]Z)−1ZT E[Ψτ(ετ)]X = mn eD1, and ZF =
+Z(ZT E[Ψτ(ετ)]Z)−1ZT E[Ψτ(ετ)]X = PZX. The term in square brackets is
+6
+
+FTZTΣτZF −XTΣτZF −FTZTΣτX + XTΣτX
+= XTPZTΣτPZX −XTΣτPZX −XTPZTΣτX + XTΣτX
+= XT[PZTΣτPZ −ΣτPZ −PZTΣτ + Στ]X
+= XT[I −PZT]Στ[I −PZ]X
+= XTMZTΣτMZX
+= eD0.
+Finally, the result follows.
+■
+Proof of Theorem ??.
+In the following, we remove the asterix as an exponent to lighten the notation. Using the same
+approach to the proof of Theorem ??, the objective function Rmnq(δ) can be decomposed into two
+parts
+Rmnq(δ) = R(1)
+mnq(δ) + R(2)
+mnq(δ).
+7
+
+R(1)
+nmq(δ) =
+−2
+√nm
+q
+∑
+k=1
+n
+∑
+i=1
+m
+∑
+j=1
+vkδτk
+Txijψτk(εijτk).εijτk
+=
+−2
+√nm
+q
+∑
+k=1
+vkδτk
+TXTΨτk(ετk)ετk
+=
+−2
+√nmδT(V ⊗X)TΨτ(ετ)ετ
+=
+−2
+√nmδT
+
+
+
+
+
+
+v1XT
+· · ·
+0
+...
+...
+...
+0
+· · ·
+vqXT
+
+
+
+
+
+
+
+
+
+
+
+
+Ψτ1(ετ1)
+· · ·
+0
+...
+...
+...
+0
+· · ·
+Ψτq(ετq)
+
+
+
+
+
+
+
+
+
+
+
+
+ετ1
+...
+ετq
+
+
+
+
+
+
+=
+−2
+√nmδT
+n
+∑
+i=1
+(V ⊗Xi)TΨτ(εiτ)εiτ
+=
+−2
+√nmδT
+n
+∑
+i=1
+
+
+v1 ∑m
+j=1 x1
+ijψτ1(εitτ1)εitτ1
+...
+v1 ∑m
+j=1 xp
+ijψτ1(εitτ1)εitτ1
+...
+vq ∑m
+j=1 x1
+ijψτq(εitτq)εitτq
+...
+vq ∑m
+j=1 xp
+ijψτq(εitτq)εitτq
+
+
+d−→−2δTB.
+To show the asymptotic normality of B, we apply the Cramér-Wold device and verify the Lya-
+punov’s condition.
+Let Tni = m−1λT(V ⊗Xi)TΨτ(εiτ)εiτ and consider n−1/2 ∑n
+i=1 Tni, where λ is a pq × 1 unit vec-
+tor, λTλ = 1. The summands Tni are independent with E[Tni] = 0 and Var
+h
+n−1/2 ∑n
+i=1 Tni
+i
+>
+ν′ > 0, by condition A2. By the Minkowski’s inequality, we have
+E|Tni|2+ν = E
+
+q
+∑
+k=1
+p
+∑
+l=1
+vkλkl
+m
+∑
+j=1
+m−1xl
+ijψτk(εijτk)εijτk
+
+2+ν
+= E
+
+q
+∑
+k=1
+p
+∑
+l=1
+m
+∑
+j=1
+m−1vkλklxl
+ijψτk(εijτk)εijτk
+
+2+ν
+≤
+
+q
+∑
+k=1
+p
+∑
+l=1
+m
+∑
+j=1
+
+E
+m−1vkλklxl
+ijψτk(εijτk)εijτk
+
+2+ν
+1
+2+ν 2+ν
+.
+8
+
+By the Cauchy-Schwarz inequality, we have
+E
+m−1vkλklxl
+ijψτk(εijτk)εijτk
+
+2+ν
+= |m−1vkλklxl
+ij|2+ν E
+ψτk(εijτk)εijτk
+
+2+ν
+≤(m−1M|λkl|)2+νh
+E|ψτk(εijτk)|4+νi1/2h
+E|εijτk|4+νi1/2
+≤(m−1M|λkl|)2+ν∆,
+where the last inequality follows by E|ψτk(εijτk)|4+ν < ∆and E|εijτk|4+ν < ∆. Therefore,
+E|Tni|2+ν ≤
+
+q
+∑
+k=1
+p
+∑
+l=1
+m
+∑
+j=1
+m−1M|λkl|∆
+1
+2+ν
+2+ν
+≤∆M2+ν|λT1pq|2+ν
+≤∆(pq)1+ν.
+Then by the Liapounov CLT B is a zero mean Gaussian vector with covariance matrix D0(τ).
+R(2)
+nmq(δ) =
+1
+nm
+q
+∑
+k=1
+n
+∑
+i=1
+m
+∑
+j=1
+vkδτk
+Txij E[ψτk(εijτk)]xijTδτk
+=
+1
+nm
+q
+∑
+k=1
+vkδτk
+TXT E[Ψτk(ετk)]Xδτk
+→δTD1(τ)δ.
+Thus the limiting form of the objective function is
+R0q(δ) = −2δTB + δTD1(τ)δ
+where B is a zero mean Gaussian vector with covariance matrix D0(τ). Application of Theorem
+2.2 of ? gives the result of Theorem ??.
+■
+Proof of Theorem ??.
+We have
+bD1(τ) =
+1
+nm(Iq ⊗c
+X∗)TΨτ(c
+ε∗τ)(V ⊗c
+X∗)
+=
+1
+nm
+n
+∑
+i=1
+diag
+
+v1 c
+X∗
+i
+TΨτ1( c
+ε∗
+iτ1) c
+X∗
+i , . . . , vq c
+X∗
+i
+TΨτq( c
+ε∗
+iτq) c
+X∗
+i
+
+.
+The convergence of bD1(τ) is obtained by showing the convergence of the general term
+1
+nm ∑n
+i=1 vk c
+X∗
+i
+TΨτk( c
+ε∗
+iτk) c
+X∗
+i .
+9
+
+This general term breaks down as follows:
+n
+∑
+i=1
+c
+X∗
+i
+TΨτ(c
+ε∗
+iτ) c
+X∗
+i = c
+X∗TΨτ( bε∗τ) c
+X∗= XTc
+MZ(τ)TΨτ( bε∗τ)c
+MZ(τ)X
+= XTΨτ( bε∗τ)c
+MZ(τ)X = XTΨτ( bε∗τ)[Inm −bPZ(τ)]X
+= XTΨτ( bε∗τ)X −XTΨτ( bε∗τ)bPZ(τ)X.
+(9)
+We will show the convergence of each of the terms separately. First, consider the following
+expression: |ψτ(bε∗
+ijτ) −ψτ(ε∗
+ijτ)|. This expression is 0 except when x∗
+ij
+Tbβτ ≤y∗
+ij ≤x∗
+ij
+Tβτ or
+x∗
+ij
+Tβτ ≤y∗
+ij ≤x∗
+ij
+Tbβτ. It can be bounded as follows:
+|ψτ(bε∗
+ijτ) −ψτ(ε∗
+ijτ)| ≤|1 −2τ|1
+ |ε∗
+ijτ| ≤|x∗
+ij
+T(bβτ −βτ)|
+
+≤|1 −2τ|1
+ |ε∗
+ijτ| ≤
+x∗
+ij
+
+bβτ −βτ
+
+
+≤|1 −2τ|1
+ |ε∗
+ijτ| ≤pM
+bβτ −βτ
+
+
+.
+(10)
+As plim bβτ = βτ, we have, by equation (10) and Markov’s inequality:
+(nm)−1XT[Ψτ( bε∗τ) −Ψτ(ε∗
+τ)]X = (nm)−1
+n
+∑
+i=1
+XiT[Ψτ(c
+ε∗
+iτ) −Ψτ(ε∗
+iτ)]Xi
+p−→0.
+In other words:
+(nm)−1XTΨτ( bε∗τ)X = (nm)−1XTΨτ(ε∗
+τ)X + op(1).
+(11)
+This result (11) is important and will be used frequently below. Another useful result is the
+convergence of the function bw∗
+iτ = (∑m
+j=1 ψτ(bε∗
+ijτ))−1 which appears in the expression of bPZ(τ).
+This function is bounded by:
+m min(τ, 1 −τ) ≤bw∗−1
+iτ
+≤m max(τ, 1 −τ).
+We have
+ 1
+nm
+n
+∑
+i=1
+bw∗
+iτ −1
+nm
+n
+∑
+i=1
+E[w∗
+iτ]
+ ≤
+ 1
+nm
+n
+∑
+i=1
+w∗
+iτ −1
+nm
+n
+∑
+i=1
+E[w∗
+iτ]
+
++
+ 1
+nm
+n
+∑
+i=1
+bw∗
+iτ −1
+nm
+n
+∑
+i=1
+w∗
+iτ
+.
+(12)
+The ﬁrst term converges by Markov’s Law of Large Numbers (LLN). The second term is bounded
+10
+
+by:
+ 1
+nm
+n
+∑
+i=1
+bw∗
+iτ −1
+nm
+n
+∑
+i=1
+w∗
+iτ
+ ≤
+1
+nm3
+n
+∑
+i=1
+m
+∑
+j=1
+|ψτ(bε∗
+ijτ) −ψτ(ε∗
+ijτ)|.
+Thus, convergence is achieved by the application of (10).
+Now, let’s show the convergence of the ﬁrst term on the last line of equation (9). We have:
+ 1
+nm
+n
+∑
+i=1
+XiTΨτ(c
+ε∗
+iτ)Xi −1
+nm
+n
+∑
+i=1
+XiT E[Ψτ(ε∗
+iτ)]Xi
+
+≤
+
+1
+nm
+n
+∑
+i=1
+XiT[Ψτ(c
+ε∗
+iτ) −Ψτ(ε∗
+iτ)]Xi
+
++
+
+1
+nm
+n
+∑
+i=1
+XiTΨτ(ε∗
+iτ)Xi −1
+nm
+n
+∑
+i=1
+XiT E[Ψτ(ε∗
+iτ)]Xi
+.
+(13)
+The result (11) gives the convergence of the ﬁrst term on the right of the inequality and the ap-
+plication of Markov’s Law of large-number (LLN) gives the convergence of the second term.
+The second term on the last line of equation (9) is expressed by:
+XTΨτ( bε∗τ)bPZ(τ)X =
+n
+∑
+i=1
+m
+∑
+j=1
+m
+∑
+k=1
+bw∗
+iτψτ(bε∗
+ijτ)ψτ(bε∗
+ikτ)xijxikT.
+(14)
+We will use the following relation to show its convergence
+bw∗
+iτψτ(bε∗
+ijτ)ψτ(bε∗
+ikτ) −w∗
+iτψτ(ε∗
+ijτ)ψτ(ε∗
+ikτ) = ( bw∗
+iτ −w∗
+iτ)ψτ(bε∗
+ijτ)ψτ(bε∗
+ikτ)
++ w∗
+iτ
+
+ψτ(bε∗
+ijτ)[ψτ(bε∗
+ikτ) −ψτ(ε∗
+ikτ)] + ψτ(ε∗
+ikτ)[ψτ(bε∗
+ijτ) −ψτ(ε∗
+ijτ)]
+	
+.
+(15)
+11
+
+To show the convergence of the expression (14), consider:
+ 1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikT bw∗
+iτψτ(bε∗
+ijτ)ψτ(bε∗
+ikτ) −1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikT E[w∗
+iτψτ(ε∗
+ijτ)ψτ(ε∗
+ikτ)]
+
+≤
+ 1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikT[ bw∗
+iτψτ(bε∗
+ijτ)ψτ(bε∗
+ikτ) −w∗
+iτψτ(ε∗
+ijτ)ψτ(ε∗
+ikτ)]
+
++
+ 1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikTw∗
+iτψτ(ε∗
+ijτ)ψτ(ε∗
+ikτ) −1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikT E[w∗
+iτψτ(ε∗
+ijτ)ψτ(ε∗
+ikτ)]
+
+≤
+ 1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikT( bw∗
+iτ −w∗
+iτ)ψτ(bε∗
+ijτ)ψτ(bε∗
+ikτ)
+
++
+ 1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikTw∗
+iτ
+
+ψτ(bε∗
+ijτ)[ψτ(bε∗
+ikτ) −ψτ(ε∗
+ikτ)] + ψτ(ε∗
+ikτ)[ψτ(bε∗
+ijτ) −ψτ(ε∗
+ijτ)]
+	
++
+ 1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikTw∗
+iτψτ(ε∗
+ijτ)ψτ(ε∗
+ikτ) −1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikT E[w∗
+iτψτ(ε∗
+ijτ)ψτ(ε∗
+ikτ)]
+
+≤
+ 1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikT( bw∗
+iτ −w∗
+iτ)
+ +
+ 1
+nm2
+n
+∑
+i=1
+m
+∑
+jk
+xijxikT[ψτ(bε∗
+ikτ) −ψτ(ε∗
+ikτ)]
+
++
+ 1
+nm2
+n
+∑
+i=1
+m
+∑
+jk
+xijxikT[ψτ(bε∗
+ijτ) −ψτ(ε∗
+ijτ)]
+
++
+ 1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikTw∗
+iτψτ(ε∗
+ijτ)ψτ(ε∗
+ikτ) −1
+nm
+n
+∑
+i=1
+m
+∑
+jk
+xijxikT E[w∗
+iτψτ(ε∗
+ijτ)ψτ(ε∗
+ikτ)]
+.
+(16)
+Finally, the convergence of the expression (14) results from the application of the relations (11)
+and (12 ) and from the application of Markov’s Law of Large Numbers.
+The second term of the variance-covariance matrix whose convergence we must show is:
+bD0(τ) =
+1
+nm(V ⊗c
+X∗)TΨτ(c
+ε∗τ)c
+ε∗τc
+ε∗τ
+TΨτ(c
+ε∗τ)(V ⊗c
+X∗),
+=
+1
+nm
+n
+∑
+i=1
+
+
+
+
+
+
+v2
+1 c
+X∗
+i
+TbΣ
+∗
+iτ1τ1 c
+X∗
+i
+· · ·
+· · ·
+v1vq c
+X∗
+i
+TbΣ
+∗
+iτ1τq c
+X∗
+i
+...
+...
+...
+...
+v1vq c
+X∗
+i
+TbΣ
+∗
+iτqτ1 c
+X∗
+i
+· · ·
+· · ·
+v2
+q c
+X∗
+i
+TbΣ
+∗
+iτqτq c
+X∗
+i
+
+
+
+
+
+
+where
+bΣ
+∗
+iτkτj = Ψτk(bε∗
+iτk)bε∗
+iτkbε∗
+iτj
+TΨτj(bε∗
+iτj).
+Again, showing the convergence of the general term sufﬁces:
+1
+nm
+n
+∑
+i=1
+c
+X∗
+i
+TbΣ
+∗
+iτkτj c
+X∗
+i =
+1
+nm
+c
+X∗TΨτk(bε∗
+τk)bε∗
+τkbε∗
+τj
+TΨτj(bε∗
+τj) c
+X∗
+(17)
+12
+
+Note that,
+bε∗
+τ = ε∗
+τ −X∗(bβτ −βτ) + ∆MZ(τ)[y −Xβτ],
+where ∆MZ(τ) = c
+MZ(τ) −MZ(τ) = PZ(τ) −bPZ(τ) = ∆PZ(τ). We have,
+bετ∗
+τk bετ∗
+τj
+T = ε∗
+τkε∗
+τj
+T −ε∗
+τk(bβτj −βτj)TX∗T + ε∗
+τk[y −Xbβτj]T∆PZ(τj)T
+−X∗(bβτk −βτk)ε∗
+τj
+T + X∗(bβτk −βτk)(bβτj −βτj)TX∗T
+−X∗(bβτk −βτk)[y −Xbβτj]T∆PZ(τj)T + ∆PZ(τk)[y −Xbβτk]ε∗
+τj
+T
+−∆PZ(τk)[y −Xbβτk](bβτj −βτj)TX∗T
++ ∆PZ(τk)[y −Xbβτk][y −Xbβτj]T∆PZ(τj)T
+Then, replacing c
+X∗= c
+MZ(τ)X = X∗+ ∆MZ(τ)X, we obtain:
+13
+
+c
+X∗TΨτk(bε∗
+τk)bε∗
+τkbε∗
+τj
+TΨτj(bε∗
+τj) c
+X∗=
++ X∗TΨτk(bε∗
+τk)ε∗
+τkε∗
+τj
+TΨτj(bε∗
+τj)X∗−X∗TΨτk(bε∗
+τk)ε∗
+τk(bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
++ X∗TΨτk(bε∗
+τk)ε∗
+τk[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
+−X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)ε∗
+τj
+TΨτj(bε∗
+τj)X∗
++ X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)(bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
+−X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
++ X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk]ε∗
+τj
+TΨτj(bε∗
+τj)X∗
+−X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk](bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
++ X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk][y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
++ X∗TΨτk(bε∗
+τk)ε∗
+τkε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
+−X∗TΨτk(bε∗
+τk)ε∗
+τk(bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
++ X∗TΨτk(bε∗
+τk)ε∗
+τk[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X
+−X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)ε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
++ X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)(bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
+−X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X
++ X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk]ε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
+−X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk](bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
++ X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk][y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X
++ XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τkε∗
+τj
+TΨτj(bε∗
+τj)X∗
+−XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τk(bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
++ XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τk[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
+−XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)ε∗
+τj
+TΨτj(bε∗
+τj)X∗
++ XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)(bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
+(continued on next page)
+14
+
+(continued from previous page)
+−XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
++ XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk]ε∗
+τj
+TΨτj(bε∗
+τj)X∗
+−XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk](bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
++ XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk][y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
++ XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τkε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
+−XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τk(bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
++ XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τk[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X
+−XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)ε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
++ XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)(bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
+−XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X
++ XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk]ε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
+−XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk](bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
++ XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk][y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X.
+Now let’s break down the following expression:
+X∗TΨτk(bε∗
+τk)ε∗
+τkε∗
+τj
+TΨτj(bε∗
+τj)X∗= X∗TΨτk(ε∗
+τk)ε∗
+τkε∗
+τj
+TΨτj(ε∗
+τj)X∗
++ X∗TΨτk(ε∗
+τk)ε∗
+τkε∗
+τj
+Th
+Ψτj(bε∗
+τj) −Ψτj(ε∗
+τj)
+i
+X∗
++ X∗Th
+Ψτk(bε∗
+τk) −Ψτk(ε∗
+τk)
+i
+ε∗
+τkε∗
+τj
+TΨτj(ε∗
+τj)X∗
++ X∗Th
+Ψτk(bε∗
+τk) −Ψτk(ε∗
+τk)
+i
+ε∗
+τkε∗
+τj
+Th
+Ψτj(bε∗
+τj) −Ψτj(ε∗
+τj)
+i
+X∗.
+15
+
+The ﬁnal expression of (17) is:
+c
+X∗TΨτk(bε∗
+τk)bε∗
+τkbε∗
+τj
+TΨτj(bε∗
+τj) c
+X∗=
++ X∗TΨτk(ε∗
+τk)ε∗
+τkε∗
+τj
+TΨτj(ε∗
+τj)X∗
+(e1)
++ X∗TΨτk(ε∗
+τk)ε∗
+τkε∗
+τj
+Th
+Ψτj(bε∗
+τj) −Ψτj(ε∗
+τj)
+i
+X∗
+(e2)
++ X∗Th
+Ψτk(bε∗
+τk) −Ψτk(ε∗
+τk)
+i
+ε∗
+τkε∗
+τj
+TΨτj(ε∗
+τj)X∗
+(e3)
++ X∗Th
+Ψτk(bε∗
+τk) −Ψτk(ε∗
+τk)
+i
+ε∗
+τkε∗
+τj
+Th
+Ψτj(bε∗
+τj) −Ψτj(ε∗
+τj)
+i
+X∗
+(e4)
+−X∗TΨτk(bε∗
+τk)ε∗
+τk(bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
+(e5)
++ X∗TΨτk(bε∗
+τk)ε∗
+τk[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
+(e6)
+−X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)ε∗
+τj
+TΨτj(bε∗
+τj)X∗
+(e7)
++ X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)(bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
+(e8)
+−X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
+(e9)
++ X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk]ε∗
+τj
+TΨτj(bε∗
+τj)X∗
+(e10)
+−X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk](bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
+(e11)
++ X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk][y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
+(e12)
++ X∗TΨτk(bε∗
+τk)ε∗
+τkε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
+(e13)
+−X∗TΨτk(bε∗
+τk)ε∗
+τk(bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
+(e14)
++ X∗TΨτk(bε∗
+τk)ε∗
+τk[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X
+(e15)
+−X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)ε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
+(e16)
++ X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)(bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
+(e17)
+−X∗TΨτk(bε∗
+τk)X∗(bβτk −βτk)[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X
+(e18)
++ X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk]ε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
+(e19)
+−X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk](bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
+(e20)
++ X∗TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk][y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X
+(e21)
+(continued on next page)
+16
+
+(continued from previous page)
++ XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τkε∗
+τj
+TΨτj(bε∗
+τj)X∗
+(e22)
+−XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τk(bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
+(e23)
++ XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τk[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
+(e24)
+−XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)ε∗
+τj
+TΨτj(bε∗
+τj)X∗
+(e25)
++ XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)(bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
+(e26)
+−XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
+(e27)
++ XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk]ε∗
+τj
+TΨτj(bε∗
+τj)X∗
+(e28)
+−XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk](bβτj −βτj)TX∗TΨτj(bε∗
+τj)X∗
+(e29)
++ XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk][y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)X∗
+(e30)
++ XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τkε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
+(e31)
+−XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τk(bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
+(e32)
++ XT∆PZ(τk)TΨτk(bε∗
+τk)ε∗
+τk[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X
+(e33)
+−XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)ε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
+(e34)
+(continued on next page)
+17
+
+(continued from previous page)
++ XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)(bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
+(e35)
+−XT∆PZ(τk)TΨτk(bε∗
+τk)X∗(bβτk −βτk)[y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X
+(e36)
++ XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk]ε∗
+τj
+TΨτj(bε∗
+τj)∆PZ(τj)X
+(e37)
+−XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk](bβτj −βτj)TX∗TΨτj(bε∗
+τj)∆PZ(τj)X
+(e38)
++ XT∆PZ(τk)TΨτk(bε∗
+τk)∆PZ(τk)[y −Xbβτk][y −Xbβτj]T∆PZ(τj)TΨτj(bε∗
+τj)∆PZ(τj)X.
+(e39)
+The demonstration is based on showing the convergence of each of these terms (e2)-(e39). We
+have three types of expression: those that are function of ∆PZ, those that are function of
+h
+Ψτk(bε∗
+τk) −
+Ψτk(ε∗
+τk)
+i
+and those that are function of (bβτj −βτj). Those that are a function of ∆PZ are shown
+by following the approach of (12 ) and those that are function of
+h
+Ψτk(bε∗
+τk) −Ψτk(ε∗
+τk)
+i
+according
+to the approach (11). The convergence technique of those that are a function of (bβτj −βτj) is
+identical to the convergence procedure used for (e7) and (e8). Thus, in the following, we will
+show the convergence of (e7) and (e8).
+Using the relation, Vec(ABC) = (CT ⊗A) Vec(B), equation (e7) is transformed as follows:
+Vec
+ 1
+nm
+n
+∑
+i=1
+X∗
+i
+TΨτk(bε∗
+iτk)X∗
+i (bβτk −βτk)ε∗
+iτj
+TΨτj(bε∗
+iτj)X∗
+i
+
+=
+1
+nm
+n
+∑
+i=1
+X∗
+i
+TΨτk(bε∗
+iτk)ε∗
+iτj ⊗X∗
+i
+TΨτj(bεiτj)X∗
+i Vec(bβτk −βτk).
+Applying Lemma ??, we have
+E
+X∗
+i
+TΨτk(bε∗
+iτk)ε∗
+iτj ⊗X∗
+i
+TΨτj(bεiτj)X∗
+i
+
+1+ν
+≤
+
+E
+X∗
+i
+TΨτk(bε∗
+iτk)ε∗
+iτj
+
+2+2ν
+E
+X∗
+i
+TΨτj(bεiτj)X∗
+i
+
+2+2ν 1/2
+.
+18
+
+Repeated application of Minkowski and Holder inequalities shows that
+E
+X∗
+i
+TΨτk(bε∗
+iτk)ε∗
+iτj
+
+2+2ν
+= E
+
+p
+∑
+k=1
+
+m
+∑
+j=1
+x∗k
+ij ψτk(bε∗
+ijτk)ε∗
+ijτj
+
+21+ν
+≤
+
+p
+∑
+k=1
+
+E
+
+m
+∑
+j=1
+x∗k
+ij ψτk(bε∗
+ijτk)ε∗
+ijτj
+
+2+2ν
+1
+1+ν 1+ν
+≤
+
+p
+∑
+k=1
+ m
+∑
+j=1
+
+E|x∗k
+ij ψτk(bε∗
+ijτk)ε∗
+ijτj|2+2ν
+1
+2+2ν 2+2ν1+ν
+≤(p∆)1+ν(Mm)2+ν.
+The last inequality is obtained by applying the assumptions E|ψτ(bεijτ)|4+ν < ∆and E|εijτ|4+ν <
+∆. Similarly
+E
+X∗
+i
+TΨτj(bεiτj)X∗
+i
+
+2+2ν
+≤E
+X∗
+i
+TΨ1/2
+τj (bεiτj)
+
+4+4ν
+≤
+
+p
+∑
+k=1
+m
+∑
+j=1
+
+E|(x∗k
+ij ψ1/2
+τj (bε∗
+ijτj))2|2+2ν
+1
+2+2ν 2+2ν
+≤(pm)2+ν∆.
+Then, by the Markov LLN it follows that
+Vec
+ 1
+nm
+n
+∑
+i=1
+X∗
+i
+TΨτk(bε∗
+iτk)X∗
+i (bβτk −βτk)ε∗
+iτj
+TΨτj(bε∗
+iτj)X∗
+i
+
+=
+1
+√nmOp(1)Op(1).
+Considering that Vec(bβτ −βτ) = Op((nm)−1/2) and that
+E
+X∗
+i
+TΨτk(bε∗
+iτk)X∗
+i
+
+2+2ν
+< (pm)2+ν∆, term (e8) is
+1
+nm Vec
+ n
+∑
+i=1
+X∗
+i
+TΨτk(bε∗
+iτk)X∗
+i (bβτk −βτk)(bβτj −βτj)TX∗
+i
+TΨτj(bε∗
+iτj)X∗
+i
+
+=
+1
+nm
+n
+∑
+i=1
+X∗
+i
+TΨτj(bε∗
+iτj)X∗
+i ⊗X∗
+i
+TΨτk(bε∗
+iτk)X∗
+i Vec[(bβτ −βτ)(bβτk −βτk)T]
+=
+1
+nmOp(1)Op(1).
+We have just shown that
+1
+nm
+n
+∑
+i=1
+c
+X∗
+i
+TbΣ
+∗
+iτkτj c
+X∗
+i −1
+nm
+n
+∑
+i=1
+X∗
+i
+TΨτk(ε∗
+iτk)ε∗
+iτkε∗
+iτj
+TΨτj(ε∗
+iτj)X∗
+i
+p−→0.
+19
+
+Application of the Markov LLN also yields
+1
+nm
+n
+∑
+i=1
+X∗
+i
+TΨτk(ε∗
+iτk)ε∗
+iτkε∗
+iτj
+TΨτj(ε∗
+iτj)X∗
+i −1
+nm
+n
+∑
+i=1
+X∗
+i
+TΣ∗
+iτkτjX∗
+i
+p−→0.
+Thus, application of the triangular inequality shows that bD0(τ)
+p−→D0(τ).
+■
+Proof of Corollary ??.
+Proof of Corollary ?? follows immediately from the proof of Theorem ??.
+■
+2
+Additional simulation results
+20
+
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.25
+0.50
+0.75
+1.00
+0.25
+0.50
+0.75
+1.00
+0.25
+0.50
+0.75
+1.00
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.5
+1.0
+1.5
+0.5
+1.0
+1.5
+0.5
+1.0
+1.5
+τ
+β^
+2
+b
+Figure 1: Distribution of the coefﬁcient estimates of the parameter β1 (Figure 1a) and the param-
+eter β2 (Figure 1b) represented as boxplot according to the sample size n ∈(100, 250, 500), the
+repeated measurements m = (5, 15, 30), the asymmetric points τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and
+the error term ε ∼T (3) in the location-shift scenario.
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.0
+0.5
+1.0
+0.0
+0.5
+1.0
+0.0
+0.5
+1.0
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+τ
+β^
+2
+b
+Figure 2: Distribution of the coefﬁcient estimates of the parameter β1 (Figure 2a) and the param-
+eter β2 (Figure 2b) represented as boxplot according to the sample size n ∈(100, 250, 500), the
+repeated measurements m = (5, 15, 30), the asymmetric points τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and
+the error term ε ∼T (3) in the location-scale-shift scenario.
+
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.4
+0.8
+1.2
+1.6
+0.4
+0.8
+1.2
+1.6
+0.4
+0.8
+1.2
+1.6
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+1.0
+1.5
+2.0
+2.5
+1.0
+1.5
+2.0
+2.5
+1.0
+1.5
+2.0
+2.5
+τ
+β^
+2
+b
+Figure 3: Distribution of the coefﬁcient estimates of the parameter β1 (Figure 3a) and the param-
+eter β2 (Figure 3b) represented as boxplot according to the sample size n ∈(100, 250, 500), the
+repeated measurements m = (5, 15, 30), the asymmetric points τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and
+the error term ε ∼χ2(3) in the location-shift scenario.
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.5
+1.0
+1.5
+2.0
+0.5
+1.0
+1.5
+2.0
+0.5
+1.0
+1.5
+2.0
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+1
+2
+3
+4
+1
+2
+3
+4
+1
+2
+3
+4
+τ
+β^
+2
+b
+Figure 4: Distribution of the coefﬁcient estimates of the parameter β1 (Figure 4a) and the param-
+eter β2 (Figure 4b) represented as boxplot according to the sample size n ∈(100, 250, 500), the
+repeated measurements m = (5, 15, 30), the asymmetric points τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and
+the error term ε ∼χ2(3) in the location-scale-shift scenario.
+
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+−10
+0
+10
+−10
+0
+10
+−10
+0
+10
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+−5
+0
+5
+10
+−5
+0
+5
+10
+−5
+0
+5
+10
+τ
+β^
+2
+b
+Figure 5: Distribution of the ratio SE
+SD for the parameter estimate bβ1 (Figure 5a) and the pa-
+rameter estimate bβ2 (Figure 5b) represented as an error plot with respect to the sample size
+n ∈(100, 250, 500), the repeated measurements m = (5, 15, 30), the asymmetric points
+τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and the error term ε ∼T (3) in the location-shift scenario.
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+−10
+−5
+0
+5
+10
+15
+−10
+−5
+0
+5
+10
+15
+−10
+−5
+0
+5
+10
+15
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+−10
+−5
+0
+5
+10
+−10
+−5
+0
+5
+10
+−10
+−5
+0
+5
+10
+τ
+β^
+2
+b
+Figure 6: Distribution of the ratio SE
+SD for the parameter estimate bβ1 (Figure 6a) and the pa-
+rameter estimate bβ2 (Figure 6b) represented as an error plot with respect to the sample size
+n ∈(100, 250, 500), the repeated measurements m = (5, 15, 30), the asymmetric points
+τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and the error term ε ∼T (3) in the location-scale-shift scenario.
+
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+−5.0
+−2.5
+0.0
+2.5
+5.0
+7.5
+−5.0
+−2.5
+0.0
+2.5
+5.0
+7.5
+−5.0
+−2.5
+0.0
+2.5
+5.0
+7.5
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0
+1
+2
+0
+1
+2
+0
+1
+2
+τ
+β^
+2
+b
+Figure 7: Distribution of the ratio SE
+SD for the parameter estimate bβ1 (Figure 7a) and the pa-
+rameter estimate bβ2 (Figure 7b) represented as an error plot with respect to the sample size
+n ∈(100, 250, 500), the repeated measurements m = (5, 15, 30), the asymmetric points
+τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and the error term ε ∼χ2(3) in the location-shift scenario.
+ER
+ERFE
+QR
+QRFE
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+−4
+0
+4
+8
+−4
+0
+4
+8
+−4
+0
+4
+8
+τ
+β^
+1
+a
+5
+15
+30
+100
+250
+500
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+0.1 0.3 0.5 0.8 0.9
+−1
+0
+1
+2
+3
+−1
+0
+1
+2
+3
+−1
+0
+1
+2
+3
+τ
+β^
+2
+b
+Figure 8: Distribution of the ratio SE
+SD for the parameter estimate bβ1 (Figure 8a) and the pa-
+rameter estimate bβ2 (Figure 8b) represented as an error plot with respect to the sample size
+n ∈(100, 250, 500), the repeated measurements m = (5, 15, 30), the asymmetric points
+τ ∈(0.1, 0.3, 0.5, 0.8, 0.9) and the error term ε ∼χ2(3) in the location-scale-shift scenario.
+

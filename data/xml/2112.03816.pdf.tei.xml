@@ -1,0 +1,1645 @@
+<?xml version="1.0" encoding="UTF-8"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">A Deep Learning Driven Algorithmic Pipeline for Autonomous Navigation in Row-Based Crops</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2023-09-14">14 Sep 2023</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Simone</forename><surname>Cerrato</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Vittorio</forename><surname>Mazzia</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Francesco</forename><surname>Salvetti</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Mauro</forename><surname>Martini</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Simone</forename><surname>Angarano</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Alessandro</forename><surname>Navone</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Marcello</forename><surname>Chiaberge</surname></persName>
+						</author>
+						<title level="a" type="main">A Deep Learning Driven Algorithmic Pipeline for Autonomous Navigation in Row-Based Crops</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2023-09-14">14 Sep 2023</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">304DC75DFE5E9AEAA2785C11FE027977</idno>
+					<idno type="arXiv">arXiv:2112.03816v2[cs.RO]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2025-01-29T07:32+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Autonomous Navigation</term>
+					<term>Robotics</term>
+					<term>Artificial Intelligence</term>
+					<term>Precision Agriculture</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Expensive sensors and inefficient algorithmic pipelines significantly affect the overall cost of autonomous machines. However, affordable robotic solutions are essential to practical usage, and their financial impact constitutes a fundamental requirement to employ service robotics in most fields of application. Among all, researchers in the precision agriculture domain strive to devise robust and cost-effective autonomous platforms in order to provide genuinely large-scale competitive solutions. In this article, we present a complete algorithmic pipeline for row-based crops autonomous navigation, specifically designed to cope with low-range sensors and seasonal variations. Firstly, we build on a robust data-driven methodology to generate a viable path for the autonomous machine, covering the full extension of the crop with only the occupancy grid map information of the field. Moreover, our solution leverages on latest advancement of deep learning optimization techniques and synthetic generation of data to provide an affordable solution that efficiently tackles the well-known Global Navigation Satellite System unreliability and degradation due to vegetation growing inside rows. Extensive experimentation and simulations against computer-generated environments and real-world crops demonstrated the robustness and intrinsic generalizability to different factors of variations of our methodology that opens the possibility of highly affordable and fully autonomous machines.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>I. INTRODUCTION Agriculture 3.0 and 4.0 have gradually introduced autonomous machines and interconnected sensors into several agricultural processes <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b1">[2]</ref>, trying to introduce robust and cost-effective novel solutions into the overall production chain. For instance, precision agriculture has progressively innovated tools for automatic harvesting <ref type="bibr" target="#b2">[3]</ref>, vegetative assessment <ref type="bibr" target="#b3">[4]</ref>, crops yield estimation <ref type="bibr" target="#b4">[5]</ref>, smart and sustainable pesticide spraying robotic system <ref type="bibr" target="#b5">[6]</ref> and many others <ref type="bibr" target="#b6">[7]</ref>, <ref type="bibr" target="#b7">[8]</ref>. Indeed, the pervasiveness of precision agriculture techniques has such a huge impact on certain fields of application that the adoption of them has become increasingly essential to achieve high product quality standards <ref type="bibr" target="#b8">[9]</ref>. Moreover, the introduction of robots in agriculture will increasingly have a stronger impact on economic, political, social, cultural, security, <ref type="bibr" target="#b9">[10]</ref>, and will be the only tool to satisfy the future food demand of our society <ref type="bibr" target="#b10">[11]</ref>.</p><p>Nevertheless, research on autonomous machines still requires further developments and improvements to meet the All the authors are with the Department of Electronics and Telecommunications (DET), Politecnico di Torino, Torino, TO 10129, email: name.surname@polito.it This work has been developed with the contribution of the Politecnico di Torino Interdepartmental Centre for Service Robotics (PIC4SeR).</p><p>Fig. <ref type="figure">1</ref>: Field tests with the Jackal platform in different seasonal periods of the same crop. Lush vegetation and thick canopies greatly reduce the GPS accuracy, affecting its reliability and consequently the overall navigation pipeline. Nevertheless, our proposed segmentation-based algorithm exploits semantic segmentation properties to provide a proportional controller that drives the robotic platform along the whole row. necessary industrial conditions of robustness and effectiveness. Global path planning <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b1">[2]</ref>, mapping <ref type="bibr" target="#b11">[12]</ref>, localization <ref type="bibr" target="#b12">[13]</ref> and decision-making <ref type="bibr" target="#b13">[14]</ref> are only some of the required tools that each year undergo heavy research from the scientific community to achieve the necessary requirements for full automation. Among all requirements, a low financial impact constitutes a fundamental goal in order to provide genuinely large-scale competitive solutions <ref type="bibr" target="#b14">[15]</ref>. Indeed, expensive sensors and demanding computational algorithms significantly impact the actual usefulness of robotics platforms, essentially preventing their large-scale adoption and introduction into the agricultural world.</p><p>Recently, deep learning methodologies <ref type="bibr" target="#b15">[16]</ref> revolutionized the entire computer perception field, endowing machines with an unprecedented representation of the surrounding environment <ref type="bibr" target="#b16">[17]</ref>. Moreover, the intrinsic robustness of representation learning techniques to different factor of variations opens the possibility to achieve noteworthy perception capabilities with low-cost and low-range sensors, greatly relieving the overall cost of the target machine <ref type="bibr" target="#b17">[18]</ref>, <ref type="bibr" target="#b18">[19]</ref>. Finally, the latest advancement in deep learning optimization techniques, <ref type="bibr" target="#b19">[20]</ref>, have progressively reduced latency, inference cost, memory, and storage footprint of its algorithms. That effectively scales down computational requirements enabling low-power computational devices boosted by hardware accelerators such as visual processing units (VPUs), tensor processing units (TPUs), and embedded GP-GPUs, <ref type="bibr" target="#b20">[21]</ref>.</p><p>Building on the latest deep learning researches for computer perception and exclusively making use of low-range sensors, we present a complete algorithmic pipeline for autonomous navigation in row-based crops. The proposed robust solution is explicitly designed to adapt to seasonal variation, as shown in Fig. <ref type="figure">1</ref>, ensuring complete coverage of the field in the different situations. Moreover, the low financial impact of our methodology greatly reduces maintenance and production costs and enables a large-scale adoption of fully autonomous machines for precision agriculture.</p><p>Firstly, we build on a robust data-driven methodology to generate a viable path for the autonomous machine, covering the full extension of the crop with only the occupancy grid map information of the field. Successively, depending on the vegetation growth status of the crop, we adopt a purely Global Navigation Satellite System (GNSS) local path planning or a vision-based algorithm that exclusively makes use of a low-cost RGB-D camera to navigate inside the interrow space. Indeed, meteorological conditions and especially lush vegetation and thick canopies, significantly affect GNSS reliability, degrading its precision and consequently the overall navigation pipeline, <ref type="bibr" target="#b21">[22]</ref>, <ref type="bibr" target="#b22">[23]</ref>. Conversely, our vision-based system exploits semantic information of the environment to navigate between rows and depth information to refine the underline control smoothness, disentangling from the necessity of a precise localization. Moreover, we make exclusively usage of synthetic data and domain randomization, <ref type="bibr" target="#b23">[24]</ref>, to enable affordable supervised learning and simultaneously bridging the domain gap between simulation and reality. Such technique allows us to easily construct and train a deep learning model able to efficiently generalize on different row-based crops.</p><p>The overall proposed methodology guarantees to autonomously navigate throughout row-based crops without expensive sensors and with every seasonal variation. All the algorithmic pipeline has been developed ROS-compatible in order to make easier the communication among different software modules and to be easily deployed on our developing platform, the Jackal Unmanned Ground Vehicle (UGV) by Clearpath Robotics <ref type="foot" target="#foot_0">1</ref> . Extensive experimentation and simulations against computer-generated environments and diverse real-world crops demonstrated the robustness and intrinsic generalizability of our solution. All of our code<ref type="foot" target="#foot_1">foot_1</ref> and data<ref type="foot" target="#foot_2">foot_2</ref> are open source and publicly available.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Related Work</head><p>Over the past years, autonomous systems designed to navigate in row-crops fields make largely usage of highprecision GNSS receivers in combination with laser-based sensors <ref type="bibr" target="#b24">[25]</ref>, <ref type="bibr" target="#b25">[26]</ref>. Nevertheless, the canopies on the sides of the row reduce the GNSS accuracy, affecting its reliability and forcing the adoption of more expensive sensors <ref type="bibr" target="#b21">[22]</ref>. Indeed, more robust solutions fuse multiple sensor information (GNSS, inertial navigation systems, wheel encoders) to obtain a better estimation of the mobile platform location in presence of thick canopies and adverse meteorological conditions <ref type="bibr" target="#b26">[27]</ref>, <ref type="bibr" target="#b27">[28]</ref>. However, high adoption of high-range sensors leads to higher system and maintenance costs, preventing a large-scale adoption of self-driving agricultural machinery.</p><p>On the other hand, visual odometry (VO), <ref type="bibr" target="#b28">[29]</ref>, <ref type="bibr" target="#b29">[30]</ref>, and computer vision based solutions, <ref type="bibr" target="#b30">[31]</ref>, <ref type="bibr" target="#b31">[32]</ref>, have been proposed as more affordable approaches. Nonetheless, VO systems show poor performance on long distances due to the accumulating error and struggle with highly similar patterns <ref type="bibr" target="#b32">[33]</ref> and unpredictable lighting conditions <ref type="bibr" target="#b33">[34]</ref>. Moreover, purely vision-based solutions cannot deal with seasonal variations and generalizability to different crops is difficult to achieve.</p><p>In this state-of-the-art landscape, our team started in 2019 a research project with the precise aim to develop a complete working pipeline to autonomously navigate in vineyard rows without relying on multiple expensive sensors. As already introduced, computer vision and deep learning based algorithms, <ref type="bibr" target="#b15">[16]</ref>, have demonstrated particular robustness in solving problems with noisy signals. Moreover, optimization and edge AI techniques have progressively made inference computational affordable, opening the usage of deep learning methodologies to diverse practical applications <ref type="bibr" target="#b34">[35]</ref>. Consequently, in <ref type="bibr" target="#b35">[36]</ref>, <ref type="bibr" target="#b36">[37]</ref> were addressed navigation in vineyard rows with deep learning based algorithm and the exclusive usage of an RGB-D camera. Furthermore, starting with <ref type="bibr" target="#b37">[38]</ref> it has been addressed the global path generation automation problem, which is commonly neglected by the research community. However, a suitable path generator is crucial for obtaining a complete autonomous navigation performance and its absence prevents the control of the platform on the field. For that reason, in <ref type="bibr" target="#b0">[1]</ref>, moving from the clustering solution proposed in <ref type="bibr" target="#b37">[38]</ref> to detect the rows of the vineyards, DeepWay, a robust datadriven approach for global path generation, was presented. Besides being more robust and easier to adopt, DeepWay is a highly general approach that can be extended to every kind of row-based crops.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Novelties</head><p>Based upon the aforementioned previous work, the main contributions of the presented approach herein are as follows:</p><p>• Introduction of a highly affordable complete algorithmic pipeline for autonomous navigation in row-based crops.</p><p>The methodology makes use of only low-cost, low-range sensors to drive a platform for the full extension of a crop in the different seasonal periods. • Building on <ref type="bibr" target="#b36">[37]</ref>, we extend the local navigation between vineyard rows to a general row-based crop. We propose a domain randomization based training procedure to easily obtain a segmentation network with only synthetic data. • We introduce a novel global path planning procedure to connect two successive rows, avoiding the usage of too general algorithms that could easily introduce jerky and inefficient paths.</p><p>Fig. <ref type="figure" target="#fig_4">2</ref>: A representation of the overall pipeline. From left to rigth, an occupancy grid of the crop is provided as input to DeepWay neural network, that estimates the waypoints at start/end of vineyards row. Then, a custom algorithm is responsible to order the generated waypoints and compute a global path maintaining a safe distance from crops. Finally, a local path planning policy chooses the right navigation algorithm according to UGV's position with respect to waypoint in order to drive the mobile platform along the whole path.</p><p>• Improved usage of semantic information of the crop to navigate between rows in case of lush vegetation and thick canopies. Compared to other existing autonomous navigation algorithms our solution makes use of low-cost sensors as: a cheap GNSS receiver with Real-Time Kinematic (RTK) corrections, an RGB-D camera, an Inertial Measurement Unit (IMU) and encoders. Our approach aims to fill the gaps between usage of low-cost sensors and robustness of autonomous navigation in the precision agriculture context exploiting the collaboration between Artificial Intelligence and standard navigation algorithms. On the other hand, existing solution exploits high cost and very accurate sensors, as: 3D LiDAR, expensive RTK-GNSS receiver to achieve a reliable and robust complete autonomous solution.</p><p>The remainder of this paper is organized as follows. Section II describes the overall system framework. The detailed explanation of the proposed full pipeline is introduced in Section III. Section IV presents the pipeline evaluation either against computer-generated environments or real-world crops. Finally, Section V draws conclusions and suggests future work.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. SYSTEM OVERVIEW</head><p>The proposed work is intended for presenting a complete autonomous navigation system for general row-based crops. The designed autonomous system is organized in several software modules that should collaborate with each other in order to obtain effective and reliable driverless navigation throughout the whole field. A visualization of the complete pipeline is shown in Fig. <ref type="figure" target="#fig_4">2</ref>.</p><p>Firstly, the system takes as input a georeferenced occupancy grid map of the considered crop to compute a global path made of geographic coordinates; in particular, it exploits the DeepWay network, <ref type="bibr" target="#b0">[1]</ref>, to estimate the start/end waypoints of each row, then a custom global path planner, <ref type="bibr" target="#b38">[39]</ref>, computes the desired path maintaining a safe distance from crops. Secondly, according to the season period and the amount of crop vegetation, it is possible to choose the kind of navigation to perform: only GNSS-based or GNSS and AI-assisted.</p><p>In case a good view of sky is available both outside and inside the row space, the system exploits only Real Time Kinematic (RTK) corrections, GNSS signals, and inertial data to autonomously guide the mobile platform throughout the crops. On the other hand, when lush vegetation is present, the proposed navigation system makes use of RTK corrections, GNSS signals, and inertial data to perform the row switch, since outside the row space a good sky view is available, while along the rows it exploits the camera, the deep neural network, and the segmentation-based control to overcome GNSS signals unreliability. In both scenarios, the system strongly relies on estimated global positions of the UGV in order to follow the provided global path. In our approach, the localization problem is tackled fusing the positioning information coming from an RTK enabled GNSS receiver and the inertial data provided by an IMU. All the data is loosely fused exploiting the well-known Extended Kalman Filter (EKF), that uses an omnidirectional model for prediction and outputs position estimations in the form of: x, y, yaw, since the navigation happens in 2-dimension. x and y are global spatial information represented in the East-North-Up (ENU) reference frame, while yaw is the absolute orientation with respect to magnetic north, corrected with the actual magnetic declination. Once the localization filter is set up, in case a clear view of the sky is available, the navigation algorithm uses the estimated UGV positions, the global path and a local planner based on the Dynamic Window Approach (DWA) to autonomously guide the mobile platform; otherwise, it makes use of both GNSSbased and AI-assisted navigation, that exploit GNSS signals and semantic information of crops to safely navigate in the whole field without colliding with the crops. In the latter case, the navigation type selection occurs comparing the estimated UGV global positions and an ordered waypoints list computed by the DeepWay neural network and successively refined. Finally, it is important to underline that DWA navigation scheme is only one possible solution. It is adopted in the pre-Fig. <ref type="figure">3</ref>: Aerial view of a row crop field, together with the occupancy grid (white), the estimated waypoints (yellow), and the global path (red). The meters/pixel resolution is 0.1 m/px, the end-row distance margin d er = 20 px, that results in a 2 meters real-world margin.</p><p>sented pipeline for its simplicity, flexibility and online collision avoidance capability. However, further experimentation with even simpler algorithms has been performed but not presented for the sake of conciseness. For instance, the Pure Pursuit controller <ref type="bibr" target="#b39">[40]</ref> demonstrated very promising results between and outside rows, bringing possible advantages in presence of more packed rows or larger vehicles.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. METHODOLOGY</head><p>In this section, each block of the navigation system is presented, detailing all the aspects of the path planning and navigation processes. Our methodology requires as input a georeferenced occupancy grid of the target field X occ ∈ R H×W , obtained by segmenting an aerial view of the environment. The system is developed and tested on satellite imagery, but the very same methodology can be applied to images obtained by drones flying over the target field. The global path is computed by the first two blocks of the pipeline and is represented as an ordered set of points P = {(x, y)|x, y ∈ R} to be followed by the UGV in order to reach full coverage of the target field. Fig. <ref type="figure">3</ref> shows an example of occupancy grid with the predicted global path in red superimposed on the aerial image of the field. Once the global path P has been generated, the system exploits a local path planning policy to autonomously navigate in the considered crop choosing the proper control algorithm according to seasonal period and the presence of thick canopies on crops. Indeed, full autonomous navigation happens exploiting the GNSS information and the semantic information obtained employing the segmentation network.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Waypoints Estimation</head><p>The first block aims at predicting the list of l waypoints W ∈ N l×2 in the occupancy grid reference frame that represent the begin and end of each row of the target field. Since classical clustering methods fail with real-world conditions such as rows of different length, holes and outliers, we adopt the DeepWay framework <ref type="bibr" target="#b0">[1]</ref>, which frames the waypoints prediction as a regression problem. DeepWay is a fully convolutional neural network that takes as input the occupancy grid X occ of dimension H × W and outputs a map Ŷ of dimension</p><formula xml:id="formula_0">U H × U W × 3: Ŷ = f DeepW ay (X occ ) (1)</formula><p>The first channel of Ŷ is a confidence map that outputs for each cell u the probability P (u) that a waypoint falls inside the cell itself. The output map dimensions are obtained subsampling the input space of a factor k:</p><formula xml:id="formula_1">U H = H/k U W = W/k (2)</formula><p>Thus, each cell u represents a square region of k × k pixels of the original occupancy grid. The other two channels of the output map Ŷ predict for each cell u two compensation factors ∆x and ∆y used to localize the waypoint inside the u cell, as shown in Fig. <ref type="figure" target="#fig_0">4</ref>. Those factors are normalized to [-1, 1] range so that they represent a distance from the center of the cell. Thus, a factor of 1 means a positive deviation on the corresponding axis of half the length of the cell. Eventually, the final location of the predicted waypoints in the input space can be recovered as:</p><formula xml:id="formula_2">ŷO = k ŷU + ∆ + 1 2<label>(3)</label></formula><p>where ŷO and ŷU are the vectors of (x, y) coordinates of a generic waypoint in the input and output reference systems, respectively; ∆ is the vector of the (∆x, ∆y) normalized compensation factors.</p><p>The prediction confidences stored in the first channel of the output map Ŷ are compared to a confidence threshold c thr , and all the positions with P (u) &gt; c thr are selected and projected in the input space as in Eq. 3. Furthermore, a suppression mechanism is adopted as in standard object detection algorithms in order to avoid multiple predictions of the same waypoint: all the points falling within a distance threshold d thr from each other are replaced with the one with maximum confidence P (u). The final waypoints are stored in the list W.</p><p>The network is characterized by a stack of N Residual Reduction modules, that are based on 2D convolutions with Mish activation <ref type="bibr" target="#b40">[41]</ref> and implement both channel and spatial attention <ref type="bibr" target="#b41">[42]</ref>. Each module halves the spatial dimension with a Reduction block based on 2D convolutions with strides of two. After N modules, a 2D Transpose Convolution increases the spatial dimension by a factor of two. A last 2D convolution projects a concatenation of the features of the last two modules to the 3-dimensional space of the output. Since the first and last convolutional layers also have strides of two, the output tensor spatial dimension is reduced by a factor k = (N + 1) 2 with respect to the input. The final layer uses sigmoid activation for the first channel that encodes the waypoint probability and tanh activation for the other two channels that encode the normalized compensation factors. All code related to DeepWay is open-source and can be found online <ref type="foot" target="#foot_3">4</ref> . </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Global Path Planning</head><p>The output list of waypoints W should be ordered in order to plan a global path that reaches a full coverage of the field. We adopt the same post-processing as in <ref type="bibr" target="#b0">[1]</ref> with the following steps:</p><p>1) the row crops orientation is estimated from the occupancy grid X occ with the progressive probabilistic Hough transform <ref type="bibr" target="#b42">[43]</ref>. 2) the waypoints are clustered using the density-based algorithm DBSCAN <ref type="bibr" target="#b43">[44]</ref> that creates a variable number of clusters depending on the space density of the waypoints. 3) the points in each cluster are ordered projecting them along the normal to the direction estimated in step 1). 4) the clusters are merged with a heuristic approach based on their position and size until two main groups representing the two sides of the field are reached. 5) the final ordered list of waypoints W ord ∈ N l×2 is obtained selecting the points from the two main clusters following an A-B-B-A scheme.</p><p>The global path is generated from the ordered list W ord in two steps. The intra-row paths are obtained with <ref type="bibr" target="#b38">[39]</ref>, which exploits a gradient-based planner between the starting and the ending waypoints of each row. On the other hand, the interrow paths are generated with a circular pattern in order to keep a safe margin from the end of the rows to avoid collision during the turns. Considering an end-row waypoint p i and the successive point that starts the following row p i+1 , the waypoints are firstly moved along the row direction to get an end-row margin d er :</p><formula xml:id="formula_3">p shif ted i = p i + d er cosα sinα p shif ted i+1 = p i+1 + (d er + ∆d) cosα sinα (<label>4</label></formula><formula xml:id="formula_4">)</formula><p>where α is the angle estimated during the post-processing steps and ∆d is the distance between the two points along the row direction:</p><formula xml:id="formula_5">∆d = (p i -p i+1 ) • cosα sinα (5)</formula><p>The end-row margin d er can be selected depending on the meters/pixel resolution of the occupancy grid in order to have a target margin in meters in the real environment. A circular interpolation is adopted to connect the shifted points by linearly interpolating the angles considering the mean point as the center of the circumference. The whole sequence of points obtained by the intra-row and inter-rows planning creates the global path P = {(x, y)|x, y ∈ R}, defined in the reference system of the occupancy grid X occ . If the field map is georeferenced, it is possible to convert the global path into a list of geographic coordinates that can be directly used in the local planning phase to control the UGV motion. In Fig. <ref type="figure">3</ref> an aerial view of a field is shown, together with the predicted waypoints in yellow and the global path in red.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Segmentation Network</head><p>The overall segmentation network acts as a function H seg , parameterized by Θ, that at each temporal instant t takes as input the RGB frame from the onboard camera X rgb ∈ R h×w×c and produces a binary map, Xseg ∈ R h×w with h, w and c as height, width and channels, respectively. The output positive class segments the crops and the foliage in the camera view. Ideally, it should be equally split on the sides of the frame for a perfectly centered path. Successively, the semantic information of the row, Xseg , is used in conjunction with its corresponding depth map to control all movements of the platform inside the crops rows. Among all recent real-time semantic segmentation models, we carefully select an architecture that guarantees high accuracy levels by also containing hardware costs, optimization simplicity, and computational load. Indeed, the segmentationbased control does not considerably benefit from fine grained predictions and elaborated encoder-decoder networks, <ref type="bibr" target="#b44">[45]</ref>, or two-pathway backbones, <ref type="bibr" target="#b45">[46]</ref>, does not bring any considerable  improvement. Therefore, we adopt a very lightweight backbone, MobileNetV3 <ref type="bibr" target="#b46">[47]</ref>, followed by a reduced version of the Atrous Spatial Pyramid Pooling module, <ref type="bibr" target="#b47">[48]</ref>, to capture richer contextual information with minimal computational impact. Indeed, the output of the last layer of the backbone can not be used directly to predict the segmentation mask due to the lack of spatial details. The overall architecture is depicted in Fig. <ref type="figure" target="#fig_1">5</ref>. The backbone, with repeated spatial reductions, extracts contextual information and two of its branches at different resolution feed the segmentation head. One layer applies atrous convolution to the 1/16 resolution to extract denser features, and the other one is used to add a skip connection from the 1/4 resolution to work with more detailed information. Finally, in order to maintain real-time performance even without hardware accelerators, we employ a 224x224 low-resolution input. So, we rescale the global average pooling layer setting the kernel size to 12×12 with strides <ref type="bibr" target="#b3">(4,</ref><ref type="bibr" target="#b4">5)</ref>. Additionally, to have equal input and output dimensions, we add a final bilinear upsampling with a factor of 8 at the end of the segmentation head.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Segmentation-based control</head><p>The segmentation masks Xseg ∈ R h×w provided by the deep neural network are post-processed and fed into a custom control algorithm in order to generate consistent velocity commands to drive the UGV inside the inter-row space and maintain as much as possible the inter-row centrality. As in <ref type="bibr" target="#b36">[37]</ref>, we compute a sum of S segmentation maps along with an intersection with depth information provided by an RGB-D camera in order to obtain a more stable control. First, we pick S consecutive segmentation maps at times {t -S, ..., t} and we fuse them</p><formula xml:id="formula_6">Xt cumSeg = S n=0 Xt-n seg<label>(6)</label></formula><p>then, we join the depth information X t depth ∈ R h×w to reduce the line of sight of the actual scene and remove some background noise. The line of sight is limited of a fixed value generating a binary map X t depthT ∈ N h×w , as follows:</p><formula xml:id="formula_7">X t depthT i=0,...,h j=0,...,w (i, j) = 0, if (X t depth ) i,j ≥ d depth 1, if (X t depth ) i,j &lt; d depth<label>(7)</label></formula><p>where d depth is a fixed experimental scalar. Finally, exploiting an interception operation between the cumulative output Xt cumSeg , computed in equation ( <ref type="formula" target="#formula_6">6</ref>) and the binary map X t depthT previously generated, we obtain the pre-processed input X t ctrl ∈ R h×w for the control algorithm:</p><formula xml:id="formula_8">X t ctrl = Xt cumSeg ∩ X t depthT<label>(8)</label></formula><p>In the X t ctrl binary map 1 stands for obstacles and 0 freespace. The segmentation-based control algorithm is developed building over the SPC algorithm presdented in <ref type="bibr" target="#b36">[37]</ref>. Indeed, we propose a simplified version of that control function to avoid useless conditional blocks and obtain a more real-time control algorithm. Algorithm 1 contains the pseudo-code of the proposed custom control, that starting from a pre-processed </p><formula xml:id="formula_9">v x ,ω z ← control function() 12: end if segmented image X t</formula><p>ctrl , is responsible for computing the driving velocity commands. First, a noise reduction function gets rid of undesired noise in the bottom part of the cumulative segmentation mask X t ctrl due to grass on the terrain, that may be wrongly segmented by the neural network. To perform such operation, we compute the sum over rows of X t ctrl obtaining an array g noise ∈ R h , then we set X t ctrl(indices,:) = 0, where indices contains the matrix-row indices such that g noise &lt; th noise , with th noise = 0.03 • max(g noise ) as threshold. We perform such operation because, in an ideal segmentation mask there are no 1s at the top of the image and on the bottom, whilst the majority of them are supposed to be in the central belt. After the noise reduction phase, we store the sum over columns of the obtained matrix X t ctrl in the array c ∈ R w , that contains the amount of segmented trees for each column. Therefore, every zero in c is a potential empty space where to route the mobile platform. Then, we select the clusters of zeros in c, which are the groups of consecutive zeros, in order to store them in the list zeros. Next, we look for the largest cluster of zeros max cluster and in case of the length of such cluster is over an empirically chosen threshold, anomaly th = 0.8 • w, the driving commands are set to zero value, because it means the provided cumulative segmentation mask X t ctrl has more zeros than ones, that is an anomaly, so for safety reason the mobile platform is stopped. While, in case of no anomalies, we compute the cluster center that is given as input to the control function. The identified cluster contains the obstacle-free space information that can be exploited to safely drive the mobile platform; as a consequence the linear and angular velocities are computed using the center of the selected cluster, which ideally corresponds to the center position of the row in front of the UGV. The desired velocities are obtained by means of two custom functions:</p><formula xml:id="formula_10">ω z = -ω z,gain • d (9) v x = v x,max • 1 - d 2 ( w 2 ) 2<label>(10)</label></formula><p>where ω z,gain = 0.01 and v x,max = 1.0 are two constants which define the angular gain and maximum linear velocity of the mobile platform respectively, w is the width of X t ctrl and d is defined as:</p><formula xml:id="formula_11">d = x c - w 2<label>(11)</label></formula><p>with x c center coordinate of the selected cluster. Equation ( <ref type="formula">9</ref>) represents the angular velocity control function, while equation <ref type="bibr" target="#b9">(10)</ref> has been used to compute the linear velocity, as in <ref type="bibr" target="#b48">[49]</ref> and <ref type="bibr" target="#b36">[37]</ref>. Eventually, the control velocity commands sent to the actuators are smoothed using the Exponential Moving Average (EMA), formalized in equation <ref type="bibr" target="#b11">(12)</ref>, in order to prevent the mobile platform from sharp motion.</p><formula xml:id="formula_12">EMA t = EMA t-1 • (1 -α EM A ) + v x ω z • α EM A (<label>12</label></formula><formula xml:id="formula_13">)</formula><p>where t is the time step and α EM A = 0.18 the multiplier for weighting the EMA, which value is found experimentally.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Local Path Planning Policy</head><p>Once the global path P and the start/end rows waypoints W ord have been correctly generated, we exploit the provided information to locally navigate throughout the whole field.</p><p>In case of lush vegetation and thick canopies that may distort GNSS signals inside the inter-row space, the local navigation problem is solved using the synergy of two different algorithms according to the kind of navigation requested in a determined place of the considered crop:</p><p>1) Inside the inter-row space: we exploit the custom control algorithm, described in Section III-D, based on the segmentation information provided by the deep neural network, in order to overcome localization inaccuracies due to blocked GNSS signals by overgrown plant vegetation. 2) Switch between different rows: we use the standard DWA, well described in <ref type="bibr" target="#b49">[50]</ref>, with fine-tuned parameters to safely switch between two rows following the circular path generated in Section III-B, since outside the interrow space a clear view of satellites and sky should be available. The choice of the suitable algorithm happens by comparing the estimated position by the EKF localization filter and the provided start/end rows waypoints; in case of start row recognition, the local path planning policy selects the segmentation-based control, otherwise it uses the DWA, as shown in Fig. <ref type="figure" target="#fig_4">2</ref>. The comparison happens by computing a simple Euclidean distance between the start/end rows waypoint and the estimated positions. In case the calculated distance is lower than a threshold, waypoint th = 0.5, the algorithm considers the waypoint as reached and selects the right local controller.</p><p>On the other hand, during specific year periods, when plant vegetation is not so dense and overgrown, the local path planning policy exploits only DWA to navigate throughout the whole field, thanks to a good view of both sky and satellites in every place of the crop, following the complete global path generated in Section III-B.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EXPERIMENTAL RESULTS AND DISCUSSIONS</head><p>In this section, we describe the main experiments conducted in simulation and real environments in order to better validate the algorithms. First, we discuss the synthetic datasets creation for the training of the two deep neural networks. Then, we illustrate the training process and the optimization techniques adopted to minimize inference costs. Finally, we conclude with the simulation and real environments evaluations.</p><p>All the code have been developed ROS-compatible, in order to exploit some of the most used ROS packages in robotics research, as move base <ref type="foot" target="#foot_4">5</ref> and robot localization<ref type="foot" target="#foot_5">foot_5</ref> packages, that offer ready-to-use local planners and basic localization methods, respectively. Moreover, all tests have been performed using Ubuntu 18.04 and ROS Melodic.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Datasets creation</head><p>As far as the two presented deep neural networks are concerned, they require to be trained on specific datasets according to the desired final application. Supervised learning training algorithms are the easiest to adopt with usually the best final results. However, they all require supervision by means of a labeled training dataset. That greatly affects costs and makes data collection complex and time-consuming. Therefore, we make exclusively use of synthetic data and domain randomization <ref type="bibr" target="#b23">[24]</ref> to enable affordable supervised learning and simultaneously bridge the domain gap between simulation and reality.</p><p>For DeepWay, a dataset of random occupancy grids is generated. All parameters such as number, orientation, depth, and length of the rows are randomly selected. The coordinates of starting and ending points of each row are generated by geometrical reasoning and the occupancy grid is obtained with circles of different radius for each location in between two corresponding points. Random holes in the rows are also created to increase the variability of the images. Ground truth waypoints are obtained to always lay inside the rows, since we experimentally found it helps the network prediction. Given two starting/ending points a and b of two successive rows, we compute the target waypoint as follows:</p><formula xml:id="formula_14">p a,b = 0 ∓1 ±1 0 a -b 2 + a + b 2<label>(13)</label></formula><p>that corresponds to a ±90 degrees rotation around the mean point, where the sign is selected to make the waypoint inside the row. We train DeepWay with a total of 3000 synthetic images and we validate it with 100 satellite images taken from the Google Maps database and manually annotated.</p><p>On the other hand, the segmentation neural network requires a set of RGB images along with segmentation masks as inputs in order to be correctly trained. As a consequence, inspired by the work of Tejaswi Digumarti et al. <ref type="bibr" target="#b31">[32]</ref>, we generate synthetic RGB images coupled with the corresponding segmentation masks. For such purpose, we exploit Blender<ref type="foot" target="#foot_6">foot_6</ref> 2.8, which is an open-source 3D computer graphics software compatible with Python language, and the Modular Tree<ref type="foot" target="#foot_7">foot_7</ref> addon to speed up the tree generation. We design four main scenarios: two single different trees, one group of heterogeneous trees, and one row-based scenario with various backgrounds and soils. Then, exploiting Python language compatibility of Blender, we write a script able to automatically capture RGB images and the corresponding segmentation masks of the scene from different positions with respect to the central reference frame and with different illuminations conditions in order to obtain as much as possible a random and complete synthetic dataset. An example of a synthetic RGB image, along with the corresponding segmentation mask, is shown in Fig. <ref type="figure" target="#fig_2">6</ref>. Every single rendering takes about 30 seconds, multiplied by a total of 2776 rendering, which is about 23 hours of continuous work on a RTX 2080 GPU. That total number of images in conjunction with transfer learning allows to train a segmentation network with high generalization capabilities while minimizing generation data costs. The overall segmentation training dataset is composed of 2776 RGB synthetic images for training and 100 manually annotated images for testing, acquired in a real environment (Italy, Valle San Giorgio di Baone).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Networks training and optimization</head><p>For training both networks, we employ the TensorFlow<ref type="foot" target="#foot_8">foot_8</ref> 2 framework on a PC with 32-GB RAM, an Intel i7-9700K CPU, and an Nvidia 2080 Super GP-GPU.</p><p>DeepWay is trained following the methodology presented in <ref type="bibr" target="#b0">[1]</ref>, with an input dimension of H = W = 800, and N = 2 Residual Reduction modules, that result in a subsampling factor of k = 8 and output dimensions of U H = U W = 100. We select a kernel size of 5 and 16 filters for all the convolutional layers, except the first and last ones, that have kernel sizes of 7 and 3, respectively. These hyperparameters have been selected by performing a grid search over reasonable sets of values and adopting those that experimentally provided the best convergence. As loss function, a weighted mean squared function (L 2 ) is used to compensate the higher number of negative cells (i.e., with no waypoint in the target image) with respect to positive ones. We set these weights to 0.7 for the positive cells and 0.3 for the negative. The default distance threshold for the waypoints suppression algorithm is set to d thr = 8 pixels, that is the minimum inter-row distance of our dataset, and the confidence threshold to c thr = 0.9, in order to select the most confident predictions only. As in standard object detection algorithms, we adopt the Average Precision (AP) as metric for the prediction quality. We compute the AP at different distance ranges d r . A prediction is considered a True Positive (TP) only if it falls within a distance d r form the target waypoint. On the 100 real-world images we reach an AP of 0.9794 with d r = 8 pixels, 0.9558 with 4 pixels and 0.7500 with 2 pixels. Regarding the segmentation network, we train our model applying transfer learning to the selected backbone. Indeed, rather than using randomly initialized weights, we exploit MobileNetV3 variables derived from an initial training phase on the 1k classes and 1.3M images of the ImageNet dataset <ref type="bibr" target="#b50">[51]</ref>. Moreover, we pre-trained the overall segmentation network with Cityscapes <ref type="bibr" target="#b51">[52]</ref>, a publicly available dataset with 30 different classes and 5000 fine annotated images. Finally, we adopt a strong data augmentation with random crops, brightness, saturation, contrast, rotation, and flips. All together, those techniques largely improve the final robustness of the model and its final generalization capability with a reduced number of training samples. We train the network with stochastic gradient descent with a learning rate of 0.03 and Intersection over Unit (IoU) as loss function. The accuracy over the test set is 0.8 with a IoU of 0.46. In comparison, the accuracy of the validation set with 0.1 of the synthetic dataset is 0.86 with a domain gap of 0.08. Moreover, our experimentation shows that larger input sizes improve segmentation over the synthetic dataset, but greatly reduces accuracy over real images.</p><p>The trained network is optimized in order to reduce latency, inference cost, memory, and storage footprint. That is obtained with two distinct techniques: model pruning and quantization. The first simplifies the topological structure, removing unnecessary parts of the architecture, and favors a more sparse model introducing zeros to the parameter tensors. Subsequently, with quantization, we reduce the precision of the numbers used to represent model parameters from float32 to float16. That can be accomplished with a post-training quantization procedure. In Table <ref type="table" target="#tab_2">I</ref> experimentation results with some reference architectures are summarized.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Platform Hardware and Sensors Setup</head><p>As mobile platform, we select the Jackal UGV by Clearpath Robotics, which can be briefly described as a small and weatherproof rover (IP62 code) with a 4x4 high-torque drivetrain. It is highly customizable and ROS-compatible allowing fast deployment and algorithm testing. All the algorithms run on Jackal's onboard Mini-ITX PC with a CPU Intel Core i3-4330TE @2.4GHz and 4GB DDR3 RAM. For what concern the localization sensors, the RTK enabled GNSS receiver is the Piksi Multi by Swift Navigation<ref type="foot" target="#foot_9">foot_9</ref> mounted on an evaluation board, that provides easy input/output communication with the receiver (used acquisition rate: 10 Hz), while the inertial measurements are provided by the MPU-9250 IMU, with an acquisition rate of about 100 Hz. In addition, to get a front view of the environment, we select the Intel Realsense D455 RGBD camera, that provides frames at 30 FPS and is mounted on the front part of Jackal's top plate. Finally, the odometry is provided by the on-board quadrature encoders that are able to run at 78000 pulses/m. As mentioned in Section II, the IMU and GNSS receiver data are fused by means of an EKF in order to obtain a global position estimate of the mobile platform time by time, described in terms of x, y, yaw. However, GNSS positioning is highly inaccurate, about 3m -5m, without implementing any corrections technique. As a consequence, we provide RTK corrections to Piksi Multi receiver, coming from the SPIN3 GNSS <ref type="foot" target="#foot_10">11</ref> of Piemonte, Lombardia, and Valle d'Aosta, through the Internet. Then, the GNSS receiver directly uses such corrections to obtain more reliable and accurate global position estimates, with an error range of [0.05, 0.10]m, in clear view of the sky and a good antenna position. We exploit such corrections service because it is entirely free prior to an online subscription and it can send out RTK corrections through the Internet.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Simulation Environment Evaluation</head><p>All the presented pipeline is tested in a simulation environment prior to real world tests in order to check the basic performances and perform a first experimental setting of various gains and thresholds. First, we build a custom simulation environment made of vine plants organized in rows, and a bumpy and uneven terrain, as shown in Fig. <ref type="figure" target="#fig_3">7</ref>, using the Gazebo<ref type="foot" target="#foot_11">foot_11</ref> simulator, that is ROS-compatible and opensource. Moreover, it provides advanced 3D graphics, dynamics simulation, and several plugins to simulate sensors, as GNSS, IMU, and cameras.</p><p>Then, we compare the UGV trajectory obtained with the proposed methodology with a ground truth line, in order to evaluate different error metrics: Mean Absolute Error (MAE), Root Mean Square Error (RMSE) and Standard Deviation (σ), as shown in Table <ref type="table" target="#tab_3">II</ref>. The ground truth is computed in two steps:</p><p>1) manual annotation of GNSS simulated positions that correspond to an ideal global path: centered in the interrow space and with a safe distance from crops switching between two different rows.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Real Environment Evaluation</head><p>The overall system is extensively tested in two real environment scenarios with multiple experiments in different seasonal periods (Fig. <ref type="figure">1</ref>): a vineyard and a pear orchard, shown in Fig. <ref type="figure" target="#fig_5">8</ref>, for a total of more than 80 hours of experimentation from 9 a.m. to 6 p.m., but without particular adverse weather conditions (e.g., rain, snow, fog). Moreover, all the tests have been performed with the same hardware and software setup to obtain consistent data. The vineyard is located in Grugliasco and managed by the Department of Agricultural, Forestry and Food Sciences of Università degli studi di Torino (UNITO). In contrast, the pear orchard is located in Montegrosso d'Asti and managed by Mura Mura farm. The first scenario has an inter-row space of about 2.80m and a height of about 2.0m, while the second is organized in rows with an inter-row space of 4.50m and a height of about 3.0m.</p><p>The errors, described in Table <ref type="table" target="#tab_4">III</ref> and Table <ref type="table" target="#tab_5">IV</ref>, are computed comparing the RTK-GNSS positions provided by the Piksi Multi receiver and the global path provided to the navigation system. All of this is possible due to the high accuracy GNSS estimated positions, thanks to a clear view of the sky and a good position of the high-end antenna on the UGV. All the collected data are represented in latitude and   longitude coordinates. However, for analysis purposes, they have been transformed in meters with respect to a known GNSS coordinate of the georeferenced occupancy grid map: the top left corner pixel. Table <ref type="table" target="#tab_4">III</ref> and Table <ref type="table" target="#tab_5">IV</ref>, together with the visual representation of Fig. <ref type="figure">9</ref>, shows some numerical results obtained by the proposed novel approach, and demonstrated that a methodology that exploits semantic segmentation along with a standard navigation approach based on the GNSS is able to provide complete and reliable navigation throughout the whole row-based crop. The results obtained in the pear orchard (Table <ref type="table" target="#tab_4">III</ref>) are slightly worse than the vineyard ones; however, this effect may be due to the greater inter-row space of the pear orchard with respect to the vineyard one. Eventually, the mean time of a single test is about 25 minutes, while the maximum velocity of the UGV is 0.5 m/s. All considered, the overall achieved performances, in terms of MAE and RMSE, are adequate to the used low-cost sensors setup and demonstrate the effectiveness of our approach.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. CONCLUSION AND FUTURE WORK</head><p>We presented a novel affordable algorithmic pipeline for autonomous navigation in row-based crops. Our methodology is a complete solution that covers all navigation stages, from global to local path planning, only relying on low-cost, lowrange sensors. Moreover, the system efficiently tackles GNSS unreliability in presence of lush vegetation and thick canopies, allowing the platform to autonomously navigate in all seasonal periods. Finally, the adopted domain generalization and optimization techniques greatly make training and inference of deep neural network less time and computational costly. Further works will aim at assessing our proposed algorithmic pipeline onto a more cumbersome vehicle and introducing a collision avoidance algorithm in the segmentation-based control.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>ACKNOWLEDGMENT</head><p>This work has been developed with the contribution of the Politecnico di Torino Interdepartmental Centre for Service Robotics (PIC4SeR <ref type="foot" target="#foot_12">13</ref> ) and SmartData@Polito<ref type="foot" target="#foot_13">foot_13</ref> .</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 4 :</head><label>4</label><figDesc>Fig. 4: Example of an output map Ŷ of DeepWay [1]. Since k = 8, each cell u represents a square area of 8 × 8 pixels of the original occupancy grid. The local reference system R u is at the centre of the cell and the compensation factors ∆x and ∆y are normalized to the [-1, 1] range, as a fraction of the semi-cell length.</figDesc><graphic coords="5,55.24,56.07,238.50,109.58" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 5 :</head><label>5</label><figDesc>Fig. 5: Graphical representation of the architecture of the segmentation network. Features at different resolution feed the segmentation head that combines them producing the output binary map, Xseg .</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 6 :</head><label>6</label><figDesc>Fig. 6: An example of synthetic RGB image (a) and the corresponding segmentation mask (b).</figDesc><graphic coords="8,53.45,66.20,118.80,89.10" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 7 :</head><label>7</label><figDesc>Fig. 7: A visual representation of the simulation environment.</figDesc><graphic coords="9,80.90,56.07,187.20,100.79" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>2 )</head><label>2</label><figDesc>linear interpolation of such points. We have performed six different tests in two different simulation environments (varying the vine plants positions and maintaining a row-based organization). The obtained performances are promising in terms of MAE, RMSE and σ, as shown in Table II. The worse attained results is stated by an RMSE=0.265 m and an MAE=0.217 m in the sixth test, while the best one is achieved in the first test with an RMSE=0.089 m and an MAE=0.068 m. Finally, the mean time to complete a test is about 4 minutes with a maximum speed of 0.5 m/s. All considered, the overall achieved performances are satisfactory taking into account the worse results are obtained in the last two tests where the vineyard rows are organized with a slight curvature shape.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Fig. 8 :</head><label>8</label><figDesc>Fig. 8: A visual representation of the real world testing environments.</figDesc><graphic coords="10,176.76,66.05,118.75,104.33" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head/><label/><figDesc>Fig.9: A visual representation of the obtained results. Both images contain the path followed by the UGV (red line), the provided global path (cyan x), the start/end row waypoints (blue dots) and the crop (green dots).</figDesc><graphic coords="10,336.72,251.77,201.59,172.75" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>TABLE I :</head><label>I</label><figDesc>Comparison between different devices' energy consumption and inference performances with graph optimization (G.O.) and weight precision (W.P.).</figDesc><table><row><cell>Device</cell><cell cols="2">GO WP</cell><cell cols="3">Latency [ms] Enet [mJ] Size [MB]</cell></row><row><cell>RTX 2080</cell><cell>N</cell><cell cols="2">FP32 28 ± 109</cell><cell>819</cell><cell>9.3</cell></row><row><cell/><cell>Y</cell><cell cols="2">FP32 0.1 ± 0.3</cell><cell>52</cell><cell>7.4</cell></row><row><cell/><cell>Y</cell><cell cols="2">FP16 0.1 ± 0.2</cell><cell>39</cell><cell>4.9</cell></row><row><cell cols="2">Cortex-A57 Y</cell><cell cols="2">FP32 111 ± 0.9</cell><cell>166</cell><cell>4.2</cell></row><row><cell/><cell>Y</cell><cell cols="2">FP16 111 ± 2.3</cell><cell>165</cell><cell>2.2</cell></row><row><cell cols="2">Cortex-A76 Y</cell><cell cols="2">FP32 55.4 ± 10.6</cell><cell>210</cell><cell>4.2</cell></row><row><cell/><cell>Y</cell><cell cols="2">FP16 65.3 ± 9.5</cell><cell>248</cell><cell>2.2</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>TABLE II :</head><label>II</label><figDesc>Comparison of different error metrics in six different tests performed in two different simulation environments. The first row describes the number of visited rows in the corresponding test.</figDesc><table><row><cell/><cell>T1</cell><cell>T2</cell><cell>T3</cell><cell>T4</cell><cell>T5</cell><cell>T6</cell></row><row><cell>N. rows</cell><cell>4</cell><cell>4</cell><cell>4</cell><cell>4</cell><cell>4</cell><cell>4</cell></row><row><cell>Min. Error [m]</cell><cell cols="6">0.001 0.002 0.002 0.001 0.002 0.002</cell></row><row><cell>Max. Error [m]</cell><cell cols="4">0.726 0.678 0.600 0.633</cell><cell>1.21</cell><cell>1.21</cell></row><row><cell>MAE [m]</cell><cell cols="6">0.068 0.085 0.077 0.082 0.215 0.217</cell></row><row><cell>RMSE [m]</cell><cell cols="6">0.089 0.100 0.092 0.096 0.263 0.265</cell></row><row><cell>σ [m]</cell><cell cols="6">0.057 0.053 0.050 0.050 0.152 0.152</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>TABLE III :</head><label>III</label><figDesc>Comparison of different error metrics in three different tests performed in the pear orchard. The second column describes the number of visited rows in the corresponding test.</figDesc><table><row><cell>Test</cell><cell>N. rows</cell><cell>Min. Error [m]</cell><cell>Max. Error [m]</cell><cell>MAE [m]</cell><cell>RMSE [m]</cell><cell>σ [m]</cell></row><row><cell>Test n. 1</cell><cell>4</cell><cell>0.008</cell><cell>1.395</cell><cell>0.523</cell><cell>0.627</cell><cell>0.351</cell></row><row><cell>Test n. 2</cell><cell>4</cell><cell>0.002</cell><cell>1.105</cell><cell>0.457</cell><cell>0.551</cell><cell>0.315</cell></row><row><cell>Test n. 3</cell><cell>2</cell><cell>0.007</cell><cell>1.320</cell><cell>0.659</cell><cell>0.755</cell><cell>0.375</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head>TABLE IV :</head><label>IV</label><figDesc>Comparison of different error metrics in three different tests performed in the vineyard. The second column describes the number of visited rows in the corresponding test.</figDesc><table><row><cell>Test</cell><cell>N. rows</cell><cell>Min. Error [m]</cell><cell>Max. Error [m]</cell><cell>MAE [m]</cell><cell>RMSE [m]</cell><cell>σ [m]</cell></row><row><cell>Test n. 1</cell><cell>4</cell><cell>0.013</cell><cell>0.621</cell><cell>0.296</cell><cell>0.332</cell><cell>0.160</cell></row><row><cell>Test n. 2</cell><cell>6</cell><cell>0.006</cell><cell>0.598</cell><cell>0.218</cell><cell>0.240</cell><cell>0.119</cell></row><row><cell>Test n. 3</cell><cell>6</cell><cell>0.003</cell><cell>0.720</cell><cell>0.204</cell><cell>0.246</cell><cell>0.145</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>https://clearpathrobotics.com/</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_1"><p>https://github.com</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3" xml:id="foot_2"><p>https://zenodo.com</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4" xml:id="foot_3"><p>https://github.com/fsalv/DeepWay</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5" xml:id="foot_4"><p>http://wiki.ros.org/move base</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6" xml:id="foot_5"><p>http://docs.ros.org/en/melodic/api/robot localization/html/index.html</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="7" xml:id="foot_6"><p>https://www.blender.org/</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="8" xml:id="foot_7"><p>https://github.com/MaximeHerpin/modular tree/tree/blender 28</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="9" xml:id="foot_8"><p>https://www.tensorflow.org</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="10" xml:id="foot_9"><p>https://www.swiftnav.com/</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="11" xml:id="foot_10"><p>https://www.spingnss.it/spiderweb/frmIndex.aspx</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="12" xml:id="foot_11"><p>http://gazebosim.org/</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="13" xml:id="foot_12"><p>https://pic4ser.polito.it/</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="14" xml:id="foot_13"><p>https://smartdata.polito.it/</p></note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Deepway: A deep learning waypoint estimator for global path generation</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Mazzia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Salvetti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Aghi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">184</biblScope>
+			<biblScope unit="page">106091</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">V. Mazzia, F. Salvetti, D. Aghi, and M. Chiaberge, "Deepway: A deep learning waypoint estimator for global path generation," Computers and Electronics in Agriculture, vol. 184, p. 106091, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Waypoint generation in row-based crops with deep learning and contrastive clustering</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Salvetti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Angarano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Martini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Cerrato</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Joint European Conference on Machine Learning and Knowledge Discovery in Databases</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="203" to="218"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">F. Salvetti, S. Angarano, M. Martini, S. Cerrato, and M. Chiaberge, "Waypoint generation in row-based crops with deep learning and con- trastive clustering," in Joint European Conference on Machine Learning and Knowledge Discovery in Databases. Springer, 2022, pp. 203-218.</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Robots in agriculture: State of art and practical experiences</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">J</forename><surname>Roldán</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Del Cerro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Garzón-Ramos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Garcia-Aunon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Garzón</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>De León</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Barrientos</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Service robots</title>
+		<imprint>
+			<biblScope unit="page" from="67" to="90"/>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. J. Roldán, J. del Cerro, D. Garzón-Ramos, P. Garcia-Aunon, M. Garzón, J. de León, and A. Barrientos, "Robots in agriculture: State of art and practical experiences," Service robots, pp. 67-90, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Assessment of rice leaf blast severity using hyperspectral imaging during late vegetative growth</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Australasian Plant Pathology</title>
+		<imprint>
+			<biblScope unit="volume">49</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="571" to="578"/>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">G. Zhang, T. Xu, Y. Tian, H. Xu, J. Song, and Y. Lan, "Assessment of rice leaf blast severity using hyperspectral imaging during late vegetative growth," Australasian Plant Pathology, vol. 49, no. 5, pp. 571-578, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Yield estimation in cotton using uav-based multi-sensor imagery</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">D</forename><surname>Vories</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">A</forename><surname>Sudduth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Biosystems Engineering</title>
+		<imprint>
+			<biblScope unit="volume">193</biblScope>
+			<biblScope unit="page" from="101" to="114"/>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Feng, J. Zhou, E. D. Vories, K. A. Sudduth, and M. Zhang, "Yield estimation in cotton using uav-based multi-sensor imagery," Biosystems Engineering, vol. 193, pp. 101-114, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Design and development of intelligent pesticide spraying system for agricultural robot</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Deshmukh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">K</forename><surname>Pratihar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">K</forename><surname>Deb</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ray</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Bhattacharyya</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Hybrid Intelligent Systems</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="157" to="170"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">D. Deshmukh, D. K. Pratihar, A. K. Deb, H. Ray, and N. Bhattacharyya, "Design and development of intelligent pesticide spraying system for agricultural robot," in International Conference on Hybrid Intelligent Systems. Springer, 2020, pp. 157-170.</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Refining satellite imagery by using uav imagery for vineyard environment: A cnn based approach</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Khaliq</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Mazzia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 IEEE International Workshop on Metrology for Agriculture and Forestry (MetroAgriFor)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="25" to="29"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Khaliq, V. Mazzia, and M. Chiaberge, "Refining satellite imagery by using uav imagery for vineyard environment: A cnn based approach," in 2019 IEEE International Workshop on Metrology for Agriculture and Forestry (MetroAgriFor). IEEE, 2019, pp. 25-29.</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">A compilation of uav applications for precision agriculture</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Radoglou-Grammatikis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Sarigiannidis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Lagkas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Moscholios</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computer Networks</title>
+		<imprint>
+			<biblScope unit="volume">172</biblScope>
+			<biblScope unit="page">107148</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">P. Radoglou-Grammatikis, P. Sarigiannidis, T. Lagkas, and I. Moscho- lios, "A compilation of uav applications for precision agriculture," Computer Networks, vol. 172, p. 107148, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Vineyard detection from unmanned aerial systems images</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Comba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Gay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Primicerio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">R</forename><surname>Aimonino</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">114</biblScope>
+			<biblScope unit="page" from="78" to="87"/>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">L. Comba, P. Gay, J. Primicerio, and D. R. Aimonino, "Vineyard detec- tion from unmanned aerial systems images," computers and Electronics in Agriculture, vol. 114, pp. 78-87, 2015.</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Robots in agriculture: prospects, impacts, ethics, and policy</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Sparrow</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Howard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Precision Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="818" to="833"/>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">R. Sparrow and M. Howard, "Robots in agriculture: prospects, impacts, ethics, and policy," Precision Agriculture, vol. 22, no. 3, pp. 818-833, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<author>
+			<persName><forename type="first">T</forename><surname>Duckett</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Pearson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Blackmore</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Grieve</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W.-H</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Cielniak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Cleaversmith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Davis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Fox</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1806.06762</idno>
+		<title level="m">Agricultural robotics: the future of robotic agriculture</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">T. Duckett, S. Pearson, S. Blackmore, B. Grieve, W.-H. Chen, G. Cielniak, J. Cleaversmith, J. Dai, S. Davis, C. Fox et al., "Agri- cultural robotics: the future of robotic agriculture," arXiv preprint arXiv:1806.06762, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Semantics for robotic mapping, perception and interaction: A survey</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Garg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Sünderhauf</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Dayoub</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Morrison</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Cosgun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Carneiro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T.-J</forename><surname>Chin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Reid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Gould</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2101.00443</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">S. Garg, N. Sünderhauf, F. Dayoub, D. Morrison, A. Cosgun, G. Carneiro, Q. Wu, T.-J. Chin, I. Reid, S. Gould et al., "Semantics for robotic mapping, perception and interaction: A survey," arXiv preprint arXiv:2101.00443, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Navigating the landscape for real-time localization and mapping for robotics and virtual and augmented reality</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Saeedi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Bodin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Wagstaff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Nisbet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Nardi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mawer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Melot</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Palomar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Vespa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Spink</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Proceedings of the IEEE</title>
+		<imprint>
+			<biblScope unit="volume">106</biblScope>
+			<biblScope unit="issue">11</biblScope>
+			<biblScope unit="page" from="2020" to="2039"/>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Saeedi, B. Bodin, H. Wagstaff, A. Nisbet, L. Nardi, J. Mawer, N. Melot, O. Palomar, E. Vespa, T. Spink et al., "Navigating the landscape for real-time localization and mapping for robotics and virtual and augmented reality," Proceedings of the IEEE, vol. 106, no. 11, pp. 2020-2039, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Commonsense reasoning and deep learning for transparent decision making in robotics</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Mota</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sridharan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Leonardis</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">European conference on multiagent systems</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">T. Mota, M. Sridharan, and A. Leonardis, "Commonsense reasoning and deep learning for transparent decision making in robotics," in European conference on multiagent systems, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">High-accuracy adaptive low-cost location sensing subsystems for autonomous rover in precision agriculture</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">J</forename><surname>Levoir</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">A</forename><surname>Farley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Open Journal of Industry Applications</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="74" to="94"/>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. J. LeVoir, P. A. Farley, T. Sun, and C. Xu, "High-accuracy adaptive low-cost location sensing subsystems for autonomous rover in precision agriculture," IEEE Open Journal of Industry Applications, vol. 1, pp. 74-94, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Deep learning</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lecun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bengio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Hinton</surname></persName>
+		</author>
+		<idno type="DOI">10.1038/nature14539</idno>
+		<ptr target="https://doi.org/10.1038/nature14539"/>
+	</analytic>
+	<monogr>
+		<title level="j">Nature</title>
+		<imprint>
+			<biblScope unit="volume">521</biblScope>
+			<biblScope unit="issue">7553</biblScope>
+			<biblScope unit="page" from="436" to="444"/>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Y. LeCun, Y. Bengio, and G. Hinton, "Deep learning," Nature, vol. 521, no. 7553, pp. 436-444, 2015. [Online]. Available: https://doi.org/10.1038/nature14539</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">A survey of deep learning techniques for autonomous driving</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Grigorescu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Trasnea</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Cocias</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Macesanu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Field Robotics</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="362" to="386"/>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Grigorescu, B. Trasnea, T. Cocias, and G. Macesanu, "A survey of deep learning techniques for autonomous driving," Journal of Field Robotics, vol. 37, no. 3, pp. 362-386, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">A cost-effective person-following system for assistive unmanned vehicles with deep learning at the edge</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Boschi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Salvetti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Mazzia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Machines</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page">49</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Boschi, F. Salvetti, V. Mazzia, and M. Chiaberge, "A cost-effective person-following system for assistive unmanned vehicles with deep learning at the edge," Machines, vol. 8, no. 3, p. 49, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Position-agnostic autonomous navigation in vineyards with deep reinforcement learning</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Martini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Cerrato</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Salvetti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Angarano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2022 IEEE 18th International Conference on Automation Science and Engineering (CASE)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="477" to="484"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">M. Martini, S. Cerrato, F. Salvetti, S. Angarano, and M. Chiaberge, "Position-agnostic autonomous navigation in vineyards with deep rein- forcement learning," in 2022 IEEE 18th International Conference on Automation Science and Engineering (CASE). IEEE, 2022, pp. 477- 484.</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Quantization and training of neural networks for efficient integer-arithmetic-only inference</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Jacob</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kligys</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Howard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Adam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Kalenichenko</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="2704" to="2713"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">B. Jacob, S. Kligys, B. Chen, M. Zhu, M. Tang, A. Howard, H. Adam, and D. Kalenichenko, "Quantization and training of neural networks for efficient integer-arithmetic-only inference," in Proceedings of the IEEE conference on computer vision and pattern recognition, 2018, pp. 2704- 2713.</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Real-time apple detection system using embedded systems with hardware accelerators: An edge ai application</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Mazzia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Khaliq</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Salvetti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Access</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page" from="9102" to="9114"/>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">V. Mazzia, A. Khaliq, F. Salvetti, and M. Chiaberge, "Real-time apple detection system using embedded systems with hardware accelerators: An edge ai application," IEEE Access, vol. 8, pp. 9102-9114, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Performance comparison of single and multi-gnss receivers under agricultural fields in korea</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">S N</forename><surname>Kabir</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M.-Z</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N.-S</forename><surname>Sung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S.-O</forename><surname>Chung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Noguchi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S.-J</forename><surname>Hong</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Engineering in agriculture, environment and food</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="27" to="35"/>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">M. S. N. Kabir, M.-Z. Song, N.-S. Sung, S.-O. Chung, Y.-J. Kim, N. Noguchi, and S.-J. Hong, "Performance comparison of single and multi-gnss receivers under agricultural fields in korea," Engineering in agriculture, environment and food, vol. 9, no. 1, pp. 27-35, 2016.</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Gps-free localisation and navigation of an unmanned ground vehicle for yield forecasting in a vineyard</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Marden</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Whitty</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Recent Advances in Agricultural Robotics, International workshop collocated with the 13th International Conference on Intelligent Autonomous Systems (IAS-13)</title>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Marden and M. Whitty, "Gps-free localisation and navigation of an unmanned ground vehicle for yield forecasting in a vineyard," in Recent Advances in Agricultural Robotics, International workshop collocated with the 13th International Conference on Intelligent Autonomous Sys- tems (IAS-13), 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Domain randomization for transferring deep neural networks from simulation to the real world</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tobin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Fong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ray</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schneider</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zaremba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Abbeel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ international conference on intelligent robots and systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2017">2017. 2017</date>
+			<biblScope unit="page" from="23" to="30"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. Tobin, R. Fong, A. Ray, J. Schneider, W. Zaremba, and P. Abbeel, "Domain randomization for transferring deep neural networks from simulation to the real world," in 2017 IEEE/RSJ international conference on intelligent robots and systems (IROS). IEEE, 2017, pp. 23-30.</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">A fully autonomous robot for putting posts for trellising vineyard with centimetric accuracy</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Ly</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Gimbert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Passault</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Baron</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2015 IEEE International Conference on Autonomous Robot Systems and Competitions</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="44" to="49"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">O. Ly, H. Gimbert, G. Passault, and G. Baron, "A fully autonomous robot for putting posts for trellising vineyard with centimetric accuracy," in 2015 IEEE International Conference on Autonomous Robot Systems and Competitions. IEEE, 2015, pp. 44-49.</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Automating orchards: A system of autonomous tractors for orchard maintenance</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">J</forename><surname>Moorehead</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">K</forename><surname>Wellington</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">J</forename><surname>Gilmore</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Vallespi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE international conference of intelligent robots and systems, workshop on agricultural robotics</title>
+		<meeting>the IEEE international conference of intelligent robots and systems, workshop on agricultural robotics</meeting>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. J. Moorehead, C. K. Wellington, B. J. Gilmore, and C. Vallespi, "Automating orchards: A system of autonomous tractors for orchard maintenance," in Proceedings of the IEEE international conference of intelligent robots and systems, workshop on agricultural robotics, 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">An overview of autonomous crop row navigation strategies for unmanned ground vehicles</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bonadies</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">A</forename><surname>Gadsden</surname></persName>
+		</author>
+		<ptr target="https://www.sciencedirect.com/science/article/pii/S188183661730188X"/>
+	</analytic>
+	<monogr>
+		<title level="j">Engineering in Agriculture, Environment and Food</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="24" to="31"/>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Bonadies and S. A. Gadsden, "An overview of autonomous crop row navigation strategies for unmanned ground vehicles," Engineering in Agriculture, Environment and Food, vol. 12, no. 1, pp. 24-31, 2019. [Online]. Available: https://www.sciencedirect.com/science/article/pii/ S188183661730188X</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Localization for precision navigation in agricultural fields-beyond crop row following</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Winterhalter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Fleckenstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Dornhege</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Burgard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Field Robotics</title>
+		<imprint>
+			<biblScope unit="volume">38</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="429" to="451"/>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">W. Winterhalter, F. Fleckenstein, C. Dornhege, and W. Burgard, "Lo- calization for precision navigation in agricultural fields-beyond crop row following," Journal of Field Robotics, vol. 38, no. 3, pp. 429-451, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Cost-effective visual odometry system for vehicle motion control in agricultural environments</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Zaman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Comba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Biglia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">R</forename><surname>Aimonino</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Barge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Gay</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">162</biblScope>
+			<biblScope unit="page" from="82" to="94"/>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Zaman, L. Comba, A. Biglia, D. R. Aimonino, P. Barge, and P. Gay, "Cost-effective visual odometry system for vehicle motion control in agricultural environments," Computers and Electronics in Agriculture, vol. 162, pp. 82-94, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Development of the architecture of the base platform agricultural robot for determining the trajectory using the method of visual odometry</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Nevliudov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Novoselov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Sychova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tesliuk</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 IEEE XVIIth International Conference on the Perspective Technologies and Methods in MEMS Design (MEMSTECH)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="64" to="68"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">I. Nevliudov, S. Novoselov, O. Sychova, and S. Tesliuk, "Development of the architecture of the base platform agricultural robot for determining the trajectory using the method of visual odometry," in 2021 IEEE XVIIth International Conference on the Perspective Technologies and Methods in MEMS Design (MEMSTECH). IEEE, 2021, pp. 64-68.</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Autonomous navigation for a wolfberry picking robot using visual cues and fuzzy control</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">S</forename><surname>Qureshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Li</surname></persName>
+		</author>
+		<ptr target="https://www.sciencedirect.com/science/article/pii/S2214317319303269"/>
+	</analytic>
+	<monogr>
+		<title level="j">Information Processing in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="15" to="26"/>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Y. Ma, W. Zhang, W. S. Qureshi, C. Gao, C. Zhang, and W. Li, "Autonomous navigation for a wolfberry picking robot using visual cues and fuzzy control," Information Processing in Agriculture, vol. 8, no. 1, pp. 15-26, 2021. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S2214317319303269</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">An approach for semantic segmentation of tree-like vegetation</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Tejaswi Digumarti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">M</forename><surname>Schmid</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">M</forename><surname>Rizzi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Nieto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Siegwart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Beardsley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Cadena</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 International Conference on Robotics and Automation (ICRA)</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="1801" to="1807"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Tejaswi Digumarti, L. M. Schmid, G. M. Rizzi, J. Nieto, R. Siegwart, P. Beardsley, and C. Cadena, "An approach for semantic segmentation of tree-like vegetation," in 2019 International Conference on Robotics and Automation (ICRA), 2019, pp. 1801-1807.</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Low-drift visual odometry in structured environments by decoupling rotational and translational motion</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Coltin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">J</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2018 IEEE international conference on Robotics and automation (ICRA)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="7247" to="7253"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">P. Kim, B. Coltin, and H. J. Kim, "Low-drift visual odometry in struc- tured environments by decoupling rotational and translational motion," in 2018 IEEE international conference on Robotics and automation (ICRA). IEEE, 2018, pp. 7247-7253.</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Uav localization in row crops</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Anthony</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Detweiler</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Field Robotics</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page" from="1275" to="1296"/>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">D. Anthony and C. Detweiler, "Uav localization in row crops," Journal of Field Robotics, vol. 34, no. 7, pp. 1275-1296, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Deep learning in agriculture: A survey</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kamilaris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">X</forename><surname>Prenafeta-Boldú</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and electronics in agriculture</title>
+		<imprint>
+			<biblScope unit="volume">147</biblScope>
+			<biblScope unit="page" from="70" to="90"/>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Kamilaris and F. X. Prenafeta-Boldú, "Deep learning in agriculture: A survey," Computers and electronics in agriculture, vol. 147, pp. 70-90, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Autonomous navigation in vineyards with deep learning at the edge</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Aghi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Mazzia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Robotics in Alpe-Adria Danube Region</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="479" to="486"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">D. Aghi, V. Mazzia, and M. Chiaberge, "Autonomous navigation in vineyards with deep learning at the edge," in International Conference on Robotics in Alpe-Adria Danube Region. Springer, 2020, pp. 479- 486.</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Deep semantic segmentation at the edge for autonomous navigation in vineyard rows</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Aghi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Cerrato</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Mazzia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021. 2021</date>
+			<biblScope unit="page" from="3421" to="3428"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">D. Aghi, S. Cerrato, V. Mazzia, and M. Chiaberge, "Deep semantic segmentation at the edge for autonomous navigation in vineyard rows," in 2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS). IEEE, 2021, pp. 3421-3428.</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Automatic path planning for unmanned ground vehicle using uav imagery</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zoto</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Musci</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Khaliq</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Aicardi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Robotics in Alpe-Adria Danube Region</title>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="223" to="230"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. Zoto, M. A. Musci, A. Khaliq, M. Chiaberge, and I. Aicardi, "Auto- matic path planning for unmanned ground vehicle using uav imagery," in International Conference on Robotics in Alpe-Adria Danube Region. Springer, 2019, pp. 223-230.</note>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">An adaptive row crops path generator with deep learning synergy</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Cerrato</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Aghi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Mazzia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Salvetti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2021 6th Asia-Pacific Conference on Intelligent Robot Systems (ACIRS)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="6" to="12"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Cerrato, D. Aghi, V. Mazzia, F. Salvetti, and M. Chiaberge, "An adaptive row crops path generator with deep learning synergy," in 2021 6th Asia-Pacific Conference on Intelligent Robot Systems (ACIRS). IEEE, 2021, pp. 6-12.</note>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<title level="m" type="main">Implementation of the pure pursuit path tracking algorithm</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">C</forename><surname>Coulter</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1992">1992</date>
+		</imprint>
+		<respStmt>
+			<orgName>Carnegie-Mellon UNIV Pittsburgh PA Robotics INST, Tech. Rep.</orgName>
+		</respStmt>
+	</monogr>
+	<note type="raw_reference">R. C. Coulter, "Implementation of the pure pursuit path tracking al- gorithm," Carnegie-Mellon UNIV Pittsburgh PA Robotics INST, Tech. Rep., 1992.</note>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<monogr>
+		<title level="m" type="main">Mish: A self regularized non-monotonic neural activation function</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Misra</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1908.08681</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="volume">4</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">D. Misra, "Mish: A self regularized non-monotonic neural activation function," arXiv preprint arXiv:1908.08681, vol. 4, p. 2, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Cbam: Convolutional block attention module</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Woo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-Y</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><forename type="middle">S</forename><surname>Kweon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the European conference on computer vision (ECCV)</title>
+		<meeting>the European conference on computer vision (ECCV)</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="3" to="19"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Woo, J. Park, J.-Y. Lee, and I. S. Kweon, "Cbam: Convolutional block attention module," in Proceedings of the European conference on computer vision (ECCV), 2018, pp. 3-19.</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Robust detection of lines using the progressive probabilistic hough transform</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Matas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Galambos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kittler</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computer vision and image understanding</title>
+		<imprint>
+			<biblScope unit="volume">78</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="119" to="137"/>
+			<date type="published" when="2000">2000</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. Matas, C. Galambos, and J. Kittler, "Robust detection of lines using the progressive probabilistic hough transform," Computer vision and image understanding, vol. 78, no. 1, pp. 119-137, 2000.</note>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">A density-based algorithm for discovering clusters in large spatial databases with noise</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ester</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-P</forename><surname>Kriegel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Sander</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Kdd</title>
+		<imprint>
+			<biblScope unit="volume">96</biblScope>
+			<biblScope unit="issue">34</biblScope>
+			<biblScope unit="page" from="226" to="231"/>
+			<date type="published" when="1996">1996</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">M. Ester, H.-P. Kriegel, J. Sander, X. Xu et al., "A density-based algorithm for discovering clusters in large spatial databases with noise." in Kdd, vol. 96, no. 34, 1996, pp. 226-231.</note>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">Real-time semantic segmentation with fast attention</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Perazzi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">C</forename><surname>Heilbron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Saenko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Sclaroff</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="263" to="270"/>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">P. Hu, F. Perazzi, F. C. Heilbron, O. Wang, Z. Lin, K. Saenko, and S. Sclaroff, "Real-time semantic segmentation with fast attention," IEEE Robotics and Automation Letters, vol. 6, no. 1, pp. 263-270, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<monogr>
+		<title level="m" type="main">Bisenet v2: Bilateral network with guided aggregation for real-time semantic segmentation</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Sang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2004.02147</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">C. Yu, C. Gao, J. Wang, G. Yu, C. Shen, and N. Sang, "Bisenet v2: Bilateral network with guided aggregation for real-time semantic segmentation," arXiv preprint arXiv:2004.02147, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Searching for mobilenetv3</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Howard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sandler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Chu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L.-C</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Pang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Vasudevan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+		<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="1314" to="1324"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Howard, M. Sandler, G. Chu, L.-C. Chen, B. Chen, M. Tan, W. Wang, Y. Zhu, R. Pang, V. Vasudevan et al., "Searching for mobilenetv3," in Proceedings of the IEEE/CVF International Conference on Computer Vision, 2019, pp. 1314-1324.</note>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<monogr>
+		<title level="m" type="main">Rethinking atrous convolution for semantic image segmentation</title>
+		<author>
+			<persName><forename type="first">L.-C</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Papandreou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Schroff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Adam</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1706.05587</idno>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">L.-C. Chen, G. Papandreou, F. Schroff, and H. Adam, "Rethinking atrous convolution for semantic image segmentation," arXiv preprint arXiv:1706.05587, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Local motion planner for autonomous navigation in vineyards with a rgb-d camera-based algorithm and deep learning synergy</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Aghi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Mazzia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Chiaberge</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Machines</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page">27</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">D. Aghi, V. Mazzia, and M. Chiaberge, "Local motion planner for au- tonomous navigation in vineyards with a rgb-d camera-based algorithm and deep learning synergy," Machines, vol. 8, no. 2, p. 27, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">The dynamic window approach to collision avoidance</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Fox</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Burgard</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Thrun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics Automation Magazine</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="23" to="33"/>
+			<date type="published" when="1997">1997</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">D. Fox, W. Burgard, and S. Thrun, "The dynamic window approach to collision avoidance," IEEE Robotics Automation Magazine, vol. 4, no. 1, pp. 23-33, 1997.</note>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Imagenet: A large-scale hierarchical image database</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Socher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L.-J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Fei-Fei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2009 IEEE conference on computer vision and pattern recognition</title>
+		<imprint>
+			<publisher>Ieee</publisher>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="248" to="255"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei, "Imagenet: A large-scale hierarchical image database," in 2009 IEEE conference on computer vision and pattern recognition. Ieee, 2009, pp. 248-255.</note>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">The Cityscapes Dataset for Semantic Urban Scene Understanding</title>
+		<author>
+			<persName><forename type="first">Marius</forename><surname>Cordts</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohamed</forename><surname>Omran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sebastian</forename><surname>Ramos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Timo</forename><surname>Rehfeld</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Markus</forename><surname>Enzweiler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rodrigo</forename><surname>Benenson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Uwe</forename><surname>Franke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Roth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bernt</forename><surname>Schiele</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/cvpr.2016.350</idno>
+	</analytic>
+	<monogr>
+		<title level="m">2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2016-06">2016</date>
+			<biblScope unit="page" from="3213" to="3223"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">M. Cordts, M. Omran, S. Ramos, T. Rehfeld, M. Enzweiler, R. Be- nenson, U. Franke, S. Roth, and B. Schiele, "The cityscapes dataset for semantic urban scene understanding," in Proceedings of the IEEE conference on computer vision and pattern recognition, 2016, pp. 3213- 3223.</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

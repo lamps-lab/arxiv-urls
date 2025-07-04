@@ -1,0 +1,160 @@
+\begin{thebibliography}{}
+
+\bibitem[Baltagi, 2008]{baltagi2008}
+Baltagi, B. (2008).
+\newblock {\em Econometric Analysis of Panel Data}.
+\newblock John Wiley \& Sons.
+
+\bibitem[Baltagi and Khanti-Akom, 1990]{BaltagiKhantiAkom1990}
+Baltagi, B. and Khanti-Akom, S. (1990).
+\newblock On efficient estimation with panel data: An empirical comparison of
+  instrumental variables estimators.
+\newblock {\em Journal of Applied Econometrics}, 5(4):401--06.
+
+\bibitem[Barnett et~al., 1991]{barnettNonparametricSemiparametricMethods1991}
+Barnett, W.~A., Powell, J., and Tauchen, G.~E. (1991).
+\newblock {\em Nonparametric and {Semiparametric} {Methods} in {Econometrics}
+  and {Statistics}: {Proceedings} of the {Fifth} {International} {Symposium} in
+  {Economic} {Theory} and {Econometrics}}.
+\newblock Cambridge University Press.
+\newblock Google-Books-ID: wHTszJdi2H0C.
+
+\bibitem[Barry et~al., 2020]{GEEE_Barry2020}
+Barry, A., Oualkacha, K., and Charpentier, A. (2020).
+\newblock A new {GEE} method to account for heteroscedasticity, using
+  asymmetric least-square regressions.
+\newblock {\em arXiv:1810.09214 [stat]}.
+\newblock arXiv: 1810.09214.
+
+\bibitem[Bose and Chatterjee, 2003]{boseGeneralizedBootstrapEstimators2003}
+Bose, A. and Chatterjee, S. (2003).
+\newblock Generalized bootstrap for estimators of minimizers of convex
+  functions.
+\newblock {\em Journal of Statistical Planning and Inference}, 117(2):225--239.
+
+\bibitem[Brüderl and Ludwig, 2014]{bruderlFixedEffectsPanelRegression2014}
+Brüderl, J. and Ludwig, V. (2014).
+\newblock Fixed-{Effects} {Panel} {Regression}.
+\newblock In {\em The {SAGE} {Handbook} of {Regression} {Analysis} and {Causal}
+  {Inference}}, pages 327--358. SAGE Publications Ltd.
+
+\bibitem[Cameron and Trivedi, 2005]{CameronTrivedi2005}
+Cameron, A. and Trivedi, P. (2005).
+\newblock {\em Microeconometrics}.
+\newblock Cambridge University Press.
+
+\bibitem[Canay, 2011]{canaySimpleApproachQuantile2011a}
+Canay, I.~A. (2011).
+\newblock A simple approach to quantile regression for panel data.
+\newblock {\em The Econometrics Journal}, 14(3):368--386.
+\newblock Publisher: Wiley.
+
+\bibitem[Card, 2001]{cardEstimatingReturnSchooling2001}
+Card, D. (2001).
+\newblock Estimating the {Return} to {Schooling}: {Progress} on {Some}
+  {Persistent} {Econometric} {Problems}.
+\newblock {\em Econometrica}, 69(5).
+
+\bibitem[Chen et~al., 2004]{Chen2004}
+Chen, L., Wei, L.-J., and Parzen, M.~I. (2004).
+\newblock {\em Quantile Regression for Correlated Observations}, pages 51--69.
+\newblock Springer New York, New York, NY.
+
+\bibitem[Cornwell and Rupert, 1988]{CornwellRupert1988}
+Cornwell, C. and Rupert, P. (1988).
+\newblock Efficient estimation with panel data: An empirical comparison of
+  instrumental variables estimators.
+\newblock {\em Journal of Applied Econometrics}, 3(2):149--55.
+
+\bibitem[Galvao and Montes-Rojas, 2010]{galvao_penalized_2010}
+Galvao, A. and Montes-Rojas, G. (2010).
+\newblock Penalized quantile regression for dynamic panel data.
+\newblock {\em Journal of Statistical Planning and Inference},
+  140(11):3476--3497.
+\newblock cited By (since 1996)5.
+
+\bibitem[Girard et~al., 2021]{girardFunctionalEstimationExtreme2021}
+Girard, S., Stupfler, G., and Usseglio-Carleve, A. (2021).
+\newblock Functional estimation of extreme conditional expectiles.
+\newblock {\em Econometrics and Statistics}.
+
+\bibitem[Greene, 2011]{Greene2011}
+Greene, W.~H. (2011).
+\newblock {\em Econometric analysis}.
+\newblock Prentice Hall, Upper Saddle River, N.J., 7th ed.. edition.
+
+\bibitem[Kocherginsky et~al.,
+  2005]{kocherginskyPracticalConfidenceIntervals2005}
+Kocherginsky, M., He, X., and Mu, Y. (2005).
+\newblock Practical {Confidence} {Intervals} for {Regression} {Quantiles}.
+\newblock {\em Journal of Computational and Graphical Statistics},
+  14(1):41--55.
+
+\bibitem[Koenker, 2004]{koenker_quantile_2004}
+Koenker, R. (2004).
+\newblock Quantile regression for longitudinal data.
+\newblock {\em Journal of Multivariate Analysis}, 91(1):74--89.
+
+\bibitem[Koenker, 2018]{quantreg}
+Koenker, R. (2018).
+\newblock {\em quantreg: Quantile Regression}.
+\newblock R package version 5.36.
+
+\bibitem[Koenker and Bache, 2014]{rqpd}
+Koenker, R. and Bache, S.~H. (2014).
+\newblock {\em rqpd: Regression Quantiles for Panel Data}.
+\newblock R package version 0.6/r10.
+
+\bibitem[Lamarche, 2010]{lamarcheRobustPenalizedQuantile2010a}
+Lamarche, C. (2010).
+\newblock Robust penalized quantile regression estimation for panel data.
+\newblock {\em Journal of Econometrics}, 157(2):396--408.
+
+\bibitem[Liu and Wu, 2011]{LiuWu2011}
+Liu, Y. and Wu, Y. (2011).
+\newblock Simultaneous multiple non-crossing quantile regression estimation
+  using kernel constraints.
+\newblock {\em Journal of Nonparametric Statistics}, 23(2):415--437.
+
+\bibitem[Mersmann, 2019]{microbenchmark2019}
+Mersmann, O. (2019).
+\newblock {\em microbenchmark: Accurate Timing Functions}.
+\newblock R package version 1.4-7.
+
+\bibitem[Newey and Powell, 1987]{newey_asymmetric_1987}
+Newey, W.~K. and Powell, J.~L. (1987).
+\newblock Asymmetric least squares estimation and testing.
+\newblock {\em Econometrica}, 55(4):819--47.
+
+\bibitem[{R Core Team}, 2021]{rcran}
+{R Core Team} (2021).
+\newblock {\em R: A Language and Environment for Statistical Computing}.
+\newblock R Foundation for Statistical Computing, Vienna, Austria.
+
+\bibitem[Sobotka et~al., 2014]{expectreg}
+Sobotka, F., Schnabel, S., Waltrup, L.~S., Eilers, P., Kneib, T., and
+  Kauermann, G. (2014).
+\newblock {\em expectreg: Expectile and Quantile Regression}.
+\newblock R package version 0.39.
+
+\bibitem[Warrington et~al., 2019]{warringtonMaternalFetalGenetic2019}
+Warrington, N.~M., Beaumont, R.~N., and al. (2019).
+\newblock Maternal and fetal genetic effects on birth weight and their
+  relevance to cardio-metabolic risk factors.
+\newblock {\em Nature Genetics}, 51(5):804--814.
+
+\bibitem[White, 1980]{White1980}
+White, H. (1980).
+\newblock A heteroskedasticity-consistent covariance matrix estimator and a
+  direct test for heteroskedasticity.
+\newblock {\em Econometrica}, 48(4):817--38.
+
+\bibitem[Yin and Cai, 2005]{YinCai2005a}
+Yin, G. and Cai, J. (2005).
+\newblock Quantile {Regression} {Models} with {Multivariate} {Failure} {Time}
+  {Data}.
+\newblock {\em Biometrics}, 61(1):151--161.
+\newblock \_eprint:
+  https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.0006-341X.2005.030815.x.
+
+\end{thebibliography}

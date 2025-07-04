@@ -1,0 +1,148 @@
+\small
+\begin{tabular}[t]{ccc||c|ccccc}
+& & & 
+Baseline
+& 
+\multicolumn{4}{c}{Decoding from an undirected sequence model}
+\\
+& $b$ & $T$ & 
+\rotatebox{0}{Autoregressive} & 
+\rotatebox{0}{Uniform} & 
+\rotatebox{0}{Left2Right} &
+\rotatebox{0}{Least2Most} &
+\rotatebox{0}{Easy-First} &
+\rotatebox{0}{Learned}
+\\
+\toprule
+\multirow{4}{*}{\rotatebox{90}{En$\to$De}}
+& $1$ & $L$ & 
+25.33 &
+21.01 &
+24.27 &
+23.08 &
+23.73 &
+24.10
+\\
+& $4$ & $L$ &
+26.84 &
+22.16 & 
+25.15 & 
+23.81 & 
+24.13 &
+24.87 % length penalty 1.0. 24.90 with length penalty 0.6.
+\\
+& $4$ & $L$\text{*} &
+-- &
+22.74 & 
+\textbf{25.66} & 
+24.42 & 
+24.69 &
+\textbf{25.28}
+\\
+& $1$ & $2L$ &
+-- &
+21.16 &
+24.45 &
+23.32 &
+23.87 &
+24.15
+\\
+& $4$ & $2L$ &
+-- &
+21.99 &
+25.14 &
+23.81 &
+24.14 &
+24.86 % length penalty 1.0
+\\
+\midrule
+\multirow{4}{*}{\rotatebox{90}{De$\to$En}}
+& $1$ & $L$ & 
+29.83 &
+26.01 & 
+28.34 &
+28.85 &
+29.00 &
+28.47
+\\
+& $4$ & $L$ &
+30.92 &
+27.07 &
+29.52 & 
+29.03 &
+29.41 &
+29.73  % length penalty 1.0. 29.54 with length penalty 0.6.
+\\
+& $4$ & $L$\text{*} &
+-- &
+28.07 &
+\textbf{30.46} & 
+29.84 &
+30.32 &
+\textbf{30.58}
+\\
+& $1$ & $2L$ &
+-- &
+26.24 &
+28.64 &
+28.60 &
+29.12 &
+28.45
+\\
+& $4$ & $2L$ &
+-- &
+26.98 &
+29.50 &
+29.02 &
+29.41 &
+29.71 % length penalty 1.0. 29.54 with length penalty 0.6.
+\end{tabular}
+
+% \small
+% \begin{tabular}[b]{cccc}
+% \toprule
+% \multirow{2}{*}{Setting} & \multirow{2}{*}{Decoding Algorithm} & \multicolumn{2}{c}{WMT'14 En$\leftrightarrow$De} \\
+% & & En$\rightarrow$De & De$\rightarrow$En \\
+%   \midrule
+%   \midrule
+% %$\multirow{2}{*}{\rotatebox[origin=c]{0}{\scriptsize AR}}
+% \rotatebox[origin=c]{0}{\scriptsize $b$\;=\;1} & \multirow{2}{*}{Autoregressive} & 25.33 & 29.83 \\
+% \rotatebox[origin=c]{0}{\scriptsize $b$\;=\;4} & & 26.84 & 30.92 \\
+% \midrule
+% %    & Gibbs sampling & \alert{ALEX} & \alert{ALEX} \\
+% %\midrule
+% \multirow{4}{*}{\rotatebox[origin=c]{0}{\scriptsize $b$\;=\;1, $T$\;=\;$L$}}
+% 	& Left-to-Right & 23.71 & 28.34 \\
+%     & Uniform & 20.09 & 26.01 \\
+%     & Least-to-Most & 22.54 & 28.84 \\
+%     & Easy-First & 23.04 & 29.00 \\
+%   \midrule
+% \multirow{4}{*}{\rotatebox[origin=c]{0}{\scriptsize $b$\;=\;4, $T$\;=\;$L$}}
+% 	& Left-to-Right & 24.70 & 29.52 \\
+%     & Uniform & 21.11 & 27.07 \\
+%     & Least-to-Most & 23.62 & 29.03 \\
+%     & Easy-First & 23.62 & 29.41 \\
+%   \midrule
+% \multirow{4}{*}{\rotatebox[origin=c]{0}{\scriptsize $b$\;=\;1, $T$\;=\;$2L$}}
+% 	& Left-to-Right & 24.02 & 28.64 \\
+%     & Uniform & 20.59 & 26.24 \\
+%     & Least-to-Most & 22.73 & 28.60 \\
+%     & Easy-First & 23.44 & 29.12 \\
+%   \midrule
+% \multirow{4}{*}{\rotatebox[origin=c]{0}{\scriptsize $b$\;=\;4, $T$\;=\;$2L$}}
+% 	& Left-to-Right & 24.68 & 29.50 \\
+%     & Uniform & 21.54 & 26.98 \\
+%     & Least-to-Most & \alert{ELMAN} & \alert{ELMAN} \\
+%     & Easy-First & \alert{ELMAN} & \alert{ELMAN} \\
+
+% % original table
+%  %\multirow{3}{*}{\rotatebox[origin=c]{90}{\scriptsize Our Model}}
+%     %& Gibbs sampling & \alert{ALEX} & \alert{ALEX} \\
+% 	%& left-to-right ($b$\;=\;1) & 21.68 & 26.28 \\
+% 	%& most-to-least ($b$\;=\;1) & 20.97 & 26.43 \\
+% 	%& easy-first ($b$\;=\;1) & 21.82 & 27.04 \\
+	
+% \bottomrule
+% \end{tabular}
+% \vspace{-2mm}
+\caption{Results (BLEU$\uparrow$) on WMT'14 En$\leftrightarrow$De translation using various decoding algorithms and different settings of beam search width ($b$) and number of iterations ($T$) as a function of sentence length ($L$). For each sentence we use $4$ most likely sentence lengths. \text{*} denotes rescoring generated hypotheses using autoregressive model instead of proposed model.}

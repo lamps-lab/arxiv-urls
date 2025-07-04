@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="UTF-8"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2020-11-06">6 Nov 2020</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Yova</forename><surname>Kementchedjhieva</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Copenhagen</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Di</forename><surname>Lu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Copenhagen</orgName>
+							</affiliation>
+						</author>
+						<author role="corresp">
+							<persName><forename type="first">Joel</forename><surname>Tetreault</surname></persName>
+							<email>inc.jtetreault@dataminr.com</email>
+							<affiliation key="aff0">
+								<orgName type="institution">University of Copenhagen</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2020-11-06">6 Nov 2020</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">7A7FB6B66905D18F01698FCA633CE023</idno>
+					<idno type="arXiv">arXiv:2011.03287v1[cs.CL]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2025-01-29T07:28+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>News articles, image captions, product reviews and many other texts mention people and organizations whose name recognition could vary for different audiences. In such cases, background information about the named entities could be provided in the form of an appositive noun phrase, either written by a human or generated automatically. We expand on the previous work in appositive generation with a new, more realistic, end-to-end definition of the task, instantiated by a dataset that spans four languages (English, Spanish, German and Polish), two entity types (person and organization) and two domains (Wikipedia and News). We carry out an extensive analysis of the data and the task, pointing to the various modeling challenges it poses. The results we obtain with standard language generation methods show that the task is indeed non-trivial, and leaves plenty of room for improvement.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>News articles, image captions, product reviews and many other texts mention people and organizations, whose name recognition could vary for different audiences. A piece of news, for example, may concern people and organizations that are known locally, but are not necessarily well-recognized on a global level. In such cases, news pieces targeted at a wider audience would provide background information about the entity in focus, often in the form of an appositive. For example:</p><p>In March 2017 , Natalie Jaresko, former Minister of Finance in Ukraine, was appointed as the board's executive director.</p><p>It is unlikely that many people outside of Ukraine know the name Natalie Jaresko, so a foreign reader would likely benefit from the extra bit of information about her former occupation as justification for her new appointment. An appositive could also be less contextualized and provide information of more general importance, for example:</p><p>The conservation unit is in the Calhau bairro of São Luís, the state capital.</p><p>In general terms, appositives are phrases that appear next to a noun phrase and serve an explicative function <ref type="bibr" target="#b2">(Bauer, 2017)</ref>. Adding such explanations to text is a multi-step process. First, one has to decide whether an entity mention needs an appositive. That may not be the case for entities that are sufficiently well-known or that have been introduced earlier in the text. In case an appositive is indeed needed, the next step is to choose what information about the entity to disclose. If the information is to be of a factual nature, the writer needs to have prior knowledge of the entity, or access to an external knowledge resource- <ref type="bibr" target="#b7">Kang et al. (2019)</ref> found appositives to be frequently based on facts of particular relevance to the context of the mention. Lastly, the surface form of the appositive, well-fitted to the surrounding context, needs to be produced. Viewed from the perspective of NLP, appositive generation is therefore an interesting and challenging natural language generation problem that involves reasoning over facts from an external knowledge source, with reference to a given context.</p><p>The task of appositive generation, first introduced by <ref type="bibr" target="#b7">Kang et al. (2019)</ref>, is still in its early stages and data resources are limited. We expand on previous work in appositive generation with a new, more realistic, end-to-end definition of the task, instantiated by a dataset, ApposCorpus,<ref type="foot" target="#foot_0">foot_0</ref> that spans four languages (English, Spanish, German and Polish), two entity types (person and organization) and two domains (Wikipedia and News). While Wikipedia as a domain is curated for a world-wide audience and as such may not benefit much from appositive generation, we posit that it is a valuable source of abundant cross-lingual data which could be used as the basis for transfer learning. In addition to a large training set automatically sourced from Wikipedia, we therefore also introduce a gold standard test sourced from newswire, one of the true target domains for appositive generation <ref type="bibr" target="#b7">(Kang et al., 2019)</ref>.</p><p>The next section of the paper outlines the theoretical framework behind the task of appositive generation. In Section 3 we describe the automatic data collection procedure used to obtain training data, and in Section 4 we detail the further manual validation performed to obtain quality data for cross-domain evaluation. The properties of the dataset are discussed in detail in Section 5. Sections 6, 7 and 8 describe the experiments we performed and the main findings from them. Section 9 concludes the paper and outlines avenues for future research.</p><p>2 The task: Appositive generation <ref type="bibr" target="#b7">Kang et al. (2019)</ref> laid the groundwork for appositive generation and our work can be seen as an expansion of their efforts. Yet, we both rename the task and redefine it in more general terms. <ref type="bibr" target="#b7">Kang et al. (2019)</ref> introduced the task of appositive generation. To date this is the only work on this task. They designed a data collection procedure where appositives are identified by locating instances of the appos dependency label <ref type="bibr" target="#b11">(Nivre et al., 2020)</ref> in parsed text, and used it to build a dataset of appositives for PERSON entities in English news articles. The candidate appositives were cross-referenced with the WikiData knowledge base <ref type="bibr" target="#b18">(Vrandečić and Krötzsch, 2014)</ref> through word matching, and only those appositives were included in the final dataset which matched a fact from WikiData.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Prior work</head><p>More generally, appositive generation relates to work on joint fact selection and generation <ref type="bibr" target="#b10">(Liang et al., 2009;</ref><ref type="bibr" target="#b8">Kim and Mooney, 2010;</ref><ref type="bibr" target="#b0">Angeli et al., 2010;</ref><ref type="bibr" target="#b9">Konstas and Lapata, 2013)</ref>. <ref type="bibr" target="#b7">Kang et al. (2019)</ref> actually called the phrases in question post-modifiers, rather than appositives. The linguistic term post-modifier can be seen as subsuming appositives, but it is much broader, including also prepositional, non-finite and dependent clauses that appear in postposition. Meanwhile, appositives come in two forms, nominal appositives, where a single noun identifies or qualifies another noun, e.g. President Washington, and explicative appositives, where a pronoun, an infinitive or a noun phrase is used to explain or specify the status of a noun <ref type="bibr" target="#b2">(Bauer, 2017)</ref>. Explicative appositives are further characterized as non-essential, meaning that they are not integral to the grammatical or semantic well-formedness of the sentence it appears in, and as such are often delimited from the rest of the sentence by punctuation marks <ref type="bibr" target="#b17">(Traffis, 2019)</ref>. For the purposes of providing background information about named entities, we are in particular interested in explicative appositive noun phrases, and that is what we refer to as an appositive throughout this work.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">A shift in terminology</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Expanding the task definition</head><p>Being built with reference to WikiData, the dataset of <ref type="bibr" target="#b7">Kang et al. (2019)</ref> creates the illusion that all facts necessary to generate an appositive are available in the knowledge base. <ref type="bibr" target="#b1">Balaraman et al. (2018)</ref> studied the relative completeness of WikiData entries and found gaps to be the norm rather than an exception. Moreover, the dataset of <ref type="bibr" target="#b7">Kang et al. (2019)</ref>  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>&lt;EMPTY&gt;</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Constrained task</head><p>Full, end-to-end task</p><p>Figure <ref type="figure">1</ref>: Illustration of the task in a constrained setting, where an appositive is always due and the facts in it are always available in the knowledge base; and in a full, end-to-end setting, where a decision has to be made as to whether or not to generate an appositive, and the facts in the appositive may be missing from the knowledge base. The entity in focus is shown in bold, the relevant facts are underlined (where available), and the &lt;EMPTY&gt; tag means no appositive is needed. Optionally, previous context can be included in the input, e.g. the three previous sentences-this is not shown in the figure . 
+
+appositive is due. A more realistic scenario would also require the model to choose whether or not to add an appositive to a given entity mention. ApposCorpus is not constrained by WikiData in terms of fact matching, and contains positive and negative samples, i.e. instances of empty appositives. See Figure <ref type="figure">1</ref> for an illustration. Moreover, it is multilingual and covers both PERSON and ORGANIZATION named entities. We built this dataset primarily based on text from Wikipedia, chosen for its rich cross-lingual coverage.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Dataset collection: Wikipedia</head><p>We used the March 2020 Wikipedia dump<ref type="foot" target="#foot_1">foot_1</ref> for English, Spanish, German and Polish, which we parsed with WikiExtractor,<ref type="foot" target="#foot_2">foot_2</ref> preserving internal links. <ref type="foot" target="#foot_3">4</ref> The choice of these particular languages was mostly based on the availability of good dependency parsers. Since dependency parsing is an integral step of the data collection process <ref type="bibr" target="#b7">(Kang et al., 2019)</ref>, it has to be as precise as possible, to maximize the quality of the outcome. <ref type="foot" target="#foot_4">5</ref> Below, we describe in detail the data collection procedure.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Preprocessing</head><p>We processed every article as follows: (1) tokenize the text and segment sentences;</p><p>(2) normalize mentions of the entity in the article's title and annotate them with internal links; (3) identify sentences which contain a linked named entity listed as an instance of type human or of (a subclass of) type organization in WikiData (corresponding to the PERSON and ORGANIZATION named entity types); (4) run a dependency parser on these sentences. Steps (1) and (4) were performed with Stanza <ref type="bibr" target="#b14">(Qi et al., 2020)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Detecting appositives</head><p>Any instance of the appos label that depends on a linked named entity and is separated from it with a comma or an opening parenthesis was considered a valid candidate. In this case, we recorded the source sentence, replacing the appositive with special token &lt;appos&gt;, as input data, and the appositive as a target. The beginning of the appositive was taken to be the first token after the comma or opening parenthesis, and the end is taken to be the last token before the next comma/semicolon/full stop (if beginning was marked by a comma) or closing parenthesis (if beginning was marked by an opening parenthesis). We discarded any commas and parenthesis surrounding the appositive, but kept semicolons and full stops as part of the input sentence. We also recorded the three preceding sentences from the article and one following sentence. Similarly to <ref type="bibr" target="#b7">Kang et al. (2019)</ref>, we process one appositive per sentence, i.e. if there are multiple appositives in a sentence, we select the first one and do not consider the rest. Appositives containing just dates (usually the date of birth and/or death of a person) are ubiquitous across Wikipedia articles to the point that they constitute up to 30% of the data samples that we get with the procedure described above. We reduced this imbalance in the data by downsampling this type of appositives to only 10% of its occurrences.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Negative samples</head><p>We added negative samples to the dataset, matching the number of positive ones. They were drawn according to the following criteria: (1) there is a PERSON or ORGANIZATION entity in the sentence, (2) it is not followed by a comma or opening parenthesis, and (3) the rest of the sentence does not contain an appositive dependent on the PERSON or ORGANIZATION entity. Condition (2) was used to reduce the chance of including instances of appositives that were not correctly tagged as such by the parser (recall that appositives are often delimited from the rest of the sentence by a punctuation), while (3) was used to ensure that we did not include instances that contain a non-essential appositive, which the author had failed to delimit by any punctuation. In negative samples the input is the original source sentence with an added token &lt;appos&gt; just after the PERSON/ORGANIZATION entity, and the target is a special &lt;EMPTY&gt; token.</p><p>The procedure described above was used to collect training data for factual appositive generation. As it is our goal to study the potential of a cross-domain approach to appositive generation, the ApposCorpus also contains an out-of-domain test set, sourced from newswire.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">Dataset collection: News</head><p>We sourced our data for cross-domain evaluation from the news domain, following previous work <ref type="bibr" target="#b7">(Kang et al., 2019)</ref>, using these news corpora: Global Voices (English, Spanish, German, Polish) <ref type="bibr" target="#b16">(Tiedemann, 2012)</ref>, News Commentary (English, Spanish, German) <ref type="bibr" target="#b16">(Tiedemann, 2012)</ref> and Paralela <ref type="bibr" target="#b13">(Pęzik, 2016)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Entity linking</head><p>Unlike Wikipedia, where entities are explicitly linked to WikiData entries through internal links, here, we had to perform additional entity linking. We did so in the following manner: (1) extract candidates from WikiData based on exact match between the full span of the named entity and all aliases of entities in the respective subset of WikiData (instances of type human if NER label is PERSON , else organization), (2) obtain relative alias frequency distributions from Wikipedia, and (3) the candidate entity with the highest relative frequency given the alias is selected. We chose to use this prior-based method instead of a modeling approach since off-the-shelf entity linkers were not available for all the languages involved. Candidate appositives were then identified as described in 3.2.</p><p>As errors could occur both in the entity linking and in the appositive detection, we hired manual annotators to verify the output of the two procedures (see details in Appendix A.1). The News portion of the ApposCorpus is therefore gold standard and will serve for stable, accurate evaluation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Negative samples</head><p>We added 1, 000 -n negative samples to each subset of the data, where n is the number of positive samples. The exact ratio of positive samples in each test set is reflected in the always yes baseline shown in the Results section (see Figure <ref type="figure">2a</ref>), a dummy baseline which always predicts an appositive.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Data analysis</head><p>This section outlines some findings on the properties of our dataset, based on general statistics and WikiData cross-referencing. The procedure described above yielded less than four thousand samples of ORG appositives for Polish, so this subset is omitted from the ApposCorpus.  <ref type="table">1</ref>: Dataset statistics. Size: full dataset size, Length: average appositive length, WD: ratio of appositives matching a fact from WikiData.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">General statistics</head><p>Table <ref type="table">1</ref> lists some statistics about the two parts of the dataset, one based on Wikipedia (Wikipedia data) and the other on news (News data). Row Size refers to the full size of the data as split into language and entity type. We further split each Wikipedia subset for training (70%), validation (15%) and testing (15%). Size varies greatly across the data, with the Polish PERSON subset being merely 2.5% the size of the English PERSON subset. This relates both to a difference in the Wikipedia sizes for these languages (6M English articles v. 1.4M Polish articles) and to a difference in the frequency of use of appositives across the languages.</p><p>Row Length in Table <ref type="table">1</ref> lists the average number of tokens per appositive, which varies from two to four tokens, and is generally lower for ORGANIZATION appositives than for PERSON ones.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">Cross-referencing with WikiData</head><p>As discussed before, fact matching is not part of our data collection procedure, but at training time it would be beneficial to have access to a knowledge base such as WikiData, and to draw from it, when possible. So we extract the WikiData entries for all named entities in our dataset and perform word matching between facts and appositives in the following way: (1) tokenize the fact and the appositive, (2) remove stopwords, (3) measure token overlap. If the overlap is non-zero, we consider there to be a match and annotate the fact as used. <ref type="foot" target="#foot_5">6</ref>Cross-referencing the data with WikiData is also useful as an insight into the makeup of the data, albeit an insight that is biased the scope and completeness of the knowledge base.</p><p>Coverage Row WD in Table <ref type="table">1a</ref> shows the rather low percentage of appositives from the Wikipedia dataset that are matched to at least one fact from WikiData: from 21.2 for German PERSON appositives to 28.1 for Spanish PERSON appositives. The numbers for the News test set, shown in Table <ref type="table">1b</ref>, are mostly similar to those for the WikiData. Another way to view these percentages is as an effective upper bound on the performance of a model trained with WikiData as the source of knowledge. Further work in identifying other sources of facts for appositive generation and new means of integrating them into a model could therefore prove very fruitful.</p><p>We manually inspected a random sample of 100 appositives from the English section of the Wikipedia dataset that were not matched to any fact from WikiData. In the majority of cases, the appositives concerned the occupation of a person, their position within an organization, their country of origin, or other type of information that is typically found in WikiData, but was missing for the given named entry.</p><p>Composition We studied the composition of the data, as observed with reference to WikiData. We performed our analysis on all languages and found that similar trends hold cross-lingually, so here we discuss the English portion of the data only, and in the Appendix A.2 we include the corresponding tables for Spanish, German and Polish.</p><p>We looked at the types of facts that were matched to appositives from the News data. For all fact types that constitute 3% or more of all facts matched, we also looked at their frequency in the Wikipedia data. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Experiments</head><p>To show how the new task formulation can be used, we experiment with three established language generation methods: the main method of <ref type="bibr" target="#b7">Kang et al. (2019)</ref>, which we refer to as base; an extension of base with external knowledge injected through embeddings with knowledge-base grounding (KB); and a model enhanced with an explicit copy mechanism (copynet, <ref type="bibr" target="#b5">Gu et al. (2016)</ref>). Notice that our goal here is not to build the best model for this task, but to develop reasonable models which can serve as baselines for future work in this area.<ref type="foot" target="#foot_6">foot_6</ref> </p><p>6.1 Architectures LSTM baseline, base <ref type="bibr" target="#b7">Kang et al. (2019)</ref> introduced an LSTM-based encoder-decoder architecture with an auxiliary objective used to guide the attention of the decoder towards the WikiData facts that were matched during the data collection process. Input sentences and facts are represented with the same word embeddings and encoded by separate biLSTMs. The decoder is initialized with the encoding of the input and attends over the encodings of the facts. Our only modification here is to add a "None of the above" item to the list of facts about an entity and point the attention to that when no other fact was matched or the appositive was empty (i.e. for negative data instances).</p><p>LSTM with external knowledge, KB External knowledge can be beneficial to a better understanding of the context and how it relates to the different facts known about an entity. Here, we use the same architecture as above, but initialize the embedding matrix of the model with the NTEE (Neural Text-Entity Encoder) word embeddings, trained on Wikipedia with WikiData grounding <ref type="bibr" target="#b19">(Yamada et al., 2017)</ref>. They aim to represent a text and its relevant entities close to each other. We deem these embeddings suitable for our modeling setup, where input text and facts are represented in a shared space. Unfortunately, the NTEE embeddings are available only for English. So we used word-level translation to "project" them to Spanish, German and Polish. See more details in Appendix A.4. This approach is likely to introduce some noise, but we only use the projection to initialize the embedding matrix which is then further trained. So any signal coming from the embeddings can be used by the model and any noise can be filtered out during training.</p><p>LSTM with a copy mechanism, copynet Motivated by the observation that there is an overlap of at least one token between WikiData facts and appositives for about 25% of the datapoints in our dataset, we experiment with a method that allows the decoder to copy tokens directly from the input: Copynet <ref type="bibr" target="#b5">(Gu et al., 2016)</ref>. <ref type="bibr" target="#b7">Kang et al. (2019)</ref> correctly point out that in their constrained data setting, where data points were selected based on word overlap with WikiData facts, using a copy mechanism would result in double-counting, i.e. artificially boosted results. In our data setting, however, this is not the case.</p><p>All three approaches are end-to-end in the sense that we do not split up the classification task of whether or not to predict an appositive from the task of generating an appositive where it is due. As negative samples in the dataset have the special &lt;EMPTY&gt; token as target, the models are performing the classification task implicitly by choosing whether to predict the &lt;EMPTY&gt; token or not.</p><p>Preliminary experiments with the base architecture showed that the choice between providing the model with three sentences of preceding context, one or zero had little impact on its performance, so all results reported below use one sentence of preceding context, following <ref type="bibr" target="#b7">Kang et al. (2019)</ref>. Further details on the implementations and the hyperparameters we used can be found in Appendix A.3.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.2">Evaluation</head><p>We follow <ref type="bibr" target="#b7">Kang et al. (2019)</ref> in the choice of performance metrics for predictions over the positive instances in the data: we measure F1 score of the predicted bag-of-words excluding stopwords; BLEU <ref type="bibr" target="#b12">(Papineni et al., 2002)</ref> over n-grams, where n = 1, 2, 3;<ref type="foot" target="#foot_7">foot_7</ref> and METEOR <ref type="bibr" target="#b3">(Denkowski and Lavie, 2014)</ref>, which supports stemming and synonymy only in English, Spanish and German, so these features are not used for Polish. We use accuracy to measure the models' ability to determine when an appositive is due.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Results</head><p>We view the results of our experiments from two angles: one concerns the expansion of the task definition we achieve with ApposCorpus, from a constrained scenario to an end-to-end one; the other concerns the increased coverage of the dataset, which allows us to compare and contrast appositive generation across different languages and named entity types.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.1">Constrained v. end-to-end scenario</head><p>To draw a direct comparison to the work of <ref type="bibr" target="#b7">Kang et al. (2019)</ref>, in this subsection we focus on English PERSON appositives, as this is the subset that was covered by their dataset, dubbed PoMo. We begin by replicating exactly their train and test settings, both constrained, using the model architecture they proposed, base. In the first two rows of Table <ref type="table" target="#tab_3">3</ref>, the performance of the model is reported on both the constrained subset of our News test data and on the PoMo test set, constrained by design. There is a considerable difference in performance as measured on the two test sets. Since they were both drawn from the same domain, this difference may largely be due to one test set being gold standard and the other silver standard, which highlights the importance of having gold standard evaluation data.</p><p>Using these results as a starting point, we consider two important factors in the shift from a constrained to an end-to-end setting: one concerns learning and the other, evaluation.</p><p>Learning complexity can be expected to increase in the end-to-end training setting, since the model has to learn not just what appositive to predict, but also whether or not to predict an appositive. Due to gaps in WikiData, the model also has to learn how to best handle instances of appositives based on unobserved facts. We demonstrate how these factors affect performance by comparing the base model trained in a constrained setting to one trained in an end-to-end setting. We measure the models' performance in a constrained test setting, to make the comparison fair to the former. Shifting from a org</p><formula xml:id="formula_0">F 1 B L E U M E T E O R F 1 B L E U M E T E O R base kb copynet (b)</formula><p>Figure <ref type="figure">2</ref>: (a) Evaluation of (a) the models' ability to correctly decide when an appositive is due, (b) generated predictions for positive test instances. Measured on the News test set.</p><p>constrained train setting (rows 1 and 2 of Table <ref type="table" target="#tab_3">3</ref>) to an end-to-end setting (rows 3 and 4), we observe a drop in performance of around 50% on all generation metrics. The model trained end-to-end does very well on choosing whether or not to predict an appositive (accuracy is 95% for ApposCorpus and 91.7% for PoMo) , so we have to conclude that the lower generation scores are not a matter of predicting empty appositives, but rather of predicting worse appositives due to the increased learning complexity.</p><p>Evaluation is another aspect to consider when comparing the constrained and full data settings. The quality of evaluation is key to understanding how well a model would perform if deployed in the real world. Constrained evaluation, however, only tells us how a model would do in an idealistic scenario, where all the facts about all the entities were indeed covered by a knowledge base. As this is not the case with <ref type="bibr">WikiData (Balaraman et al., 2018)</ref>, and with any existing knowledge base for that matter, it is important to evaluate models in a manner that reflect gaps in external knowledge sources. We report the performance of a model trained and tested in an end-to-end setting in the last row of Table <ref type="table" target="#tab_3">3</ref>. Compared to the model's performance as measured on the constrained test set (row 3), these numbers are substantially lower. Yet, they are the numbers that most truly represent the performance of the base model, at least in terms of automatic evaluation. We return to this matter when analysing the model's performance in Section 8.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.2">Languages and entity types</head><p>The full range of results on the News test set are shown in Figure <ref type="figure">2</ref>. Results are averaged over three models trained from different random initializations. We evaluate how well the models can detect when an appositive is needed (implicit classification) and how well it can perform the end-to-end task of classifying and generating a good appositive.</p><p>Implicit classification of the positive and negative samples in the data appears to be roughly equally challenging across the two entity types and the four languages, as viewed across all three models (see Figure <ref type="figure">2a</ref>. One exception is Polish PERSON appositives, where base and kb score higher than they do on the other subsets, while copynet barely beats the baseline. Since the models are not explicitly trained to perform this type of classification, it is encouraging to see that even in this setting, they can outperform the baseline (always predicting the positive class) by as much as 20% in several cases.</p><p>Generation is the more difficult aspect of the task, as shown in Figure <ref type="figure">2b</ref>. We see that, somewhat surprisingly considering the amounts of training data (see  Polish is virtually non-existent. There are no clear differences between overall performance on PERSON and ORGANIZATION appositives. Only in English, the latter seem to pose a greater challenge to all three models and according to all three metrics. Model comparison is not straightforward since the different metrics reveal different strengths and weaknesses in each approach. It does appear to be the case that injecting external knowledge through pretrained knowledge-base embeddings (kb) is beneficial to the prediction of ORGANIZATION appositives and somewhat harmful to the prediction of PERSON appositives. Since the differences between the three methods are not consistent across all languages, named entity types and metrics, we cannot conclusively say which method is best, but we do note that copynet scores high on the most metrics, languages and entity types. To better understand the performance of this model, we stepped away from automatic generation metrics, which are known to suffer from certain biases and can be difficult to interpret, and we carried out an additional manual evaluation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8">Analysis</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.1">Manual evaluation</head><p>We used Amazon Mechanical Turk to carry out a ranking paradigm study on the predictions of copynet for English PERSON and ORGANIZATION appositives. The annotators were shown a true appositive and a predicted appositive side-by-side (in the context of the input sentence) and were asked to express their preference towards either of these two, or their lack of preference as a third option. One example prompt is shown in Appendix A.7. Five annotations were obtained per data instance, and we then took the majority vote as an indication of the overall preference. The results are shown in Table <ref type="table" target="#tab_5">4</ref>. For PERSON appositives, the writer's choice (true) and the system's prediction were preferred at almost equal ratesthis observation challenges the numbers obtained with the automatic evaluation metrics, as it suggests that the predicted appositives were not necessarily of poor quality. A bigger gap was observed between true and system-generated ORGANIZATION appositives, where the crowdworkers preferred the original appositive 66.0% of the time. The lower preference for ORGANIZATION predictions is in line with the trend in the automatic results, where performance on English ORGANIZATION appositives was shown to be lower than that on English PERSON appositives. Notice, however, that even for organization appositives, annotators still showed preference for the predicted ones at a considerable rate. This suggests that the automatic metrics may have severely under-represented the abilities of the models.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.2">Qualitative analysis</head><p>To better understand the source of error in the models' predictions, we manually inspected 50 data points from the PERSON subset and 50 data points from the ORGANIZATION subset, where a choice was made in favour of the true appositive over the predicted one. Half of the data points were instances where the true appositive was not empty, but the models predicted an empty appositive. The annotators seemed to strongly prefer non-empty appositives, possibly due to the fact that they where shown sentences without their original context, where the role of an entity might have been clarified at an earlier mention. Yet, that is not categorically so as seen in example 1 in Table <ref type="table">5</ref>, where the predicted appositive is redundant in the given context, so the annotators preferred the true empty appositive. Other types of errors the models made were to predict appositives that concern the right piece of information but are too general (examples 2 and 3), to predict appositives based on the wrong piece of information (examples 4 and 5), and, specifically for ORGANIZATION appositives, to just repeat the named entity (example 6). While the latter is the result of either suboptimal learning or noise in the data, the rest of the errors we saw point to the need for an approach with deeper understanding of the facts and their relevance to the context.</p><p>Gold sentence Prediction 1 In response to an April 9 court ruling declaring the military backed government of Frank Bainimarama &lt;EMPTY&gt; to power illegally when he dissolved Parliament and deposed the government of Laisenia Qarase , the country 's President nullified the Fiji 's constitution , fired the entire judiciary and appointment himself head of state and the armed forces.</p><p>the President of Fiji 2 Artyom Loskutov, creator of the popular counter -culture art movement " Monstration ", made waves on RuNet by signing a letter in support of Dmitry Kiselyov , a journalist who many consider to be Putin 's chief propagandist.</p><p>a Russian painter 3 In a fatal blow to our already lackluster sources of entertainment , the Sudanese government has blocked access to YouTube, the online video sharing Web site. platform 3 Modi, a tech-savvy nationalist from the right-wing Bharata Janatiya Party, has traveled the world to sell the idea of India as an emerging digital economy, making deals with the likes of Google and ( less successfully ) Facebook.</p><p>the Prime minister of India 4 Some critics also highlighted the fact that Jabrailov is from Chechnya, a republic in the Northern Caucasus region of Russia where Muslim separatists fought two bloody wars against the Russian army.</p><p>Chechnya 5 He steers between Soukous , rhumba and RnB " , and links to an interview with the singer on Radio Okapi, the nationwide radio station sponsored by the UN and Fondation Hirondelle.</p><p>the Democratic Republic of the Congo 6 In particular , tweeps took note of Abed Rabbo 's attacks on Qatar, the home of Al Jazeera. Qatar</p><p>Table <ref type="table">5</ref>: Examples where true appositives were preferred over predicted ones by human annotators.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="9">Conclusion</head><p>ApposCorpus targets factual appositive generation, a phenomenon frequently occurring in a range of textual domains. It substantially extends the prior resources in the area by spanning four languages, two named entity types , and two domains. This resource also allows the burgeoning field to investigate end-to-end appositive generation. Our manual and automatic evaluations with ApposCorpus show that standard model architectures can approach the quality of human targets in specific cases but there is still room for improvement. With this dataset, appositive generation can be studied in much more depth than previously possible, ultimately paving the way for novel NLP applications in the generation and writing space. The focus in future research, we believe, should fall on explicit methods for cross-domain learning, on richer knowledge sources, and on the development of test sets for new domains.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="10">Acknowledgements</head><p>We acknowledge the responsiveness and help of Jun Seok Kang and Robert L. Logan IV in discussions on the design choices and goals of their work on post-modifier generation and on how to accurately reproduce their experiments. We also thank researchers from Dataminr: Saran Krishnasamy, Lin Nie, and Isabel Zhang for their help in setting up experiments and annotation. Finally, we thank the three anonymous reviewers for their feedback and comments.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A Appendices</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.1 Manual validation</head><p>We hired annotators fluent in the languages of the data to manually validate it. They had to mark instances where an error had occurred in the appositive detection, the detected appositive was not factual, or the entity had been incorrectly linked to WikiData (all instances of noise in the data, resulting from errors in appositive detection and entity linking). Our ultimate goal was to build test sets of 1,000 instances per language per entity type, equally balanced between positive and negative instances, i.e. we needed 500 valid data instances per language per entity type. Based on a pilot study, we determined that noise levels for candidate appositives for PERSON entities were approximately 33% and for ORGANIZATION entities, 50% (averaged across languages). We therefore gave annotators 750 and 1,000 candidates to annotate for the PERSON and ORGANIZATION types, respectively. For most language-entity type combinations, the manual annotation successfully yielded close to 500 valid instances. That was not the case for Polish ORGANIZATION appositives, where only 80 valid candidates were retrieved, so we excluded this language-entity type combination from our work. It remains an open question whether ORGANIZATION appositives in Polish are rare or our automatic detection method failed at catching them. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.2 Composition of cross-lingual data</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.4 Projection of NTEE embeddings</head><p>We obtained a bilingual dictionary with CSLS retrieval over the cross-lingual FastText embeddings. CSLS retrieval is similar to nearest neighbor retrieval, but has proven more accurate: <ref type="bibr" target="#b6">(Joulin et al., 2018)</ref> report an accuracy of 83.7%, 77.6% and 73.5% for word translation, respectively, from Spanish, German and Polish to English, as measured on a sample of 1,500 medium frequency words. Any errors in the bilingual dictionaries would inevitably lead to noise in the NTEE embedding projection.</p><p>Copynet We use the AllenNLP (?) implementation of Copynet with the hyperpameters shown in Table <ref type="table" target="#tab_8">7</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.5 Transformer experiments</head><p>Transformer-based architectures are state-of-the-art for many NLP tasks, so it is only fair that we experiment with such an architecture as well. As BERT models <ref type="bibr" target="#b4">(Devlin et al., 2019)</ref> have been made available for all four languages we work with, we chose to train BERT-to-BERT encoder-decoder models for appositive generation. <ref type="bibr" target="#b15">Rothe et al. (2019)</ref> found that architecture to give strong performance on tasks like sentence fusion and rephrasing. We used their training schedule but unfortunately, found that all models learned to predict the &lt;empty&gt; token exclusively. As it is not the goal of our work to explore the capabilities of the BERT-to-BERT architecture in particular, we did not use further resources to adjust the training schedule. Yet, we do believe this to be an optimization problem, and we would not discourage future research from attempting to solve the task of appositive generation with a transformer-based approach.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.6 Results</head><p>The results as measured on the Wikipedia test set are shown in Figure <ref type="figure" target="#fig_1">3</ref>. Compared to results on the News test set (see Figure <ref type="figure">2</ref>, the numbers seen here are higher, which is to be expected considering that this test set is in-domain and any noise found in it (due to it being silver standard) likely resembles the noise found in the training data. It is worth noting though, that certain patterns repeat between the two test sets, as for example the fact that copynet, as measured on F1 score and BLEU, outperforms the other models on the majority of language-named entity type combinations, but not on Polish PERSON appositives and Spanish ORGANIZATION appositives. This suggests that, while evaluation on the silverstandard Wikipedia test set cannot be consider fully stable and representative, it can be taken as a proxy in model comparison for developmental purposes.</p><p>The numbers behind the results from Figures 2 and 3 are shown in Tables <ref type="table" target="#tab_9">8</ref> and<ref type="table" target="#tab_10">9</ref>, respectively.  A.7 Ranking paradigm study Figure <ref type="figure">4</ref> shows an example prompt from the blind taste test. Instances where either the true appositive was empty or the predicted one was empty were included in the the study, but instances where both were empty were excluded, as the comparison would not have been meaningful in this case. The average time for completing a HIT was 53 seconds.</p><p>Figure <ref type="figure">4</ref>: Prompt for manual evaluation.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: (a) Evaluation of (a) the models' ability to correctly decide when an appositive is due, (b) generated predictions for positive test instances. Measured on the News test set.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head/><label/><figDesc>only includes positive samples, i.e. instances where an</figDesc><table><row><cell/><cell>&lt; N sentences of past context &gt; ...</cell><cell>&lt; N sentences of past context &gt; ...</cell><cell>&lt; N sentences of past context &gt; ...</cell></row><row><cell>Input text</cell><cell>Blogrel notes the passing of Aram Asatryan.</cell><cell>In particular , tweeps took note of Abed Rabbo's attacks on Qatar.</cell><cell>Yandex is being forced to change the terms of its information sharing policy.</cell></row><row><cell>Input facts</cell><cell>sex or gender: male citizenship: Armenia, Soviet Union date of birth: 3 March 1953 occupation: singer, composer genre: Rabiz, pop music</cell><cell>part of: Middle East inception: 1870 official language: Arabic capital: Doha lowest point: Persian Gulf</cell><cell>industry: internet, software inception: 23 September 1997 CEO: Arkady Volozh country: Russia 59,790,000,000 Russian ruble</cell></row><row><cell>Output</cell><cell>an Armenian musician</cell><cell>the home of Al Jazeera</cell><cell/></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Table 2 :</head><label>2</label><figDesc>Top fact types. English.Results are shown in Table2. We see that half of the top fact types in the News dataset are also wellattested in the Wikipedia data, i.e. their relative frequency is 3% or more. We can expect that knowledge concerning appositives based on these fact types would trivially transfer from one domain to the other. The low frequency for the remaining fact types (cf. has quality and capital of ), on the other hand, poses a challenge whose solution would require deeper natural language understanding and, possibly, explicit domain transfer techniques.</figDesc><table><row><cell/><cell>Fact type</cell><cell cols="2">News (%) Wiki(%)</cell><cell/><cell>Fact type</cell><cell cols="2">News (%) Wiki(%)</cell></row><row><cell/><cell>position held</cell><cell>20.9</cell><cell>9.4</cell><cell/><cell>instance of</cell><cell>23.1</cell><cell>10.9</cell></row><row><cell/><cell>occupation</cell><cell>15.9</cell><cell>10.6</cell><cell/><cell cols="2">official website 6.3</cell><cell>6.2</cell></row><row><cell>PER</cell><cell cols="2">citizenship member of party 7.6 10.1 award received 5.2</cell><cell>4.3 1.9 3.9</cell><cell>ORG</cell><cell>country member of subsidiary</cell><cell>5.9 4.2 3.5</cell><cell>3.3 2.4 2.1</cell></row><row><cell/><cell>nominated for</cell><cell>3.6</cell><cell>0.4</cell><cell/><cell>capital of</cell><cell>3.2</cell><cell>0.1</cell></row><row><cell/><cell>educated at</cell><cell>3.1</cell><cell>3.1</cell><cell/><cell>has quality</cell><cell>3.0</cell><cell>0.0</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>Table 3 :</head><label>3</label><figDesc>Generation of English PERSON appositives in a constrained v. end-to-end train and test setting.</figDesc><table><row><cell cols="3">Train setting Test setting Dataset</cell><cell cols="2">Acc(%) F1</cell><cell>BLEU MET.</cell></row><row><cell>constrained</cell><cell>constrained</cell><cell cols="2">ApposCorpus (News) -PoMo -</cell><cell cols="2">19.61 7.93 11.21 3.44</cell><cell>9.12 5.03</cell></row><row><cell>end-to-end</cell><cell>constrained</cell><cell cols="2">ApposCorpus (News) 95.0 PoMo 91.7</cell><cell cols="2">10.76 3.39 4.52 0.57</cell><cell>4.41 2.03</cell></row><row><cell/><cell>end-to-end</cell><cell cols="2">ApposCorpus (News) 72.33</cell><cell>5.97</cell><cell>1.03</cell><cell>2.96</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head>Table 4 :</head><label>4</label><figDesc>Results from the ranking paradigm study comparing true appositives to system-generated ones.</figDesc><table/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7"><head>Table 6 :</head><label>6</label><figDesc>Top fact types per language.</figDesc><table/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8"><head>Table 7 :</head><label>7</label><figDesc>Table6present findings on the composition of the Spanish, German and Polish positions of the data, respectively, as observed through cross-referencing with WikiData. The low number of facts for Polish is the result of one fact type dominating a large amount of the data (position held). Hyperparameter configurations for Base/KB models and Copynet models. We use the implementation of<ref type="bibr" target="#b7">Kang et al. (2019)</ref> from https://github.com/ rloganiv/claimrank-allennlp. We set the model hyperparameters to the ones reported in their paper, changing only the dimension of the embeddings from 500 to 300, to make the comparison between [Base] and[KB]  fair in terms of model parameterization. Training hyperparameters were tweaked to achieve stable training that fits on one 16 GB GPU. See the full list of hyperparameters in Table7.</figDesc><table><row><cell/><cell cols="2">Base/KB Copynet</cell></row><row><cell>vocab size</cell><cell>50k</cell><cell>50k</cell></row><row><cell cols="2">embedding dim 300</cell><cell>300</cell></row><row><cell>hidden units</cell><cell>250</cell><cell>250</cell></row><row><cell>num layers</cell><cell>2</cell><cell>2</cell></row><row><cell>optimizer</cell><cell>Adam</cell><cell>Adam</cell></row><row><cell>learning rate</cell><cell>0.001</cell><cell>0.0001</cell></row><row><cell>batch size</cell><cell>16</cell><cell>6</cell></row><row><cell>dropout</cell><cell>0.3</cell><cell>0.3</cell></row><row><cell>A.3 Implementations and hyperparameters</cell><cell/><cell/></row><row><cell>[Base] and [KB]</cell><cell/><cell/></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_9"><head>Table 8 :</head><label>8</label><figDesc>Evaluation of the models' ability to correctly decide when an appositive is due and of generated predictions for positive test instances. Measured on the News test set.</figDesc><table><row><cell/><cell/><cell/><cell>72 1.03</cell><cell>2.96</cell></row><row><cell/><cell>kb</cell><cell cols="2">71.73 0.73 1.03</cell><cell>2.9</cell></row><row><cell/><cell>copynet</cell><cell cols="2">70.19 0.71 2.45</cell><cell>2.24</cell></row><row><cell>EN-ORG</cell><cell cols="3">always yes 0.5 base 68.09 0.74 0.23 0.0 0.0 kb 66.58 0.74 0.21</cell><cell>0.0 1.61 1.58</cell></row><row><cell/><cell>copynet</cell><cell cols="2">65.98 0.73 0.52</cell><cell>1.37</cell></row><row><cell>ES-PER</cell><cell cols="3">always yes 0.58 base 62.84 0.67 1.24 0.0 0.0 kb 61.18 0.68 0.79</cell><cell>0.0 5.44 4.79</cell></row><row><cell/><cell>copynet</cell><cell cols="2">64.08 0.67 2.2</cell><cell>4.36</cell></row><row><cell>ES-ORG</cell><cell cols="3">always yes 0.4 base 47.39 0.68 1.32 0.0 0.0 kb 60.91 0.71 2.02</cell><cell>0.0 5.64 6.83</cell></row><row><cell/><cell>copynet</cell><cell cols="2">33.57 0.62 0.33</cell><cell>2.77</cell></row><row><cell>DE-PER</cell><cell cols="3">always yes 0.54 base 62.94 0.67 0.8 0.0 0.0 kb 63.47 0.68 0.75</cell><cell>0.0 3.19 2.84</cell></row><row><cell/><cell>copynet</cell><cell cols="2">67.63 0.69 1.75</cell><cell>1.76</cell></row><row><cell>DE-ORG</cell><cell cols="3">always yes 0.46 base 62.77 0.72 0.54 0.0 0.0 kb 65.13 0.73 0.19</cell><cell>0.0 3.21 3.47</cell></row><row><cell/><cell>copynet</cell><cell cols="2">62.22 0.72 0.43</cell><cell>1.08</cell></row><row><cell>PL-PER</cell><cell cols="3">always yes 0.54 base 72.83 0.78 0.16 0.0 0.0 kb 73.8 0.77 0.06</cell><cell>0.0 0.09 0.13</cell></row><row><cell/><cell>copynet</cell><cell>2.75</cell><cell>0.58 0.0</cell><cell>0.12</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_10"><head>Table 9 :</head><label>9</label><figDesc>Evaluation of the models' ability to correctly decide when an appositive is due and of generated predictions for positive test instances. Measured on the Wiki test set.</figDesc><table/></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>Available at https://yovakem.github.io/#ApposCorpus.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_1"><p>https://dumps.wikimedia.org/</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3" xml:id="foot_2"><p>https://github.com/attardi/wikiextractor</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4" xml:id="foot_3"><p>These links point to other pages on Wikipedia and allow us to identify the Wikidata entry for the given named entity.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5" xml:id="foot_4"><p>We only considered parsers with labeled accuracy score over 90.0</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6" xml:id="foot_5"><p>We experimented with other thresholds (2 and 3-word overlap) and with fuzzy matching, but found this method to work best.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="7" xml:id="foot_6"><p>We also experimented with a transformer architecture, but encountered optimization problems. See details in Appendix A.5.</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="8" xml:id="foot_7"><p><ref type="bibr" target="#b7">Kang et al. (2019)</ref> also included four-grams, but seeing that the average length of an appositive across the different subsets of the data is 3.08 tokens, we exclude four-grams from consideration.</p></note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">A simple domain-independent probabilistic approach to generation</title>
+		<author>
+			<persName><forename type="first">Gabor</forename><surname>Angeli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Percy</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dan</forename><surname>Klein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2010 Conference on Empirical Methods in Natural Language Processing</title>
+		<meeting>the 2010 Conference on Empirical Methods in Natural Language Processing<address><addrLine>Cambridge, MA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2010-10">2010. October</date>
+			<biblScope unit="page" from="502" to="512"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Gabor Angeli, Percy Liang, and Dan Klein. 2010. A simple domain-independent probabilistic approach to gen- eration. In Proceedings of the 2010 Conference on Empirical Methods in Natural Language Processing, pages 502-512, Cambridge, MA, October. Association for Computational Linguistics.</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Recoin: relative completeness in wikidata</title>
+		<author>
+			<persName><forename type="first">Simon</forename><surname>Vevake Balaraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Werner</forename><surname>Razniewski</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Nutt</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Companion Proceedings of the The Web Conference</title>
+		<imprint>
+			<date type="published" when="2018">2018. 2018</date>
+			<biblScope unit="page" from="1787" to="1792"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Vevake Balaraman, Simon Razniewski, and Werner Nutt. 2018. Recoin: relative completeness in wikidata. In Companion Proceedings of the The Web Conference 2018, pages 1787-1792.</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Nominal Apposition in Indo-European: Its Forms and Functions, and its Evolution in Latin-Romance</title>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">L M</forename><surname>Bauer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="s">Trends in Linguistics. Studies and Monographs</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<publisher>De Gruyter</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">B.L.M. Bauer. 2017. Nominal Apposition in Indo-European: Its Forms and Functions, and its Evolution in Latin-Romance. Trends in Linguistics. Studies and Monographs [TiLSM]. De Gruyter.</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Meteor universal: Language specific translation evaluation for any target language</title>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Denkowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alon</forename><surname>Lavie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Ninth Workshop on Statistical Machine Translation</title>
+		<meeting>the Ninth Workshop on Statistical Machine Translation<address><addrLine>Baltimore, Maryland, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2014-06">2014. June</date>
+			<biblScope unit="page" from="376" to="380"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Michael Denkowski and Alon Lavie. 2014. Meteor universal: Language specific translation evaluation for any target language. In Proceedings of the Ninth Workshop on Statistical Machine Translation, pages 376-380, Baltimore, Maryland, USA, June. Association for Computational Linguistics.</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Bert: Pre-training of deep bidirectional transformers for language understanding</title>
+		<author>
+			<persName><forename type="first">Jacob</forename><surname>Devlin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ming-Wei</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kenton</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kristina</forename><surname>Toutanova</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</title>
+		<meeting>the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="4171" to="4186"/>
+		</imprint>
+	</monogr>
+	<note>Long and Short Papers</note>
+	<note type="raw_reference">Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019. Bert: Pre-training of deep bidirec- tional transformers for language understanding. In Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers), pages 4171-4186.</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Incorporating copying mechanism in sequence-tosequence learning</title>
+		<author>
+			<persName><forename type="first">Jiatao</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhengdong</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hang</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><forename type="middle">K</forename><surname>Victor</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics</title>
+		<meeting>the 54th Annual Meeting of the Association for Computational Linguistics<address><addrLine>Berlin, Germany</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2016-08">2016. August</date>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="1631" to="1640"/>
+		</imprint>
+	</monogr>
+	<note>: Long Papers)</note>
+	<note type="raw_reference">Jiatao Gu, Zhengdong Lu, Hang Li, and Victor O.K. Li. 2016. Incorporating copying mechanism in sequence-to- sequence learning. In Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 1631-1640, Berlin, Germany, August. Association for Computational Linguis- tics.</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Loss in translation: Learning bilingual word mapping with a retrieval criterion</title>
+		<author>
+			<persName><forename type="first">Armand</forename><surname>Joulin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Piotr</forename><surname>Bojanowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tomas</forename><surname>Mikolov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hervé</forename><surname>Jégou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Edouard</forename><surname>Grave</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing</title>
+		<meeting>the 2018 Conference on Empirical Methods in Natural Language Processing<address><addrLine>Brussels, Belgium</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2018-10">2018. October-November</date>
+			<biblScope unit="page" from="2979" to="2984"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Armand Joulin, Piotr Bojanowski, Tomas Mikolov, Hervé Jégou, and Edouard Grave. 2018. Loss in translation: Learning bilingual word mapping with a retrieval criterion. In Proceedings of the 2018 Conference on Em- pirical Methods in Natural Language Processing, pages 2979-2984, Brussels, Belgium, October-November. Association for Computational Linguistics.</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Pomo: Generating entity-specific post-modifiers in context</title>
+		<author>
+			<persName><forename type="first">Jun Seok</forename><surname>Kang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><forename type="middle">L</forename><surname>Logan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><forename type="middle">V</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zewei</forename><surname>Chu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yang</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dheeru</forename><surname>Dua</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kevin</forename><surname>Gimpel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sameer</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Niranjan</forename><surname>Balasubramanian</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of NAACL-HLT</title>
+		<meeting>NAACL-HLT</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="826" to="838"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Jun Seok Kang, Robert L Logan IV, Zewei Chu, Yang Chen, Dheeru Dua, Kevin Gimpel, Sameer Singh, and Niranjan Balasubramanian. 2019. Pomo: Generating entity-specific post-modifiers in context. In Proceedings of NAACL-HLT, pages 826-838.</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Generative alignment and semantic parsing for learning from ambiguous supervision</title>
+		<author>
+			<persName><forename type="first">Joohyun</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Raymond</forename><surname>Mooney</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Coling 2010: Posters</title>
+		<meeting><address><addrLine>Beijing, China</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2010-08">2010. August</date>
+			<biblScope unit="page" from="543" to="551"/>
+		</imprint>
+	</monogr>
+	<note>Coling 2010 Organizing Committee</note>
+	<note type="raw_reference">Joohyun Kim and Raymond Mooney. 2010. Generative alignment and semantic parsing for learning from am- biguous supervision. In Coling 2010: Posters, pages 543-551, Beijing, China, August. Coling 2010 Organizing Committee.</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">A global model for concept-to-text generation</title>
+		<author>
+			<persName><forename type="first">Ioannis</forename><surname>Konstas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mirella</forename><surname>Lapata</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">J. Artif. Intell. Res</title>
+		<imprint>
+			<biblScope unit="volume">48</biblScope>
+			<biblScope unit="page" from="305" to="346"/>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Ioannis Konstas and Mirella Lapata. 2013. A global model for concept-to-text generation. J. Artif. Intell. Res., 48:305-346.</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Learning semantic correspondences with less supervision</title>
+		<author>
+			<persName><forename type="first">Percy</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Jordan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dan</forename><surname>Klein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Joint Conference of the 47th Annual Meeting of the ACL and the 4th International Joint Conference on Natural Language Processing of the AFNLP</title>
+		<meeting>the Joint Conference of the 47th Annual Meeting of the ACL and the 4th International Joint Conference on Natural Language Processing of the AFNLP<address><addrLine>Suntec, Singapore</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2009-08">2009. August</date>
+			<biblScope unit="page" from="91" to="99"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Percy Liang, Michael Jordan, and Dan Klein. 2009. Learning semantic correspondences with less supervision. In Proceedings of the Joint Conference of the 47th Annual Meeting of the ACL and the 4th International Joint Con- ference on Natural Language Processing of the AFNLP, pages 91-99, Suntec, Singapore, August. Association for Computational Linguistics.</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Universal Dependencies v2: An evergrowing multilingual treebank collection</title>
+		<author>
+			<persName><forename type="first">Joakim</forename><surname>Nivre</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marie-Catherine</forename><surname>De Marneffe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Filip</forename><surname>Ginter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jan</forename><surname>Hajič</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><forename type="middle">D</forename><surname>Manning</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sampo</forename><surname>Pyysalo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sebastian</forename><surname>Schuster</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francis</forename><surname>Tyers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Zeman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 12th Language Resources and Evaluation Conference</title>
+		<meeting>the 12th Language Resources and Evaluation Conference<address><addrLine>Marseille, France</addrLine></address></meeting>
+		<imprint>
+			<publisher>European Language Resources Association</publisher>
+			<date type="published" when="2020-05">2020. May</date>
+			<biblScope unit="page" from="4034" to="4043"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Joakim Nivre, Marie-Catherine de Marneffe, Filip Ginter, Jan Hajič, Christopher D. Manning, Sampo Pyysalo, Sebastian Schuster, Francis Tyers, and Daniel Zeman. 2020. Universal Dependencies v2: An evergrowing multilingual treebank collection. In Proceedings of the 12th Language Resources and Evaluation Conference, pages 4034-4043, Marseille, France, May. European Language Resources Association.</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Bleu: A method for automatic evaluation of machine translation</title>
+		<author>
+			<persName><forename type="first">Kishore</forename><surname>Papineni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Salim</forename><surname>Roukos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Todd</forename><surname>Ward</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei-Jing</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 40th Annual Meeting on Association for Computational Linguistics, ACL '02</title>
+		<meeting>the 40th Annual Meeting on Association for Computational Linguistics, ACL '02</meeting>
+		<imprint>
+			<publisher>USA. Association for Computational Linguistics</publisher>
+			<date type="published" when="2002">2002</date>
+			<biblScope unit="page" from="311" to="318"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Kishore Papineni, Salim Roukos, Todd Ward, and Wei-Jing Zhu. 2002. Bleu: A method for automatic evalu- ation of machine translation. In Proceedings of the 40th Annual Meeting on Association for Computational Linguistics, ACL '02, page 311-318, USA. Association for Computational Linguistics.</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">Exploring phraseological equivalence with paralela</title>
+		<author>
+			<persName><forename type="first">Piotr</forename><surname>Pęzik</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Piotr Pęzik. 2016. Exploring phraseological equivalence with paralela.</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Stanza: A Python natural language processing toolkit for many human languages</title>
+		<author>
+			<persName><forename type="first">Peng</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuhao</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuhui</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jason</forename><surname>Bolton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><forename type="middle">D</forename><surname>Manning</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics: System Demonstrations</title>
+		<meeting>the 58th Annual Meeting of the Association for Computational Linguistics: System Demonstrations</meeting>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Peng Qi, Yuhao Zhang, Yuhui Zhang, Jason Bolton, and Christopher D. Manning. 2020. Stanza: A Python natural language processing toolkit for many human languages. In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics: System Demonstrations.</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Leveraging pre-trained checkpoints for sequence generation tasks</title>
+		<author>
+			<persName><forename type="first">Sascha</forename><surname>Rothe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shashi</forename><surname>Narayan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aliaksei</forename><surname>Severyn</surname></persName>
+		</author>
+		<idno>CoRR, abs/1907.12461</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Sascha Rothe, Shashi Narayan, and Aliaksei Severyn. 2019. Leveraging pre-trained checkpoints for sequence generation tasks. CoRR, abs/1907.12461.</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Parallel data, tools and interfaces in opus</title>
+		<author>
+			<persName><forename type="first">Jörg</forename><surname>Tiedemann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Eight International Conference on Language Resources and Evaluation (LREC'12)</title>
+		<editor>
+			<persName><forename type="first">Khalid</forename><surname>Choukri</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Thierry</forename><surname>Declerck</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Mehmet</forename><surname>Ugur Dogan</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Bente</forename><surname>Maegaard</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Joseph</forename><surname>Mariani</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Jan</forename><surname>Odijk</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">Stelios</forename><surname>Piperidis</surname></persName>
+		</editor>
+		<meeting>the Eight International Conference on Language Resources and Evaluation (LREC'12)<address><addrLine>Istanbul, Turkey</addrLine></address></meeting>
+		<imprint>
+			<publisher>European Language Resources Association (ELRA</publisher>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+	<note>Nicoletta Calzolari (Conference Chair)</note>
+	<note type="raw_reference">Jörg Tiedemann. 2012. Parallel data, tools and interfaces in opus. In Nicoletta Calzolari (Conference Chair), Khalid Choukri, Thierry Declerck, Mehmet Ugur Dogan, Bente Maegaard, Joseph Mariani, Jan Odijk, and Stelios Piperidis, editors, Proceedings of the Eight International Conference on Language Resources and Eval- uation (LREC'12), Istanbul, Turkey, may. European Language Resources Association (ELRA).</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">Appositives-what they are and how to use them</title>
+		<author>
+			<persName><forename type="first">Catherine</forename><surname>Traffis</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2019-05">2019. May</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Catherine Traffis. 2019. Appositives-what they are and how to use them, May.</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Wikidata: A free collaborative knowledgebase</title>
+		<author>
+			<persName><forename type="first">Denny</forename><surname>Vrandečić</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Markus</forename><surname>Krötzsch</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Commun. ACM</title>
+		<imprint>
+			<biblScope unit="volume">57</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page" from="78" to="85"/>
+			<date type="published" when="2014-09">2014. September</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Denny Vrandečić and Markus Krötzsch. 2014. Wikidata: A free collaborative knowledgebase. Commun. ACM, 57(10):78-85, September.</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Learning distributed representations of texts and entities from knowledge base</title>
+		<author>
+			<persName><forename type="first">Ikuya</forename><surname>Yamada</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hiroyuki</forename><surname>Shindo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hideaki</forename><surname>Takeda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yoshiyasu</forename><surname>Takefuji</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Transactions of the Association for Computational Linguistics</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="page" from="397" to="411"/>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Ikuya Yamada, Hiroyuki Shindo, Hideaki Takeda, and Yoshiyasu Takefuji. 2017. Learning distributed representa- tions of texts and entities from knowledge base. Transactions of the Association for Computational Linguistics, 5:397-411.</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

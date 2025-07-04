@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">A Generalized Framework of Sequence Generation with Application to Undirected Sequence Models</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2020-02-07">7 Feb 2020</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Elman</forename><surname>Mansimov</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Alex</forename><surname>Wang</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Sean</forename><surname>Welleck</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Kyunghyun</forename><surname>Cho</surname></persName>
+						</author>
+						<title level="a" type="main">A Generalized Framework of Sequence Generation with Application to Undirected Sequence Models</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2020-02-07">7 Feb 2020</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">1456036D232B7F81791D4ACD1FAE31CA</idno>
+					<idno type="arXiv">arXiv:1905.12790v2[cs.LG]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2025-01-29T07:25+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Undirected neural sequence models such as BERT <ref type="bibr" target="#b2">(Devlin et al., 2019)</ref> have received renewed interest due to their success on discriminative natural language understanding tasks such as questionanswering and natural language inference. The problem of generating sequences directly from these models has received relatively little attention, in part because generating from undirected models departs significantly from conventional monotonic generation in directed sequence models. We investigate this problem by proposing a generalized model of sequence generation that unifies decoding in directed and undirected models. The proposed framework models the process of generation rather than the resulting sequence, and under this framework, we derive various neural sequence models as special cases, such as autoregressive, semi-autoregressive, and refinementbased non-autoregressive models. This unification enables us to adapt decoding algorithms originally developed for directed sequence models to undirected sequence models. We demonstrate this by evaluating various handcrafted and learned decoding strategies on a BERT-like machine translation model <ref type="bibr" target="#b10">(Lample &amp; Conneau, 2019)</ref>. The proposed approach achieves constant-time translation results on par with linear-time translation results from the same undirected sequence model, while both are competitive with the state-of-theart on WMT'14 English-German translation.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>Undirected neural sequence models such as BERT <ref type="bibr" target="#b2">(Devlin et al., 2019)</ref> have recently brought significant improvements 1 New York University 2 Facebook AI Research 3 CIFAR Azrieli Global Scholar. Correspondence to: Elman Mansimov &lt;mansimov@cs.nyu.edu&gt;.</p><p>Under review at the 37 th International Conference on Machine Learning, Vienna, Austria, PMLR 108, 2020. Copyright 2020 by the author(s).</p><p>to a variety of discriminative language modeling tasks such as question-answering and natural language inference. Generating sequences from these models has received relatively little attention. Unlike directed sequence models, each word typically depends on the full left and right context around it in undirected sequence models. Thus, a decoding algorithm for an undirected sequence model must specify both how to select positions and what symbols to place in the selected positions. We formalize this process of selecting positions and replacing symbols as a general framework of sequence generation, and unify decoding from both directed and undirected sequence models under this framework. This framing enables us to study generation on its own, independent from the specific parameterization of the sequence models.</p><p>Our proposed framework casts sequence generation as a process of determining the length of the sequence, and then repeatedly alternating between selecting sequence positions followed by generation of symbols for those positions. A variety of sequence models can be derived under this framework by appropriately designing the length distribution, position selection distribution, and symbol replacement distribution. Specifically, we derive popular decoding algorithms such as monotonic autoregressive, non-autoregressive by iterative refinement, and monotonic semi-autoregressive decoding as special cases of the proposed model. This separation of coordinate selection and symbol replacement allows us to build a diverse set of decoding algorithms agnostic to the parameterization or training procedure of the underlying model. We thus fix the symbol replacement distribution as a variant of BERT and focus on deriving novel generation procedures for undirected neural sequence models under the proposed framework. We design a coordinate selection distribution using a log-linear model and a learned model with a reinforcement learning objective to demonstrate that our model generalizes various fixed-order generation strategies, while also being capable of adapting generation order based on the content of intermediate sequences.</p><p>We empirically validate our proposal on machine translation using a translation-variant of BERT called a masked translation model <ref type="bibr" target="#b10">(Lample &amp; Conneau, 2019)</ref>. We design several generation strategies based on features of intermediate se-quence distributions and compare them against the state-ofthe-art monotonic autoregressive sequence model <ref type="bibr" target="#b23">(Vaswani et al., 2017)</ref> on WMT'14 English-German. Our experiments show that generation from undirected sequence models, under our framework, is competitive with the state of the art, and that adaptive-order generation strategies generate sequences in different ways, including left-to-right, right-to-left and mixtures of these.</p><p>Due to the flexibility in specifying a coordinate selection mechanism, we design constant-time variants of the proposed generation strategies, closely following the experimental setup of <ref type="bibr" target="#b4">Ghazvininejad et al. (2019)</ref>. Our experiments reveal that we can do constant-time translation with the budget as low as 20 iterations (equivalently, generating a sentence of length 20 in the conventional approach) while achieving similar performance to the state-of-the-artmonotonic autoregressive sequence model and linear-time translation from the same masked translation model. This again confirms the potential of the proposed framework and generation strategies. We release the implementation, preprocessed datasets as well as trained models online at <ref type="url" target="https://github.com/nyu-dl/dl4mt-seqgen">https://github.com/nyu-dl/dl4mt-seqgen</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">A Generalized Framework of Sequence Generation</head><p>We propose a generalized framework of probabilistic sequence generation to unify generation from directed and undirected neural sequence models. In this generalized framework, we have a generation sequence G of pairs of an intermediate sequence Y t = (y t 1 , . . . , y t L ) and the corresponding coordinate sequence Z t = (z t 1 , . . . , z t L ), where V is a vocabulary, L is a length of a sequence, T is a number of generation steps, y t i ∈ V , and z t i ∈ {0, 1}. The coordinate sequence indicates which of the current intermediate sequence are to be replaced. That is, consecutive pairs are related to each other by</p><formula xml:id="formula_0">y t+1 i = (1 -z t+1 i )y t i + z t+1 i ỹt+1 i</formula><p>, where ỹt+1 i ∈ V is a new symbol for the position i. This sequence of pairs G describes a procedure that starts from an empty sequence Y 1 = ( mask , . . . , mask ) and empty coordinate sequence Z 1 = (0, ..., 0), iteratively fills in tokens, and terminates after T steps with final sequence Y T . We model this procedure probabilistically as p(G|X):</p><formula xml:id="formula_1">p(L|X) (c) length predict T t=1 L i=1 p(z t+1 i |Y ≤t , Z t , X) (a) coordinate selection p(y t+1 i |Y ≤t , X) (b) symbol replacement z t+1 i (1)</formula><p>We condition the whole process on an input variable X to indicate that the proposed model is applicable to both conditional and unconditional sequence generation. In the latter case, X = ∅.</p><p>We first predict the length L of a target sequence Y accord-ing to p(L|X) distribution to which we refer as (c) length prediction. At each generation step t, we first select the next coordinates Z t+1 for which the corresponding symbols will be replaced according to p(z t+1 i |Y ≤t , Z t , X), to which we refer as (a) coordinate selection. Once the coordinate sequence is determined, we replace the corresponding symbols according to the distribution p(y t+1 i |Y ≤t , Z t+1 , X), leading to the next intermediate sequence Y t+1 . From this sequence generation framework, we recover the sequence distribution p(Y |X) by marginalizing out all the intermediate and coordinate sequences except for the final sequence Y T . In the remainder of this section, we describe several special cases of the proposed framework, which are monotonic autoregressive, non-autoregressive, semi-autoregressive neural sequence models.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1.">Special Cases</head><p>Monotonic autoregressive neural sequence models We first consider one extreme case of the generalized sequence generation model, where we replace one symbol at a time, monotonically moving from the left-most position to the right-most. In this case, we define the coordinate selection distribution of the generalized sequence generation model in Eq. (1) (a) as p(z t+1 i+1 = 1|Y ≤t , Z t , X) = 1(z t i = 1), where 1(•) is an indicator function and z 1 1 = 1. This coordinate selection distribution is equivalent to saying that we replace one symbol at a time, shifting from the left-most symbol to the right-most symbol, regardless of the content of intermediate sequences. We then choose the symbol replacement distribution in Eq. (1) (b) to be p(y t+1 i+1 |Y ≤t , X) = p(y t+1 i+1 |y t 1 , y t 2 , . . . , y t i , X), for z t+1 i+1 = 1. Intuitively, we limit the dependency of y t+1 i+1 only to the symbols to its left in the previous intermediate sequence y t &lt;(i+1) and the input variable X. The length distribution (1) (c) is implicitly defined by considering how often the special token eos , which indicates the end of a sequence, appears after L generation steps: p(L|X) ∝ y 1:L-1 L-1 l=1 p(y l+1 l+1 = eos |y ≤l ≤l , X). With these choices, the proposed generalized model reduces to p(G|X) = L i=1 p(y i |y &lt;i , X) which is a widely-used monotonic autoregressive neural sequence model.</p><p>Non-autoregressive neural sequence modeling by iterative refinement We next consider the other extreme in which we replace the symbols in all positions at every single generation step <ref type="bibr" target="#b11">(Lee et al., 2018)</ref>. We design the coordinate selection distribution to be implying that we replace the symbols in all the positions. We then choose the symbol replacement distribution to be as it was in Eq. (1) (b). That is, the distribution over the symbols in the position i in a new intermediate sequence y t+1 i is conditioned on the entire current sequence Y t and the input variable X. We do not need to assume any relationship between the number of gen-eration steps T and the length of a sequence L in this case. The length prediction distribution p(L|X) is estimated from training data.</p><p>Semi-autoregressive neural sequence models <ref type="bibr" target="#b25">(Wang et al., 2018)</ref> recently proposed a compromise between autoregressive and non-autoregresive sequence models by predicting a chunk of symbols in parallel at a time. This approach can also be put under the proposed generalized model. We first extend the coordinate selection distribution of the autoregressive sequence model into</p><formula xml:id="formula_2">p(z t+1 k(i+1)+j = 1|Y ≤t , Z t , X) = = 1, if z t ki+j = 1, ∀j ∈ {0, 1, . . . , k} 0, otherwise,</formula><p>where k is a group size. Similarly we modify the symbol replacement distribution:</p><formula xml:id="formula_3">p(y t+1 k(i+1)+j |Y ≤t , X) =p(y t+1 k(i+1)+j |y t &lt;k(i+1) , X), ∀j ∈ {0, 1, . . . , k} , for z t i = 1.</formula><p>This naturally implies that T = L/k .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Decoding from Masked Language Models</head><p>In this section, we give an overview of masked language models like BERT, cast Gibbs sampling under the proposed framework, and then use this connection to design a set of approximate, deterministic decoding algorithms for undirected sequence models.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.">BERT as an undirected sequence model</head><p>BERT <ref type="bibr" target="#b2">(Devlin et al., 2019)</ref> is a masked language model: It is trained to predict a word given the word's left and right context. Because the model gets the full context, there are no directed dependencies among words, so the model is undirected. The word to be predicted is masked with a special mask symbol and the model is trained to predict p(y i |y &lt;i , mask , y &gt;i , X). We refer to this as the conditional BERT distribution. This objective was interpreted as a stochastic approximation to the pseudo log-likelihood objective <ref type="bibr" target="#b1">(Besag, 1977)</ref> by <ref type="bibr" target="#b24">Wang &amp; Cho (2019)</ref>. This approach of full-context generation with pseudo log-likelihood maximization for recurrent networks was introduced earlier by <ref type="bibr" target="#b0">Berglund et al. (2015)</ref>. More recently, <ref type="bibr" target="#b22">Sun et al. (2017)</ref> use it for image caption generation.</p><p>Recent work <ref type="bibr" target="#b24">(Wang &amp; Cho, 2019;</ref><ref type="bibr" target="#b4">Ghazvininejad et al., 2019)</ref> has demonstrated that undirected neural sequence models like BERT can learn complex sequence distributions and generate well-formed sequences. In such models, it is relatively straightforward to collect unbiased samples using, for instance, Gibbs sampling. But due to high variance of Gibbs sampling, the generated sequence is not guaranteed to be high-quality relative to a ground-truth sequence. Finding a good sequence in a deterministic manner is also nontrivial.</p><p>A number of papers have explored using pretrained language models like BERT to initialize sequence generation models. </p><formula xml:id="formula_4">= 1|Y ≤t , Z t , X) = 1/L with the constraint that L i=1 z t i = 1</formula><p>. By using the conditional BERT distribution as a symbol replacement distribution, we end up with Gibbs sampling.</p><p>Adaptive Gibbs sampling: non-uniform coordinate selection Instead of selecting coordinates uniformly at random, we can base selections on the intermediate sequences. We propose a log-linear model with features φ i based on the intermediate and coordinate sequences:</p><formula xml:id="formula_5">p(z t+1 i = 1|Y ≤t , Z t , X) ∝ exp 1 τ L i=1 α i φ i (Y t , Z t , X, i)<label>(2)</label></formula><p>again with the constraint that L i=1 z t i = 1. τ &gt; 0 is a temperature parameter controlling the sharpness of the coordinate selection distribution. A moderately high τ smooths the coordinate selection distribution and ensures that all the coordinates are replaced in the infinite limit of T , making it a valid Gibbs sampler <ref type="bibr" target="#b12">(Levine &amp; Casella, 2006)</ref>. We investigate three features φ i : (1) We compute how peaked the conditional distribution of each position is given the symbols in all the other positions by measuring its negative entropy:</p><formula xml:id="formula_6">φ negent (Y t , Z t , X, i) = -H(y t+1 i |y t &lt;i , mask , y t &gt;i , X).</formula><p>In other words, we prefer a position i if we know the change in i has a high potential to alter the joint probability p(Y |X) = p(y 1 , y 2 , ..., y L |X).</p><p>(2) For each position i we measure how unlikely the current symbol (y t i , not</p><formula xml:id="formula_7">y t+1 i ) is under the new condi- tional distribution: φ logp (Y t , Z t , X, i) = -log p(y i = y t i |y t &lt;i , mask , y t &gt;i , X)</formula><p>. Intuitively, we prefer to replace a symbol if it is highly incompatible with the input variable and all the other symbols in the current sequence. (3) We encode a positional preference that does not consider the content of intermediate sequences:</p><formula xml:id="formula_8">φ pos (i) = -log(|t -i| + ),</formula><p>where &gt; 0 is a small constant scalar to prevent log 0. This feature encodes our preference to generate from left to right if there is no information about the input variable nor of any intermediate sequences.</p><p>Unlike the special cases of the proposed generalized model in §2, the coordinate at each generation step is selected based on the intermediate sequences, previous coordinate sequences, and the input variable. We mix the features using scalar coefficients α negent , α logp and α pos , which are selected or estimated to maximize a target quality measure on the validation set.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Adaptive Gibbs sampling: learned coordinate selection</head><p>We learn a coordinate selection distribution that selects coordinates in order to maximize a reward function that we specify. In this case, we refer to the coordinate selection distribution as a policy, π θ (a t |s t ), where a state s t is (Y ≤t , Z t , X), an action a t ∈ {1, . . . , L} is a coordinate, so that Z t+1 is 1 at position a t and 0 elsewhere, and π θ is parameterized using a neural network. Beginning at a state s 1 ∼ p(s 1 ) corresponding to an input X along with an empty coordinate and output sequence, we obtain a generation by repeatedly sampling a coordinate a t ∼ π θ (•|s t ) and transitioning to a new state for T steps. Each transition, s t+1 ∼ p(•|s t , a t ), consists of generating a symbol at position a t . Given a scalar reward function r(s t , a t , s t+1 ), the objective is to find a policy that maximizes expected reward, with the expectation taken over the distribution of generations obtained using the policy for coordinate selection,</p><formula xml:id="formula_9">J(θ) = E τ ∼π θ (τ ) T t=1 γ t-1 r(s t , a t , s t+1 ) , (3) π θ (τ ) = p(s 1 ) T t=1 π θ (a t |s t )p(s t+1 |a t , s t ),<label>(4)</label></formula><p>where τ = (s 1 , a 1 , s 2 , . . . , a T , s T +1 ), and γ ∈ [0, 1] is a discount factor (with 0 0 = 1). We maximize this objective by estimating its gradient using policy gradient methods <ref type="bibr" target="#b28">(Williams, 1992)</ref>. We discuss our choice of reward function, policy parameterization, and hyperparameters later in Section 4.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.">Optimistic decoding and beam search from a masked language model</head><p>Based on the adaptive Gibbs sampler with the nonuniform and learned coordinate selection distributions we can now design an inference procedure to approxi-mately find the most likely sequence argmax Y p(Y |X) from the sequence distribution by exploiting the corresponding model of sequence generation. In doing so, a naive approach is to marginalize out the generation procedure G using a Monte Carlo method:</p><formula xml:id="formula_10">argmax Y T 1 M G m p(Y T |Y m,&lt;T , Z m,≤T , X)</formula><p>where G m is the m-th sample from the sequence generation model.</p><p>This approach suffers from a high variance and non-deterministic behavior, and is less appropriate for practical use. We instead propose an optimistic decoding approach following equation (1):</p><formula xml:id="formula_11">argmax L,Y 1 ,...,Y T Z 1 ,...,Z T log p(L|X)+ T t=1 L i=1 log p(z t+1 i |Y ≤t , Z t , X) (5) + z t+1 i log p(y t+1 i |Y ≤t , X)</formula><p>The proposed procedure is optimistic in that we consider a sequence generated by following the most likely generation path to be highly likely under the sequence distribution obtained by marginalizing out the generation path. This optimism in the criterion more readily admits a deterministic approximation scheme such as greedy and beam search, although it is as intractable to solve this problem as the original problem which required marginalization of the generation path.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Length-conditioned beam search</head><p>To solve this intractable optimization problem, we design a heuristic algorithm, called length-conditioned beam search. Intuitively, given a length L, this algorithm performs beam search over the coordinate and intermediate token sequences. At each step t of this iterative algorithm, we start from the hypothesis set H t-1 that contains K generation hypotheses:</p><formula xml:id="formula_12">H t-1 = h t-1 k = (( Ŷ 1 k , . . . , Ŷ t-1 k ), ( Ẑ1 k , . . . , Ẑt-1 k )) K k=1</formula><p>. Each generation hypothesis has a score:</p><formula xml:id="formula_13">s(h t-1 k ) = log p(L|X)+ t-1 t =1 L i=1 log p(ẑ t i | Ŷ &lt;t k , Ẑt -1 , X) + ẑt i log p(ŷ t i | Ŷ ≤t , X) .</formula><p>For notational simplicity, we drop the time superscript t.</p><p>Each of the K generation hypotheses is first expanded with K candidate positions according to the coordinate selection distribution:</p><formula xml:id="formula_14">arg top-K u∈{1,...,L} s(h k ) + log p(z k,u = 1| Ŷ &lt;t , Ẑt-1 , X) =s(hk one-hot(u))</formula><p>so that we have K × K candidates ĥk,k , where each candidate consists of a hypothesis h k with the position sequence extended by the selected position u k,k and has a score s(h k one-hot(u k,k )). <ref type="foot" target="#foot_0">1</ref> We then expand each candidate with the symbol replacement distribution:</p><formula xml:id="formula_15">arg top-K v∈V s(h k one-hot(u k,k )) + log p(y z k,k = v| Ŷ ≤t , X) =s(h k,k ( Ŷ t-1 &lt;z k,k ,v, Ŷ t-1 &gt;z k,k</formula><p>))</p><p>.</p><p>This results in K × K × K candidates ĥk,k ,k , each consisting of hypothesis h k with intermediate and coordinate sequence respectively extended by v k,k ,k and u k,k . Each hypothesis has a score</p><formula xml:id="formula_16">s(h k,k ( Ŷ t-1 &lt;z k,k , v k,k ,k , Ŷ t-1 &gt;z k,k ))</formula><p>,<ref type="foot" target="#foot_1">foot_1</ref> which we use to select K candidates to form a new hypothesis set</p><formula xml:id="formula_17">H t = arg top-K h∈ ĥk,k ,k k,k ,k s(h).</formula><p>After iterating for a predefined number T of steps, the algorithm terminates with the final set of K generation hypotheses. We then choose one of them according to a prespecified criterion, such as Eq. ( <ref type="formula">5</ref>), and return the final symbol sequence Ŷ T .</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Experimental Settings</head><p>Data and preprocessing We evaluate our framework on WMT'14 English-German translation. The dataset consists of 4.5M parallel sentence pairs. We preprocess this dataset by tokenizing each sentence using a script from Moses <ref type="bibr" target="#b9">(Koehn et al., 2007)</ref> and then segmenting each word into subword units using byte pair encoding <ref type="bibr" target="#b17">(Sennrich et al., 2016)</ref> with a joint vocabulary of 60k tokens. We use newstest-2013 and newstest-2014 as validation and test sets respectively.</p><p>Sequence models We base our models off those of <ref type="bibr" target="#b10">Lample &amp; Conneau (2019)</ref>. Specifically, we use a Transformer <ref type="bibr" target="#b23">(Vaswani et al., 2017)</ref> with 1024 hidden units, 6 layers, 8 heads, and Gaussian error linear units <ref type="bibr" target="#b7">(Hendrycks &amp; Gimpel, 2016)</ref>. We use a pretrained model 3 trained using a masked language modeling objective <ref type="bibr" target="#b10">(Lample &amp; Conneau, 2019)</ref> on 5M monolingual sentences from <ref type="bibr">WMT NewsCrawl 2007</ref><ref type="bibr">-2008.</ref> To distinguish between English and German sentences, a special language embedding is added as an additional input to the model.</p><p>We adapt the pretrained model to translation by finetuning it with a masked translation objective <ref type="bibr">(Lample &amp; Conneau,</ref> <ref type="url" target="https://dl.fbaipublicfiles.com/XLM/mlm_ende_1024.pth">https://dl.fbaipublicfiles.com/XLM/mlm_ ende_1024.pth</ref> 2019). We concatenate parallel English and German sentences, mask out a subset of the tokens in either the English or German sentence, and predict the masked out tokens. We uniformly mask out 0 -100% tokens as in <ref type="bibr" target="#b4">Ghazvininejad et al. (2019)</ref>. Training this way more closely matches the generation setting, where the model starts with an input sequence of all masks.</p><p>Baseline model We compare against a standard Transformer encoder-decoder autoregressive neural sequence model <ref type="bibr" target="#b23">(Vaswani et al., 2017)</ref> trained for left-to-right generation and initialized with the same pretrained model. We train a separate autoregressive model to translate an English sentence to a German sentence and vice versa, with the same hyperparameters as our model.</p><p>Training details We train the models using Adam <ref type="bibr" target="#b8">(Kingma &amp; Ba, 2014)</ref> with an inverse square root learning rate schedule, learning rate of 10 -<ref type="foot" target="#foot_2">foot_2</ref> , β 1 = 0.9, β 2 = 0.98, and dropout rate of 0.1 <ref type="bibr" target="#b20">(Srivastava et al., 2014)</ref>. Our models are trained on 8 GPUs with a batch size of 256 sentences. We use beam search described in §3.3 with K fixed to 1, i.e., we consider only one possible position for replacing a symbol per hypothesis each time of generation. We vary K = K between 1 (greedy) and 4. For each source sentence, we consider four length candidates according to the length distribution estimated from the training pairs, based on early experiments showing that using only four length candidates performs as well as using the ground-truth length (see Table <ref type="table" target="#tab_2">2</ref>). Given the four candidate translations, we choose the best one according to the pseudo log-probability of the final sequence <ref type="bibr" target="#b24">(Wang &amp; Cho, 2019)</ref>. Additionally, we experimented with choosing best translation according to log-probability of the final sequence calculated by an autoregressive neural sequence model. (Eq. 3). As the reward function, we use the change in edit distance from the reference,</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Handcrafted decoding strategies</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Learned decoding strategies</head><formula xml:id="formula_18">r(s t , a t , s t+1 ) = (d edit (Y ≤t , Y ) -d edit (Y ≤t+1 , Y )),</formula><p>where s t is (Y ≤t , Z t , X). The policy is parameterized as,</p><formula xml:id="formula_19">π θ (a t |s t ) = softmax f θ (h 1 , h), . . . , f θ (h L , h) ,</formula><p>where h i ∈ R 1024 is the masked language model's output vector for position i, and h ∈ R 1024 is a history of the previous k selected positions, h = 1 k k j=1 (emb θ (j)+h j aj ). We use a 2-layer MLP for f θ which concatenates its inputs and has hidden dimension of size 1024.</p><p>Policies are trained with linear time decoding (T = L), with positions sampled from the current policy, and symbols selected greedily. At each training iteration we sample a batch of generations, add the samples to a FIFO buffer, then perform gradient updates on batches sampled from the buffer. We use proximal policy optimization (PPO), specifically the clipped surrogate objective from <ref type="bibr" target="#b16">Schulman et al. (2017)</ref> with a learned value function V θ (s t ) to compute advantages. This objective resulted in stable training compared to initial experiments with REINFORCE <ref type="bibr" target="#b28">(Williams, 1992)</ref>. The value function is a 1-layer MLP, V θ ( 1</p><formula xml:id="formula_20">L L i=1 (h i , h)).</formula><p>Training hyperparameters were selected based on validation BLEU in an initial grid search of generation batch size ∈ {4, 16} (sequences), FIFO buffer size ∈ {1k, 10k} (timesteps), and update batch size ∈ {32, 128} (timesteps). Our final model was then selected based on validation BLEU with a grid search on discount γ ∈ {0.1, 0.9, 0.99} and history k ∈ {0, 20, 50} for each language pair, resulting in a discount γ of 0.9 for both pairs, and history sizes of 0 for De→En and 50 for En→De.</p><p>Decoding scenarios We consider two decoding scenarios: linear-time and constant-time decoding. In the linear-time scenario, the number of decoding iterations T grows linearly w.r.t. the length of a target sequence L. We test setting T to L and 2L. In the constant-time scenario, the number of iterations is constant w.r.t. the length of a translation, i.e., T = O(1). At the t-th iteration of generation, we replace o t -many symbols, where o t is either a constant L/T or linearly anneals from L to 1 (L → 1) as done by <ref type="bibr" target="#b4">Ghazvininejad et al. (2019)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Linear-Time Decoding: Result and Analysis</head><p>Main findings We present translation quality measured by BLEU <ref type="bibr" target="#b14">(Papineni et al., 2002)</ref>   ing adds minimal overhead as it is run in parallel since the left-to-right constraint is enforced by masking out future tokens. ( <ref type="formula" target="#formula_9">4</ref>) Different generation strategies result in translations of varying qualities depending on the setting. Learned and left2right were consistently the best performing among all generation strategies. On English-German translation, left2right is the best performing strategy slightly outperforming the learned strategy, achieving 25.66 BLEU. On German-English translation, learned is the best performing strategy, slightly outperforming the left2right strategy while achieving 30.58 BLEU. ( <ref type="formula">5</ref>) We see little improvement in refining a sequence beyond the first pass. ( <ref type="formula">6</ref>) Lastly, the masked translation model is competitive with the state of the art neural autoregressive model, with a difference of less than 1 BLEU score in performance. We hypothesize that a difference between train and test settings causes a slight performance difference of the masked translation model compared to the conventional autoregressive model. In the standard autoregressive case, the model is explicitly trained to generate in left-to-right order, which matches the test time usage. By randomly selecting tokens to mask during training, our undirected sequence model is trained to follow all possible generation orders and to use context from both directions, which is not available when generating left-to-right at test time.</p><p>Adaptive generation order The least2most, easy-first, and learned generation strategies automatically adapt the generation order based on the intermediate sequences generated. We investigate the resulting generation orders on the development set by presenting each as a 10-dim vector (downsampling as necessary), where each element corre-sponds to the selected position in the target sequence normalized by sequence length. We cluster these sequences with k-means clustering and visualize the clusters centers as curves with thickness proportional to the number of sequences in the cluster in Fig. <ref type="figure" target="#fig_1">1</ref>.</p><p>The visualization reveals that many sequences are generated monotonically, either left-to-right or right-to-left (see, e.g., green, purple and orange clusters in easy-first, De→En, and orange, blue, and red clusters in learned, En→De). For the easy-first and least2most strategies, we additionally identify clusters of sequences that are generated from outside in (e.g., blue and red clusters in easy-first, De→En, and red and purple clusters in least2most, En→De).</p><p>On De→En, in roughly 75% of the generations, the learned policy either generated from left-to-right (orange) or generated the final token, typically punctuation, followed by left-to-right generation (green). In the remaining 25% of generations, the learned policy generates with variations of an outside-in strategy (red, blue, purple). See Appendix Figures <ref type="figure">7</ref><ref type="figure">8</ref><ref type="figure">9</ref>for examples. On En→De, the learned policy has a higher rate of left-to-right generation, with roughly 85% of generations using a left-to-right variation (blue, orange). These variations are however typically not strictly monotonic; the learned policy usually starts with the final token, and often skips tokens in the left-to-right order before generating them at a later time. We hypothesize that the learned policy tends towards variations of left-to-right since (a) left-to-right may be an easy strategy to learn, yet (b) left-to-right achieves reasonable performance.</p><p>In general, we explain the tendency towards either monotonic or outside-in generation by the availability of contex- tual evidence, or lack thereof. At the beginning of generation, the only two non-mask symbols are the beginning and end of sentence symbols, making it easier to predict a symbol at the beginning or end of the sentence. As more symbols are filled near the boundaries, more evidence is accumulated for the decoding strategy to accurately predict symbols near the center. This process manifests either as monotonic or outside-in generation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.">Constant-Time Decoding: Result and Analysis</head><p>The trends in constant-time decoding noticeably differ from those in linear-time decoding. First, the left2right strategy performs comparably worse compared to the best performing strategies in constant-time decoding. The performance gap is wider (up to 4.8 BLEU) with a tighter budget (T = 10). Second, the learned coordinate selection strategy performs best when generating L/T symbols every iteration, despite only being trained with linear-time decoding, but performs significantly worse when annealing the number of generated symbols from L to 1. This could be explained by the fact that the learned policy was never trained to refine predicted symbols, which is the case in L → 1 constant-time decoding. Third, easy-first is the second-best performing strategy in the L/T setting, but similarly to the learned strategy it performs worse in the L → 1 setting. This may be because in the L → 1 setting it is preferable to first generate hard-to-predict symbols and have multiple attempts at refining them, rather than predicting hard tokens at the end of generation process and not getting an opportunity to refine them, as is done in easy-first scenario. To verify this hypothesis, we test a hard-first strategy where we flip the signs of the coefficients of easy-first in the log-linear model. This new hard-first strategy works on par with least2most, again confirming that decoding strategies must be selected based on the target tasks and decoding setting. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.">Conclusion</head><p>We present a generalized framework of neural sequence generation that unifies decoding in directed and undirected neural sequence models. Under this framework, we separate position selection and symbol replacement, allowing us to apply a diverse set of generation algorithms, inspired by those for directed neural sequence models, to undirected models such as BERT and its translation variant.</p><p>We evaluate these generation strategies on WMT'14 En-De machine translation using a recently proposed masked translation model. Our experiments reveal that undirected neural sequence models achieve performance comparable to conventional, state-of-the-art autoregressive models, given an appropriate choice of decoding strategy. We further show that constant-time translation in these models performs similar to linear-time translation by using one of the proposed generation strategies. Analysis of the generation order automatically determined by these adaptive decoding strategies reveals that most sequences are generated either monotonically or outside-in.</p><p>We only apply our framework to the problem of sequence generation. As one extension of our work, we could also apply it to other structured data such as grids (for e.g. images) and arbitrary graphs. Overall, we hope that our generalized framework opens new avenues in developing and understanding generation algorithms for a variety of settings.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Comparison with other non-autoregressive neural machine translation approaches</head><p>We present the comparison of results of our approach with other constant-time machine translation approaches in Table 4. Our model is most similar to conditional model by <ref type="bibr" target="#b4">(Ghazvininejad et al., 2019)</ref>. However, there are differences in both model and training hyperparameters between our work and work by <ref type="bibr" target="#b4">(Ghazvininejad et al., 2019)</ref>. We use smaller Transformer model with 1024 hidden units vs 2048 units in <ref type="bibr" target="#b4">(Ghazvininejad et al., 2019)</ref>. We also train the model with more than twice smaller batch size since we use 8 GPUs on DGX-1 machine and <ref type="bibr" target="#b4">(Ghazvininejad et al., 2019)</ref> use 16 GPUs on two DGX-1 machine with float16 precision. Finally we don't average best 5 checkpoints and don't use label smoothing for our model.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Non-monotonic neural sequence models</head><p>The proposed generalized framework subsumes recently proposed variants of non-monotonic generation <ref type="bibr" target="#b27">(Welleck et al., 2019;</ref><ref type="bibr" target="#b21">Stern et al., 2019;</ref><ref type="bibr" target="#b6">Gu et al., 2019)</ref>. Unlike the other special cases described above, these non-monotonic generation approaches learn not only the symbol replacement distribution but also the coordinate selection distribution, and implicitly the length distribution, from data. Because the length of a sequence is often not decided in advance, the intermediate coordinate sequence Z t and the coordinate selection distribution are reparameterized to work with relative coordinates rather than absolute coordinates. We do not go into details of these recent algorithms, but we emphasize that all these approaches are special cases of the proposed framework, which further suggests other variants of non-monotonic generation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Energy evolution over generation steps</head><p>While the results in Table <ref type="table" target="#tab_1">1</ref> in paper indicate that our decoding algorithms find better generations in terms of BLEU relative to uniform decoding, we verify that the algorithms produce generations that are more likely according to the model. We do so by computing the energy (negative logit) of the sequence of intermediate sentences generated while using an algorithm, and comparing to the average energy of intermediate sentences generated by picking positions uniformly at random. We plot this energy difference over decoding in Figure <ref type="figure" target="#fig_2">2</ref>. We additionally plot the evolution of energy of the sequence by different position selection algorithms throughout generation process in Figure <ref type="figure" target="#fig_3">3</ref>. Overall, we find that left-to-right, least-to-most, and easy-first do find sentences that are lower energy than the uniform baseline over the entire decoding process. Easy-first produces sentences with the lowest energy, followed by least-to-most, and then left-to-right.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Sample sequences and their generation orders</head><p>We present sample decoding processes on De→En with b = 1, T = L using the easy-first decoding algorithm in Figures <ref type="figure" target="#fig_4">4,</ref><ref type="figure">5</ref>   Would I ever _ _ _ live a normal life at the University of Oxford ? 14</p><p>Would I ever _ able _ live a normal life at the University of Oxford ? 15 Would I ever be able _ live a normal life at the University of Oxford ? 16</p><p>Would I ever be able to live a normal life at the University of Oxford ? (target) Would I ever be able to lead a normal life at Oxford ?  </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head/><label/><figDesc>We design four generation strategies for the masked translation model based on the log-linear coordinate selection distribution in §2: 1. Uniform: τ → ∞, i.e., sample a position uniformly at random without replacement 2. Left2Right: α negent = 0, α logp = 0, α pos = 1 3. Least2Most (Ghazvininejad et al., 2019): α negent = 0, α logp = 1, α pos = 0 4. Easy-First: α negent = 1, α logp = 1, 4 α pos = 0</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 1 .</head><label>1</label><figDesc>Figure1. Generation orders given by easy-first, least2most, and learned coordinate selection. We use greedy search with L iterations on the development set. We group the orders into five clusters using and visualize cluster centers with normalized positions (x-axis) over normalized generation steps (y-axis). The thickness of a line is proportional to the number of examples in the corresponding cluster.</figDesc><graphic coords="7,55.44,67.06,485.99,196.35" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 2 .</head><label>2</label><figDesc>Figure 2. Average difference in energy ↑ between sequences generated by selecting positions uniformly at random versus by different algorithms, over the course of decoding.</figDesc><graphic coords="13,67.59,111.72,461.70,223.09" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 3 .</head><label>3</label><figDesc>Figure 3. Evolution of the energy of the sequence ↓ over the course of decoding by different position selection algorithms.</figDesc><graphic coords="13,67.59,465.92,461.70,181.62" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 4 .</head><label>4</label><figDesc>Figure 4. Example sentences generated following an right-to-left-to-right-to-left generation order, using the easy-first decoding algorithm on De→En.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 5 .Figure 6 .</head><label>56</label><figDesc>Figure5. Example sentences generated following an outside-in generation order, using the easy-first decoding algorithm on De→En.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 1 .</head><label>1</label><figDesc>Results (BLEU↑) on WMT'14 En↔De translation using various decoding algorithms and different settings of beam search width (b) and number of iterations (T ) as a function of sentence length (L). For each sentence we use 4 most likely sentence lengths. * denotes rescoring generated hypotheses using autoregressive model instead of proposed model.</figDesc><table><row><cell>We train a parameterized</cell></row><row><cell>coordinate selection policy to maximize expected reward</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Table 2 .</head><label>2</label><figDesc>Effect of the number of length candidates considered during decoding on BLEU, measured on the validation set (newstest-2013) using the easy-first strategy.</figDesc><table/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>Table 3 .</head><label>3</label><figDesc>Constant-time machine translation on WMT'14 De→En with different settings of the budget (T ) and number of tokens predicted each iteration (ot). * denotes rescoring generated hypotheses using autoregressive model instead of proposed model.</figDesc><table><row><cell>T</cell><cell>ot</cell><cell cols="6">Uniform Left2Right Least2Most Easy-First Hard-First Learned</cell></row><row><cell>10</cell><cell>L → 1</cell><cell>22.38</cell><cell>22.38</cell><cell>27.14</cell><cell>22.21</cell><cell>26.66</cell><cell>12.70</cell></row><row><cell cols="2">10 L → 1*</cell><cell>23.64</cell><cell>23.64</cell><cell>28.63</cell><cell>23.79</cell><cell>28.46</cell><cell>13.18</cell></row><row><cell>10</cell><cell>L/T</cell><cell>22.43</cell><cell>21.92</cell><cell>24.69</cell><cell>25.16</cell><cell>23.46</cell><cell>26.47</cell></row><row><cell>20</cell><cell>L → 1</cell><cell>26.01</cell><cell>26.01</cell><cell>28.54</cell><cell>22.24</cell><cell>28.32</cell><cell>12.85</cell></row><row><cell cols="2">20 L → 1*</cell><cell>27.28</cell><cell>27.28</cell><cell>30.13</cell><cell>24.55</cell><cell>29.82</cell><cell>13.19</cell></row><row><cell>20</cell><cell>L/T</cell><cell>24.69</cell><cell>25.94</cell><cell>27.01</cell><cell>27.49</cell><cell>25.56</cell><cell>27.82</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6"><head>Table 4 .</head><label>4</label><figDesc>, 6, and 7, and the learned decoding algorithm in Figures8, 9, and 10. For easy-first decoding, we highlight examples decoding in right-to-left-to-right-to-left order, outside-in, left-to-right, and right-to-left orders, which respectively correspond to the orange, purple, red, and blue clusters from Figure1in the main paper. For learned decoding, we highlight examples with right-to-left-to-right, outside-in, and left-to-right orders, corresponding to the blue, red, and green clusters. The examples demonstrate the ability of the coordinate selection strategies to adapt the generation order based on the intermediate sequences generated. Even in the cases of largely monotonic generation order (left-to-right and right-to-left), each algorithm has the capacity to make small changes to the generation order as needed. BLEU scores on WMT'14 En→De and De→En datasets showing performance of various constant-time machine translation approaches. Each block shows the performance of autoregressive model baseline with their proposed approach. AR denotes autoregressive model. Distill denotes distillation. AR rescoring denotes rescoring of samples with autoregressive model. FT denotes fertility. NPD denotes noisy parallel decoding followed by rescoring with autoregressive model.</figDesc><table><row><cell>WMT2014</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0"><p>h k one-hot(u k,k ) appends one-hot(u k,k ) at the end of the sequence of the coordinate sequences in h k</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_1"><p>h k,k ( Ŷ t-1 &lt;z k,k , v k,k ,k , Ŷ t-1 &gt;z k,k) denotes creating a new sequence from Ŷ t-1 by replacing the z k,k -th symbol with v k,k ,k , and appending this sequence to the intermediate sequences in h k,k .</p></note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="4" xml:id="foot_2"><p>We set αlogp = 0.9 for De→En based on the validation set performance.</p></note>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Iteration</head><p>Right-to-Left    </p><p>Terminal 3 _ _ _ _ smaller US airlines . 7</p><p>Terminal 3 _ _ _ by smaller US airlines . 8</p><p>Terminal 3 is _ _ by smaller US airlines . 9</p><p>Terminal 3 is mainly _ by smaller US airlines . 10</p><p>Terminal 3 is mainly served by smaller US airlines . (target)</p><p>Terminal 3 serves mainly small US airlines . </p><p>The winners _ _ _ _ _ _ _ _ _ . 4</p><p>The winners of _ _ _ _ _ _ _ _ . 5</p><p>The winners of the _ _ _ _ _ _ _ . 6</p><p>The winners of the team _ _ _ _ _ _ . 7</p><p>The winners of the team and _ _ _ _ _ . 8</p><p>The winners of the team and individual _ _ _ _ . 9</p><p>The winners of the team and individual competitions _ _ _ . 10</p><p>The winners of the team and individual competitions will _ _ . 11</p><p>The winners of the team and individual competitions will _ prizes . 12</p><p>The winners of the team and individual competitions will receive prizes . (target)</p><p>The winners of the team and individual contests receive prizes .</p><p>Figure <ref type="figure">10</ref>. Example sentences generated following an left-to-right generation order, using the learned decoding algorithm on De→En.</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Bidirectional recurrent neural networks as generative models</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Berglund</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Raiko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Honkala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Kärkkäinen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Vetek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">T</forename><surname>Karhunen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="856" to="864"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Berglund, M., Raiko, T., Honkala, M., Kärkkäinen, L., Vetek, A., and Karhunen, J. T. Bidirectional recurrent neural networks as generative models. In Advances in Neural Information Processing Systems, pp. 856-864, 2015.</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Efficiency of pseudolikelihood estimation for simple gaussian fields</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Besag</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1977">1977</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Besag, J. Efficiency of pseudolikelihood estimation for simple gaussian fields. 1977.</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Pretraining of deep bidirectional transformers for language understanding</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Devlin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M.-W</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kenton</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">T</forename><surname>Bert</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">NAACL</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Devlin, J., Chang, M.-W., and Kenton Lee, K. T. Bert: Pre- training of deep bidirectional transformers for language understanding. In NAACL, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">Pre-trained language model representations for language generation</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Edunov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Baevski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Auli</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Edunov, S., Baevski, A., and Auli, M. Pre-trained language model representations for language generation, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">Mask-predict: Parallel decoding of conditional masked language models</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ghazvininejad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Levy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Zettlemoyer</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1904.09324</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Ghazvininejad, M., Levy, O., Liu, Y., and Zettlemoyer, L. Mask-predict: Parallel decoding of conditional masked language models. arXiv preprint arXiv:1904.09324, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Non-autoregressive neural machine translation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Bradbury</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><forename type="middle">O K</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Socher</surname></persName>
+		</author>
+		<idno>CoRR, abs/1711.02281</idno>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Gu, J., Bradbury, J., Xiong, C., Li, V. O. K., and Socher, R. Non-autoregressive neural machine translation. CoRR, abs/1711.02281, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Insertion-based decoding with automatically inferred generation order</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Cho</surname></persName>
+		</author>
+		<idno>CoRR, abs/1902.01370</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Gu, J., Liu, Q., and Cho, K. Insertion-based decoding with automatically inferred generation order. CoRR, abs/1902.01370, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Bridging nonlinearities and stochastic regularizers with gaussian error linear units</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Hendrycks</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Gimpel</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1606.08415</idno>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Hendrycks, D. and Gimpel, K. Bridging nonlinearities and stochastic regularizers with gaussian error linear units. arXiv preprint arXiv:1606.08415,, 2016.</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">A method for stochastic optimization</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">P</forename><surname>Kingma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ba</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Adam</surname></persName>
+		</author>
+		<idno>arXiv preprint 1412.6980</idno>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Kingma, D. P. and Ba, J. Adam: A method for stochastic optimization. arXiv preprint 1412.6980, 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Open source toolkit for statistical machine translation</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Koehn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Hoang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Birch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Callison-Burch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Federico</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Bertoldi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Cowan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Moran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zens</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL</title>
+		<imprint>
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Koehn, P., Hoang, H., Birch, A., Callison-Burch, C., Fed- erico, M., Bertoldi, N., Cowan, B., Shen, W., Moran, C., Zens, R., et al. Moses: Open source toolkit for statistical machine translation. In ACL, 2007.</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Cross-lingual language model pretraining</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Lample</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Conneau</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1901.07291</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Lample, G. and Conneau, A. Cross-lingual language model pretraining. arXiv preprint arXiv:1901.07291, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Deterministic nonautoregressive neural sequence modeling by iterative refinement</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Mansimov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Cho</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1802.06901</idno>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Lee, J., Mansimov, E., and Cho, K. Deterministic non- autoregressive neural sequence modeling by iterative re- finement. arXiv preprint arXiv:1802.06901, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Optimizing random scan gibbs samplers</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">A</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Casella</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Multivariate Analysis</title>
+		<imprint>
+			<biblScope unit="volume">97</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page" from="2071" to="2100"/>
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Levine, R. A. and Casella, G. Optimizing random scan gibbs samplers. Journal of Multivariate Analysis, 97(10): 2071-2100, 2006.</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">Non-autoregressive conditional sequence generation with generative flow</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Neubig</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Hovy</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Flowseq</surname></persName>
+		</author>
+		<idno>arXiv preprint 1909.02480</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Ma, X., Zhou, C., Li, X., Neubig, G., and Hovy, E. Flowseq: Non-autoregressive conditional sequence generation with generative flow. arXiv preprint 1909.02480, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">a method for automatic evaluation of machine translation</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Papineni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Roukos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Ward</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W.-J</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Bleu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 40th annual meeting on association for computational linguistics</title>
+		<meeting>the 40th annual meeting on association for computational linguistics</meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2002">2002</date>
+			<biblScope unit="page" from="311" to="318"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Papineni, K., Roukos, S., Ward, T., and Zhu, W.-J. Bleu: a method for automatic evaluation of machine translation. In Proceedings of the 40th annual meeting on association for computational linguistics, pp. 311-318. Association for Computational Linguistics, 2002.</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Unsupervised pretraining for sequence to sequence learning</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Ramachandran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Le</surname></persName>
+		</author>
+		<idno type="DOI">10.18653/v1/d17-1039</idno>
+		<ptr target="http://dx.doi.org/10.18653/v1/d17-1039"/>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing</title>
+		<meeting>the 2017 Conference on Empirical Methods in Natural Language Processing</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Ramachandran, P., Liu, P., and Le, Q. Unsupervised pretraining for sequence to sequence learning. Pro- ceedings of the 2017 Conference on Empirical Meth- ods in Natural Language Processing, 2017. doi: 10. 18653/v1/d17-1039. URL http://dx.doi.org/ 10.18653/v1/d17-1039.</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Proximal Policy Optimization Algorithms</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schulman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wolski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Dhariwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Radford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Klimov</surname></persName>
+		</author>
+		<ptr target="http://arxiv.org/abs/1707.06347"/>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Schulman, J., Wolski, F., Dhariwal, P., Radford, A., and Klimov, O. Proximal Policy Optimization Algo- rithms. 2017. URL http://arxiv.org/abs/ 1707.06347.</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Neural machine translation of rare words with subword units</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Sennrich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Haddow</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Birch</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ACL</title>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Sennrich, R., Haddow, B., and Birch, A. Neural machine translation of rare words with subword units. In ACL, 2016.</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">Latent-variable non-autoregressive neural machine translation with deterministic inference using a delta posterior</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Shu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Nakayama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Cho</surname></persName>
+		</author>
+		<idno>arXiv preprint 1908.07181</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Shu, R., Lee, J., Nakayama, H., and Cho, K. Latent-variable non-autoregressive neural machine translation with deter- ministic inference using a delta posterior. arXiv preprint 1908.07181, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">Mass: Masked sequence to sequence pre-training for language generation</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T.-Y</forename><surname>Liu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Song, K., Tan, X., Qin, T., Lu, J., and Liu, T.-Y. Mass: Masked sequence to sequence pre-training for language generation, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Dropout: A simple way to prevent neural networks from overfitting</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Srivastava</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Hinton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Krizhevsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Sutskever</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Salakhutdinov</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R. Dropout: A simple way to prevent neural networks from overfitting. 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title level="m" type="main">Insertion transformer: Flexible sequence generation via insertion operations</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Stern</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Chan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kiros</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Uszkoreit</surname></persName>
+		</author>
+		<idno>CoRR, abs/1902.03249</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Stern, M., Chan, W., Kiros, J., and Uszkoreit, J. Insertion transformer: Flexible sequence generation via insertion operations. CoRR, abs/1902.03249, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title level="m" type="main">Bidirectional beam search: Forward-backward inference in neural sequence models for fill-in-the-blank image captioning</title>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Batra</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Sun, Q., Lee, S., and Batra, D. Bidirectional beam search: Forward-backward inference in neural sequence models for fill-in-the-blank image captioning. 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Attention is all you need</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Vaswani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Shazeer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Parmar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Uszkoreit</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Jones</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">N</forename><surname>Gomez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ł</forename><surname>Kaiser</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Polosukhin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">NIPS</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., and Polosukhin, I. Attention is all you need. In NIPS, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">a mouth, and it must speak: Bert as a markov random field language model</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Cho</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Bert Has</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1902.04094</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Wang, A. and Cho, K. Bert has a mouth, and it must speak: Bert as a markov random field language model. arXiv preprint arXiv:1902.04094, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1808.08583</idno>
+		<title level="m">Semi-autoregressive neural machine translation</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Wang, C., Zhang, J., and Chen, H. Semi-autoregressive neu- ral machine translation. arXiv preprint arXiv:1808.08583, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">Non-autoregressive machine translation with auxiliary regularization</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zhai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T.-Y</forename><surname>Liu</surname></persName>
+		</author>
+		<idno>arXiv preprint 1902.10245</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Wang, Y., Tian, F., He, D., Qin, T., Zhai, C., and Liu, T.-Y. Non-autoregressive machine translation with auxiliary regularization. arXiv preprint 1902.10245, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Nonmonotonic sequential text generation</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Welleck</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Brantley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">D</forename><surname>Iii</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Cho</surname></persName>
+		</author>
+		<ptr target="http://proceedings.mlr.press/v97/welleck19a.html"/>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 36th International Conference on Machine Learning</title>
+		<editor>
+			<persName><forename type="first">K</forename><surname>Chaudhuri</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">R</forename><surname>Salakhutdinov</surname></persName>
+		</editor>
+		<meeting>the 36th International Conference on Machine Learning<address><addrLine>Long Beach, California, USA</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2019-06-15">09-15 Jun 2019</date>
+			<biblScope unit="volume">97</biblScope>
+			<biblScope unit="page" from="6716" to="6726"/>
+		</imprint>
+	</monogr>
+	<note>Proceedings of Machine Learning Research</note>
+	<note type="raw_reference">Welleck, S., Brantley, K., III, H. D., and Cho, K. Non- monotonic sequential text generation. In Chaudhuri, K. and Salakhutdinov, R. (eds.), Proceedings of the 36th International Conference on Machine Learning, vol- ume 97 of Proceedings of Machine Learning Research, pp. 6716-6726, Long Beach, California, USA, 09-15 Jun 2019. PMLR. URL http://proceedings.mlr. press/v97/welleck19a.html.</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Simple statistical gradient-following algorithms for connectionist reinforcement learning</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">J</forename><surname>Williams</surname></persName>
+		</author>
+		<idno type="DOI">10.1007/BF00992696</idno>
+		<ptr target="https://doi.org/10.1007/BF00992696"/>
+	</analytic>
+	<monogr>
+		<title level="j">Machine Learning</title>
+		<idno type="ISSN">1573-0565</idno>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="229" to="256"/>
+			<date type="published" when="1992-05">May 1992</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Williams, R. J. Simple statistical gradient-following algo- rithms for connectionist reinforcement learning. Machine Learning, 8(3):229-256, May 1992. ISSN 1573-0565. doi: 10.1007/BF00992696. URL https://doi.org/ 10.1007/BF00992696.</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

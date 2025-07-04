@@ -1,0 +1,1554 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation</title>
+<!--Generated on Thu Dec  5 01:36:48 2024 by LaTeXML (version 0.8.8) http://dlmf.nist.gov/LaTeXML/.-->
+
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<link rel="stylesheet" href="ltx-listings.css" type="text/css">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line">
+<div id="p1" class="ltx_para">
+<span class="ltx_ERROR undefined">\algnewcommand</span><span class="ltx_ERROR undefined">\algorithmicinput</span>
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Input:</span>
+<span class="ltx_ERROR undefined">\algnewcommand</span><span class="ltx_ERROR undefined">\algorithmicoutput</span><span class="ltx_text ltx_font_bold">Output:</span>
+<span class="ltx_ERROR undefined">\algnewcommand</span><span class="ltx_ERROR undefined">\Input</span><span class="ltx_ERROR undefined">\algnewcommand</span><span class="ltx_ERROR undefined">\Output</span></p>
+</div>
+<h1 class="ltx_title ltx_title_document">
+<span class="ltx_text ltx_font_bold ltx_font_smallcaps">DapStep</span>: <span class="ltx_text ltx_font_bold">D</span>eep <span class="ltx_text ltx_font_bold">A</span>ssignee <span class="ltx_text ltx_font_bold">P</span>rediction 
+<br class="ltx_break">for <span class="ltx_text ltx_font_bold">S</span>tack <span class="ltx_text ltx_font_bold">T</span>race <span class="ltx_text ltx_font_bold">E</span>rror re<span class="ltx_text ltx_font_bold">P</span>resentation</h1>
+<div class="ltx_authors">
+<span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">
+Denis Sushentsev
+</span><span class="ltx_author_notes">
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_text ltx_font_italic">HSE University
+<br class="ltx_break">JetBrains
+<br class="ltx_break"></span>Saint Petersburg, Russia 
+<br class="ltx_break">denis.sushentsev@jetbrains.com
+
+</span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Aleksandr Khvorov
+</span><span class="ltx_author_notes">
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_text ltx_font_italic">HSE University
+<br class="ltx_break">JetBrains
+<br class="ltx_break"></span>Saint Petersburg, Russia 
+<br class="ltx_break">aleksandr.khvorov@jetbrains.com
+
+</span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Roman Vasiliev
+
+
+  <span class="ltx_ERROR undefined">{@IEEEauthorhalign}</span>
+Yaroslav Golubev
+</span><span class="ltx_author_notes">
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_text ltx_font_italic">JetBrains
+<br class="ltx_break"></span>Saint Petersburg, Russia 
+<br class="ltx_break">roman.vasiliev@jetbrains.com
+
+</span>
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_text ltx_font_italic">JetBrains Research
+<br class="ltx_break"></span>Saint Petersburg, Russia 
+<br class="ltx_break">yaroslav.golubev@jetbrains.com
+
+</span></span></span>
+<span class="ltx_author_before">  </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Timofey Bryksin
+</span><span class="ltx_author_notes">
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_text ltx_font_italic">JetBrains Research
+<br class="ltx_break">HSE University
+<br class="ltx_break"></span>Saint Petersburg, Russia 
+<br class="ltx_break">timofey.bryksin@jetbrains.com
+
+</span></span></span>
+</div>
+
+<div class="ltx_abstract">
+<h6 class="ltx_title ltx_title_abstract">Abstract</h6>
+    
+<p class="ltx_p">The task of finding the best developer to fix a bug is called <span class="ltx_text ltx_font_italic">bug triage</span>. Most of the existing approaches consider the bug triage task as a classification problem, however, classification is not appropriate when the sets of classes change over time (as developers often do in a project). Furthermore, to the best of our knowledge, all the existing models use textual sources of information, <span class="ltx_text ltx_font_italic">i.e.,</span> bug descriptions, which are not always available.</p>
+    
+<p class="ltx_p">In this work, we explore the applicability of existing solutions for the bug triage problem when stack traces are used as the main data source of bug reports. Additionally, we reformulate this task as a ranking problem and propose new deep learning models to solve it. The models are based on a bidirectional recurrent neural network with attention and on a convolutional neural network, with the weights of the models optimized using a ranking loss function. To improve the quality of ranking, we propose using additional information from version control system annotations. Two approaches are proposed for extracting features from annotations: manual and using an additional neural network. To evaluate our models, we collected two datasets of real-world stack traces. Our experiments show that the proposed models outperform existing models adapted to handle stack traces. To facilitate further research in this area, we publish the source code of our models and one of the collected datasets.</p>
+  
+</div>
+<section id="S1" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">I </span><span class="ltx_text ltx_font_smallcaps">Introduction</span>
+</h2>
+
+<div id="S1.p1" class="ltx_para">
+<p class="ltx_p">Software bugs are an inevitable part of the development process. Bugs can lead to security problems, loss of company profit, and in the worst case, even fatal accidents <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib1" title="" class="ltx_ref">1</a>]</cite>. For these reasons, bugs need to be swiftly fixed, which requires choosing the most appropriate developer. The problem of finding such a developer for a particular bug is called <span class="ltx_text ltx_font_italic">bug triage</span> <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib2" title="" class="ltx_ref">2</a>]</cite>.</p>
+</div>
+<div id="S1.p2" class="ltx_para">
+<p class="ltx_p">The developer who should fix the bug can be assigned manually, however, such an approach has several significant disadvantages. Firstly, it is tedious and time-consuming work, and the situation gets more and more complicated as the number of developers grows. In large companies, hundreds of bug reports are received every day, which makes manual developer assignment very difficult if not impossible. For example, 333,371 bugs were reported for the Eclipse IDE from October 2001 to December 2010, averaging at about 100 bugs every day <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib3" title="" class="ltx_ref">3</a>]</cite>. Secondly, it is important to assign the most suitable developer right from the start to reduce the time of bug fixing <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib2" title="" class="ltx_ref">2</a>]</cite>. Otherwise, the error gets reassigned from one developer to another <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib4" title="" class="ltx_ref">4</a>]</cite>, and as a result, the time of each developer in such a chain is wasted, while the error remains in the system longer, which can be critical.</p>
+</div>
+<div id="S1.p3" class="ltx_para">
+<p class="ltx_p">A large number of approaches have been proposed to solve the bug triage problem automatically. Existing models can be roughly divided into three groups: based on heuristics <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib5" title="" class="ltx_ref">5</a>, <a href="#bib.bib6" title="" class="ltx_ref">6</a>, <a href="#bib.bib7" title="" class="ltx_ref">7</a>, <a href="#bib.bib8" title="" class="ltx_ref">8</a>]</cite>, based on classic machine learning <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib9" title="" class="ltx_ref">9</a>, <a href="#bib.bib10" title="" class="ltx_ref">10</a>, <a href="#bib.bib11" title="" class="ltx_ref">11</a>]</cite>, and based on deep learning (DL) <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib12" title="" class="ltx_ref">12</a>, <a href="#bib.bib13" title="" class="ltx_ref">13</a>, <a href="#bib.bib14" title="" class="ltx_ref">14</a>, <a href="#bib.bib15" title="" class="ltx_ref">15</a>]</cite>. The works of Guo et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib13" title="" class="ltx_ref">13</a>]</cite> and Mani et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib14" title="" class="ltx_ref">14</a>]</cite> demonstrated that deep learning helps with the task of assigning a developer better than other approaches. This is to be expected, since the bug triage task is based on natural language processing, where deep learning shows promising results <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib16" title="" class="ltx_ref">16</a>]</cite>. An additional advantage of deep learning algorithms is that they do not require sophisticated feature extraction methods <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib17" title="" class="ltx_ref">17</a>]</cite>.</p>
+</div>
+<div id="S1.p4" class="ltx_para">
+<p class="ltx_p">However, it should be noted that bugs can be reported in different forms. For example, in a bug tracking system, errors are usually present in the form of a bug report: a name, a small description in some natural language, and some additional meta information (the date the error was introduced, priority, severity, etc.). To the best of our knowledge, all the existing solutions are based on working with this kind of error representation. At the same time, errors can also come in the form of <span class="ltx_text ltx_font_italic">stack traces</span>: sequences of function calls (called <span class="ltx_text ltx_font_italic">frames</span>) that lead to an error in the system. Developers commonly use stack traces during debugging, and users can usually see a stack trace displayed as part of an error message. Stack traces help to solve the bug localization problem <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib18" title="" class="ltx_ref">18</a>, <a href="#bib.bib19" title="" class="ltx_ref">19</a>, <a href="#bib.bib20" title="" class="ltx_ref">20</a>]</cite> and the bug report deduplication problem <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib21" title="" class="ltx_ref">21</a>, <a href="#bib.bib22" title="" class="ltx_ref">22</a>, <a href="#bib.bib23" title="" class="ltx_ref">23</a>]</cite>. The example of a single stack frame is presented in <a href="#S1.F1" title="In I Introduction ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>.</p>
+</div>
+<figure id="S1.F1" class="ltx_figure"><img src="x1.png" id="S1.F1.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="830" height="183" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 1: </span>An example of a stack frame. The frame consists of the name of the function that led to the error, as well as various information about it.</figcaption>
+</figure>
+<div id="S1.p5" class="ltx_para">
+<p class="ltx_p">Stack traces are a data source that is often easy to obtain: most modern software systems are able to automatically send back stack traces of the error that has occurred. In such a setting, predicting the assignee by the textual description of the error would require labeling all the error reports, which is almost impossible since the number of such reports per day could be enormous. Another important reason to process stack traces automatically is that they are more complicated to analyze manually by people who did not participate in the development of a particular system component, since the information is presented in a rather raw form. Thus, a new approach is needed that solves the bug triage problem for the case where only the stack trace information is available.</p>
+</div>
+<div id="S1.p6" class="ltx_para">
+<p class="ltx_p">Another important limitation of the existing approaches is that they consider the bug triage task as a classification problem. The classification setting might not be the best choice in practice, since the set of classes (developers) can change over time: developers can leave and join the team responsible for the product of even the company itself.</p>
+</div>
+<div id="S1.p7" class="ltx_para">
+<p class="ltx_p">To the best of our knowledge, no one has previously suggested using bug stack traces as the main source of information for the bug triage problem. In this work, we strive to fill this gap in research to support working with the systems where stack traces are the primary type of data. To that end, we collected two datasets of real-world bug stack traces from JetBrains,<span id="footnote1" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">1</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">1</sup>
+            <span class="ltx_tag ltx_tag_note">1</span>
+            
+            
+            
+          JetBrains: <a href="https://www.jetbrains.com/" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://www.jetbrains.com/</a></span></span></span> the developer of a wide array of software products including IntelliJ-based IDEs. The larger dataset contains 11,139 stack traces, however, it contains proprietary company code, so we also curate the second dataset — a smaller public subset of the first one that contains 3,361 stack traces that we release for researchers and practitioners. The datasets consist of a labeled set of bug reports and annotations from the version control system (developer IDs and timestamps) that we apply to improve the quality of our model.</p>
+</div>
+<div id="S1.p8" class="ltx_para">
+<p class="ltx_p">We propose a new approach to solve the bug assignee prediction problem based on stack traces — a DL-based ranking model called <span class="ltx_text ltx_font_italic">DapStep</span> (an RNN ranking model with manual frame-based &amp; stack-based features). We compared the proposed model with existing approaches adapted for stack trace processing. The proposed model shows Acc@1 of 0.34 and MRR of 0.43 on the public dataset and Acc@1 of 0.60 and MRR of 0.70 on the private dataset.</p>
+</div>
+<div id="S1.p9" class="ltx_para">
+<p class="ltx_p">The main contributions of this paper are as follows:</p>
+<ul id="S1.I1" class="ltx_itemize">
+<li id="S1.I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S1.I1.i1.p1" class="ltx_para">
+<p class="ltx_p">We propose bug stack traces as a self-sufficient source of information for the assignee prediction task and carry out the first study in comparing various approaches in this setting.</p>
+</div>
+</li>
+<li id="S1.I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S1.I1.i2.p1" class="ltx_para">
+<p class="ltx_p">We introduce two bug triage ranking models based on recurrent neural networks (RNN) with the attention mechanism and convolutional neural networks (CNN). The models outperform the existing classification approaches by
+15–20 percentage points on the public dataset, and 17–18 percentage points on the private dataset.</p>
+</div>
+</li>
+<li id="S1.I1.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S1.I1.i3.p1" class="ltx_para">
+<p class="ltx_p">We publish the source code of all the studied models, as well as the public dataset, for future researchers and practitioners: <a href="https://github.com/Sushentsev/DapStep" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://github.com/Sushentsev/DapStep</a>.</p>
+</div>
+</li>
+</ul>
+</div>
+<div id="S1.p10" class="ltx_para">
+<p class="ltx_p">The remaining sections of this paper are organized as follows. <a href="#S2" title="II Related work ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">II</span></a> provides a brief overview of existing solutions, and in <a href="#S3" title="III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III</span></a>, we propose a new deep learning solution. We evaluate our approach in <a href="#S4" title="IV Evaluation ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">IV</span></a>, followed by a discussion of the threats to validity in <a href="#S5" title="V Threats to validity ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">V</span></a>. Finally, <a href="#S6" title="VI Conclusion and future work ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">VI</span></a> summarizes the results of the paper.</p>
+</div>
+</section>
+<section id="S2" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">II </span><span class="ltx_text ltx_font_smallcaps">Related work</span>
+</h2>
+
+<div id="S2.p1" class="ltx_para">
+<p class="ltx_p">The bug triage task is a well-established area of research, with a large number of proposed approaches. Previous works can be broadly divided into three large groups: based on <span class="ltx_text ltx_font_italic">heuristics</span>, on <span class="ltx_text ltx_font_italic">classic machine learning</span>, and on <span class="ltx_text ltx_font_italic">deep learning</span>.</p>
+</div>
+<div id="S2.p2" class="ltx_para">
+<p class="ltx_p">Heuristic-based approaches tend to consider the relevance scores of developers and errors based on domain knowledge. Kagdi et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib24" title="" class="ltx_ref">24</a>]</cite>, Shokripour et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib25" title="" class="ltx_ref">25</a>, <a href="#bib.bib26" title="" class="ltx_ref">26</a>]</cite>, and Vásquez et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib27" title="" class="ltx_ref">27</a>]</cite> use the information about code authorship, commit messages, comments in the source code, etc. Also, various indexing and NLP techniques are used to search for files related to the query bug report. The most appropriate developers are then selected based on their activities in the relevant files.</p>
+</div>
+<div id="S2.p3" class="ltx_para">
+<p class="ltx_p">Since the software development process is impossible without team work, developers often interact with each other. The result is a collaboration network that can be used as another source of information. Hu et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib8" title="" class="ltx_ref">8</a>]</cite> and Zhang et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib28" title="" class="ltx_ref">28</a>]</cite> use collaboration networks and information retrieval techniques on graphs to choose the most appropriate developer.</p>
+</div>
+<div id="S2.p4" class="ltx_para">
+<p class="ltx_p">As the influence of machine learning spread, it became actively applied in the assignee recommendation as well. Often, such approaches vectorize the text of the bug summary and description using TF-IDF or Bag-of-words (BOW), and classify them using a machine learning algorithm: Naive Bayes, Random Forest, or SVM <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib2" title="" class="ltx_ref">2</a>, <a href="#bib.bib29" title="" class="ltx_ref">29</a>, <a href="#bib.bib30" title="" class="ltx_ref">30</a>, <a href="#bib.bib31" title="" class="ltx_ref">31</a>]</cite>.</p>
+</div>
+<div id="S2.p5" class="ltx_para">
+<p class="ltx_p">Recently, deep learning solutions also became popular.
+Lee et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib12" title="" class="ltx_ref">12</a>]</cite> present one of the first DL models based on the CNN and Word2Vec embeddings used for assigning a developer to fix the bug. Their approach achieved higher accuracy in industrial projects at LG compared to an open source project.</p>
+</div>
+<div id="S2.p6" class="ltx_para">
+<p class="ltx_p">The application of CNN for the bug triage problem has been reported to be useful in more recent approaches. Guo et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib13" title="" class="ltx_ref">13</a>]</cite> compare the CNN-based model to the models based on Naive Bayes, SVM, kNN, and Random Forest. The experimental results show that the CNN-based approach outperforms other solutions. Since some of the developers can change jobs or leave the company indefinitely, the authors also propose to reorder developers based on their activity.</p>
+</div>
+<div id="S2.p7" class="ltx_para">
+<p class="ltx_p">Zaidi et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib32" title="" class="ltx_ref">32</a>]</cite> explore different word embeddings for the CNN model: Word2Vec <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib33" title="" class="ltx_ref">33</a>]</cite>, GloVe <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib34" title="" class="ltx_ref">34</a>]</cite>, and ELMo <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib35" title="" class="ltx_ref">35</a>]</cite>. The experimental results suggest that the ELMo embeddings are the best for the bug triage problem.</p>
+</div>
+<div id="S2.p8" class="ltx_para">
+<p class="ltx_p">Chen et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib36" title="" class="ltx_ref">36</a>]</cite> extend the work on incident triaging (unplanned interruptions or outages of the service) and perform an empirical study on the datasets provided by Microsoft. They explore different bug triage techniques: based on machine learning, deep learning, topic modeling, tossing graphs, and fuzzy sets. On average, the DL technique performs best.</p>
+</div>
+<div id="S2.p9" class="ltx_para">
+<p class="ltx_p">An alternative to CNNs are RNNs, which are one of the most popular and effective approaches for processing sequences of variable length. Mani et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib14" title="" class="ltx_ref">14</a>]</cite> use RNNs for assigning the developer to fix a bug. To address the common issue of RNNs “forgetting” long sequences <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib37" title="" class="ltx_ref">37</a>]</cite>, they propose to apply a bidirectional network with an attention mechanism. Moreover, the neural network learns syntactic and semantic features in an unsupervised manner, which means that it has the ability to use unfixed bug reports. Their work shows that the proposed approach provides a higher average accuracy rank than BOW features with softmax classifier, SVM, Naive Bayes, and cosine distance.</p>
+</div>
+<div id="S2.p10" class="ltx_para">
+<p class="ltx_p">Finally, Xi et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib15" title="" class="ltx_ref">15</a>]</cite> propose to use a bug tossing sequence to improve the DL model that helps to reassign the bug if the assignment was incorrect. The proposed approach was evaluated on three different open-source projects and outperforms baseline RNN and CNN models.</p>
+</div>
+<div id="S2.p11" class="ltx_para">
+<p class="ltx_p">In our work, we strive to overcome the limitations of the existing approaches: namely, their reliance on textual descriptions and their use of classification models.</p>
+</div>
+</section>
+<section id="S3" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">III </span><span class="ltx_text ltx_font_smallcaps">Approach</span>
+</h2>
+
+<div id="S3.p1" class="ltx_para">
+<p class="ltx_p">In this section, we describe our algorithm for assignee prediction. We consider bug triage as a ranking problem, which we believe to be more appropriate here, because it does not depend on the current set of developers. The classifying setting requires an immutable set of predicted classes. If a developer leaves the project, they should be filtered out of the resulting prediction afterwards, and when a new developer joins, the classifying model will have to be retrained to take them into account. Since developers in the project may come and go, a more suitable option is the ranking problem setting, in which it is necessary to evaluate the relevance function <math id="S3.p1.m1" class="ltx_Math" alttext="f(q,d)" display="inline"><mrow><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>q</mi><mo>,</mo><mi>d</mi><mo stretchy="false">)</mo></mrow></mrow></math> for a bug <math id="S3.p1.m2" class="ltx_Math" alttext="q" display="inline"><mi>q</mi></math> and a developer <math id="S3.p1.m3" class="ltx_Math" alttext="d" display="inline"><mi>d</mi></math>.</p>
+</div>
+<div id="S3.p2" class="ltx_para">
+<p class="ltx_p">More formally, given a query <math id="S3.p2.m1" class="ltx_Math" alttext="q" display="inline"><mi>q</mi></math> (bug) and a collection <math id="S3.p2.m2" class="ltx_Math" alttext="D" display="inline"><mi>D</mi></math> of documents (developers) that match the query, the task is to find a function <math id="S3.p2.m3" class="ltx_Math" alttext="f" display="inline"><mi>f</mi></math> such that <math id="S3.p2.m4" class="ltx_Math" alttext="(q,d)\prec(q,d^{\prime})\Leftrightarrow f(q,d)&lt;f(q,d^{\prime})" display="inline"><mrow><mrow><mrow><mo stretchy="false">(</mo><mi>q</mi><mo>,</mo><mi>d</mi><mo stretchy="false">)</mo></mrow><mo>≺</mo><mrow><mo stretchy="false">(</mo><mi>q</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">⇔</mo><mrow><mrow><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>q</mi><mo>,</mo><mi>d</mi><mo stretchy="false">)</mo></mrow></mrow><mo>&lt;</mo><mrow><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>q</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></math>, where <math id="S3.p2.m5" class="ltx_Math" alttext="(q,d)\prec(q,d^{\prime})" display="inline"><mrow><mrow><mo stretchy="false">(</mo><mi>q</mi><mo>,</mo><mi>d</mi><mo stretchy="false">)</mo></mrow><mo>≺</mo><mrow><mo stretchy="false">(</mo><mi>q</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo stretchy="false">)</mo></mrow></mrow></math> means that <math id="S3.p2.m6" class="ltx_Math" alttext="d" display="inline"><mi>d</mi></math> has a rank lower than <math id="S3.p2.m7" class="ltx_Math" alttext="d^{\prime}" display="inline"><msup><mi>d</mi><mo>′</mo></msup></math>. Function <math id="S3.p2.m8" class="ltx_Math" alttext="f" display="inline"><mi>f</mi></math> maps query-documents pairs to a relevance score.</p>
+</div>
+<div id="S3.p3" class="ltx_para">
+<p class="ltx_p">The proposed model uses bug stack traces as the primary source of information for predicting assignees. In order to obtain better results, we also build features from the version control system (VCS) annotations, which provide information on which developer modified each line of the file and when. For example, Git annotations can be obtained via the <span class="ltx_text ltx_font_italic">git blame</span> or <span class="ltx_text ltx_font_italic">git annotate</span> commands.</p>
+</div>
+<div id="S3.p4" class="ltx_para">
+<p class="ltx_p">The overall pipeline of the proposed algorithm is presented in <a href="#S3.F2" title="In III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>. Using deep learning methods, the bug and the developer are mapped to a vector of a fixed size (embedding). We transform each bug stack trace into a sequence of text tokens (<a href="#S3.SS1" title="III-A Preprocessing ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-A</span></a>) and apply the ideas from text sequences processing to obtain embeddings of bugs (<a href="#S3.SS2" title="III-B Representing Stack Traces as Vectors ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-B</span></a>). Then, to create an embedding of a developer, we process all the files in the given stack trace to find files that the developer edited, and use this information to map this developer into the stack trace embedding space (<a href="#S3.SS3" title="III-C Representing Developers as Vectors ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-C</span></a>). After all the embeddings are extracted, they are compared using the comparison module (<a href="#S3.SS6" title="III-F Similarity of Vector Representations ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-F</span></a>), and the score is obtained, which shows the relevance of the bug and the developer. To get the most appropriate developers for a given bug, we simply have to rank all the developers by their score.</p>
+</div>
+<figure id="S3.F2" class="ltx_figure"><img src="x2.png" id="S3.F2.g1" class="ltx_graphics ltx_img_square" width="581" height="483" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 2: </span>The overall pipeline of the approach.</figcaption>
+</figure>
+<div id="S3.p5" class="ltx_para">
+<p class="ltx_p">To improve our model, we use additional features based on the VCS annotations and propose to process the annotations in two different ways: manually (<a href="#S3.SS4" title="III-D Additional Features ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-D</span></a>) and using an additional neural network (<a href="#S3.SS5" title="III-E Neural Annotation Processing ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-E</span></a>) that allows us to avoid complex feature engineering.
+Let us now describe these steps in greater detail.</p>
+</div>
+<section id="S3.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">III-A </span><span class="ltx_text ltx_font_italic">Preprocessing</span>
+</h3>
+
+<div id="S3.SS1.p1" class="ltx_para">
+<p class="ltx_p">The stack trace is represented as a sequence of frames <math id="S3.SS1.p1.m1" class="ltx_Math" alttext="ST=\{f_{1},f_{2},\ldots,f_{n}\}" display="inline"><mrow><mrow><mi>S</mi><mo>⁢</mo><mi>T</mi></mrow><mo>=</mo><mrow><mo stretchy="false">{</mo><msub><mi>f</mi><mn>1</mn></msub><mo>,</mo><msub><mi>f</mi><mn>2</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>f</mi><mi>n</mi></msub><mo stretchy="false">}</mo></mrow></mrow></math>, where <math id="S3.SS1.p1.m2" class="ltx_Math" alttext="f_{i}" display="inline"><msub><mi>f</mi><mi>i</mi></msub></math> is the <math id="S3.SS1.p1.m3" class="ltx_Math" alttext="i" display="inline"><mi>i</mi></math>-th stack frame. Every frame has a method name, a file name, a subsystem name, a commit hash, and an error line. An example of a stack frame is presented in <a href="#S1.F1" title="In I Introduction ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>.</p>
+</div>
+<div id="S3.SS1.p2" class="ltx_para">
+<p class="ltx_p">Our preliminary experiments showed that stack trace preprocessing is an essential step that can significantly improve the model quality. In our work, we used the following data processing steps.</p>
+</div>
+<div id="S3.SS1.p3" class="ltx_para">
+<p class="ltx_p">Firstly, we noticed that the length of the stack trace can sometimes be quite large. For instance, the maximum stack trace length in our dataset reached as many as 15,000 frames. It is difficult to make a neural network remember all the information as the frames are processed one by one. On the other hand, long stack traces tend to relate to a <span class="ltx_text ltx_font_italic">StackOverflowException</span> error. Oftentimes, such a stack trace contains a loop: a set of frames that repeat at a specific frequency. Replacing the loop with the first occurrence of the loop element allows us to significantly reduce the length of the trace stack without degrading the model’s quality. We did this for every stack trace in the dataset where it is applicable.</p>
+</div>
+<div id="S3.SS1.p4" class="ltx_para">
+<p class="ltx_p">Secondly, because of the way the dataset was collected, not all information is available for every frame, the frame fields can be null. If the text token received from the frame is null, then we skip this frame.</p>
+</div>
+<div id="S3.SS1.p5" class="ltx_para">
+<p class="ltx_p">In order to apply existing approaches, we propose to represent a stack trace as a sequence of text tokens using the following technique. Firstly, we extract the method name, the file name, or the subsystem name from each frame of the stack trace. For example, the stack frame in <a href="#S1.F1" title="In I Introduction ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a> can be mapped to <span class="ltx_text ltx_font_italic">org.mockito.internal.MockitoCore.mockStatic</span>, <span class="ltx_text ltx_font_italic">MockitoCore.java</span>, or <span class="ltx_text ltx_font_italic">org.mockito.internal</span>, respectively. Thus, the stack trace will be presented as a sequence of text tokens, which can be processed with various deep learning approaches. We conducted experiments with all three options (method name, file name, or subsystem), and since the difference was insignificant, we decided to extract the stack trace file name.</p>
+</div>
+</section>
+<section id="S3.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">III-B </span><span class="ltx_text ltx_font_italic">Representing Stack Traces as Vectors</span>
+</h3>
+
+<div id="S3.SS2.p1" class="ltx_para">
+<p class="ltx_p">To represent a stack trace with a vector of a fixed length (<span class="ltx_text ltx_font_italic">i.e.</span>, embedding), we were inspired by the architectures applied in the previous works, namely, RNNs with attention and CNNs <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib12" title="" class="ltx_ref">12</a>, <a href="#bib.bib13" title="" class="ltx_ref">13</a>, <a href="#bib.bib32" title="" class="ltx_ref">32</a>, <a href="#bib.bib14" title="" class="ltx_ref">14</a>]</cite>. These two types of neural networks are among the most popular in the natural language processing field. In our study, we experimented with both of them.</p>
+</div>
+<section id="S3.SS2.SSS1" class="ltx_subsubsection">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">III-B1 </span>Recurrent Neural Network</h4>
+
+<div id="S3.SS2.SSS1.p1" class="ltx_para">
+<p class="ltx_p">An RNN architecture called LSTM <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib38" title="" class="ltx_ref">38</a>]</cite> is frequently used to handle sequential data. It takes a sequence of text tokens as input and produces the resulting vectors. However, LSTMs may have problems remembering long sequences <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib39" title="" class="ltx_ref">39</a>]</cite>, which can be fixed with a bidirectional network <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib40" title="" class="ltx_ref">40</a>]</cite> with attention. The attention technique allows to focus on important parts of the input data <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib41" title="" class="ltx_ref">41</a>]</cite>. For instance, frames that are at the top of the stack trace are usually more informative and useful.</p>
+</div>
+<div id="S3.SS2.SSS1.p2" class="ltx_para">
+<p class="ltx_p">We use the neural network architecture from the work of Maini et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib14" title="" class="ltx_ref">14</a>]</cite>. The input of the model is a sequence of vector representations of words, <math id="S3.SS2.SSS1.p2.m1" class="ltx_Math" alttext="\mathbf{x}=\{\mathbf{x_{1}},\mathbf{x_{2}},\ldots,\mathbf{x_{n}}\}" display="inline"><mrow><mi>𝐱</mi><mo>=</mo><mrow><mo stretchy="false">{</mo><msub><mi>𝐱</mi><mn>𝟏</mn></msub><mo>,</mo><msub><mi>𝐱</mi><mn>𝟐</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>𝐱</mi><mi>𝐧</mi></msub><mo stretchy="false">}</mo></mrow></mrow></math>. In our approach, we use trainable embeddings for every text token. The network is bidirectional, therefore, the sequence is processed in both directions. The RNN produces a sequence of outputs <math id="S3.SS2.SSS1.p2.m2" class="ltx_Math" alttext="\mathbf{y}=\{\mathbf{y_{1}},\mathbf{y_{2}},\ldots,\mathbf{y_{n}}\}" display="inline"><mrow><mi>𝐲</mi><mo>=</mo><mrow><mo stretchy="false">{</mo><msub><mi>𝐲</mi><mn>𝟏</mn></msub><mo>,</mo><msub><mi>𝐲</mi><mn>𝟐</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>𝐲</mi><mi>𝐧</mi></msub><mo stretchy="false">}</mo></mrow></mrow></math> from each direction. After that, the attention mechanism is applied, which is the weighted sum of the RNN outputs:</p>
+<table id="S6.EGx1" class="ltx_equationgroup ltx_eqn_align ltx_eqn_table">
+
+<tbody id="S3.E1"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S3.E1.m1" class="ltx_Math" alttext="\displaystyle\mathbf{a_{n}}=\sum_{i=1}^{n}\alpha_{i}\mathbf{y_{i}}," display="inline"><mrow><mrow><msub><mi>𝐚</mi><mi>𝐧</mi></msub><mo>=</mo><mrow><mstyle displaystyle="true"><munderover><mo movablelimits="false">∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover></mstyle><mrow><msub><mi>α</mi><mi>i</mi></msub><mo>⁢</mo><msub><mi>𝐲</mi><mi>𝐢</mi></msub></mrow></mrow></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S3.SS2.SSS1.p2.m3" class="ltx_Math" alttext="\alpha_{i}" display="inline"><msub><mi>α</mi><mi>i</mi></msub></math> represents an attention weight for the <math id="S3.SS2.SSS1.p2.m4" class="ltx_Math" alttext="i" display="inline"><mi>i</mi></math>-th output vector.</p>
+</div>
+<div id="S3.SS2.SSS1.p3" class="ltx_para">
+<p class="ltx_p">The final representation <math id="S3.SS2.SSS1.p3.m1" class="ltx_Math" alttext="\mathbf{r}" display="inline"><mi>𝐫</mi></math> is obtained as follows:</p>
+<table id="S6.EGx2" class="ltx_equationgroup ltx_eqn_align ltx_eqn_table">
+
+<tbody id="S3.E2"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S3.E2.m1" class="ltx_Math" alttext="\displaystyle\mathbf{r}=\underbrace{\mathbf{y_{n}}\oplus\mathbf{a_{n}}}_{\text%
+{forward LSTM}}\oplus\underbrace{\mathbf{y_{n}}\oplus\mathbf{a_{n}}}_{\text{%
+backward LSTM}}," display="inline"><mrow><mrow><mi>𝐫</mi><mo>=</mo><mrow><munder><munder accentunder="true"><mrow><msub><mi>𝐲</mi><mi>𝐧</mi></msub><mo>⊕</mo><msub><mi>𝐚</mi><mi>𝐧</mi></msub></mrow><mo>⏟</mo></munder><mtext>forward LSTM</mtext></munder><mo>⊕</mo><munder><munder accentunder="true"><mrow><msub><mi>𝐲</mi><mi>𝐧</mi></msub><mo>⊕</mo><msub><mi>𝐚</mi><mi>𝐧</mi></msub></mrow><mo>⏟</mo></munder><mtext>backward LSTM</mtext></munder></mrow></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(2)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S3.SS2.SSS1.p3.m2" class="ltx_Math" alttext="\oplus" display="inline"><mo>⊕</mo></math> represents the concatenation of vectors. It is easy to see that if the output vector has dimension <math id="S3.SS2.SSS1.p3.m3" class="ltx_Math" alttext="d" display="inline"><mi>d</mi></math>, then the embedding <math id="S3.SS2.SSS1.p3.m4" class="ltx_Math" alttext="r" display="inline"><mi>r</mi></math> will be of size <math id="S3.SS2.SSS1.p3.m5" class="ltx_Math" alttext="4\times d" display="inline"><mrow><mn>4</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mi>d</mi></mrow></math>.</p>
+</div>
+</section>
+<section id="S3.SS2.SSS2" class="ltx_subsubsection">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">III-B2 </span>Convolutional Neural Network</h4>
+
+<div id="S3.SS2.SSS2.p1" class="ltx_para">
+<p class="ltx_p">Another possible approach to represent a stack trace with a vector is to use CNN. CNNs are most commonly applied to analyze visual information, however, they can also solve natural language processing tasks <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib42" title="" class="ltx_ref">42</a>]</cite>.</p>
+</div>
+<div id="S3.SS2.SSS2.p2" class="ltx_para">
+<p class="ltx_p">In a CNN-based network, for each sequence of text tokens, we build a matrix <math id="S3.SS2.SSS2.p2.m1" class="ltx_Math" alttext="\mathbf{S}\in\mathbb{R}^{s\times d}" display="inline"><mrow><mi>𝐒</mi><mo>∈</mo><msup><mi>ℝ</mi><mrow><mi>s</mi><mo lspace="0.222em" rspace="0.222em">×</mo><mi>d</mi></mrow></msup></mrow></math>, where <math id="S3.SS2.SSS2.p2.m2" class="ltx_Math" alttext="s" display="inline"><mi>s</mi></math> is the sequence length and <math id="S3.SS2.SSS2.p2.m3" class="ltx_Math" alttext="d" display="inline"><mi>d</mi></math> is the embedding dimension. We were inspired by the work of Lee et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib12" title="" class="ltx_ref">12</a>]</cite> when building the model architecture. Similarly to them, we use trainable embeddings for text tokens. After that, a convolution layer with 1D convolutions is used to extract different patterns from the sequence of tokens. After applying each convolution filter, a feature vector is obtained. In the extracted feature vector, the subsampling process called max-pooling is applied, which is the operation of extracting the maximum element from a vector. The final representation <math id="S3.SS2.SSS2.p2.m4" class="ltx_Math" alttext="\mathbf{r}" display="inline"><mi>𝐫</mi></math> is obtained by concatenating max-pooling values and has a dimension equal to the total number of convolutions.</p>
+</div>
+</section>
+</section>
+<section id="S3.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">III-C </span><span class="ltx_text ltx_font_italic">Representing Developers as Vectors</span>
+</h3>
+
+<div id="S3.SS3.p1" class="ltx_para">
+<p class="ltx_p">Obtaining an embedding of a given bug is pretty straightforward, since each bug has a stack trace that can be transformed into a sequence of text tokens. However, the process of extracting the embedding of a developer is not that obvious.</p>
+</div>
+<div id="S3.SS3.p2" class="ltx_para">
+<p class="ltx_p">One possible solution is to represent the developer as all the code they wrote in the system. This approach has a significant drawback: the need to regularly re-index a large amount of data. If the developer has written new code in the system, then this must be taken into account. Continuous and efficient updates of the developer’s embedding is a challenging task.</p>
+</div>
+<div id="S3.SS3.p3" class="ltx_para">
+<p class="ltx_p">To address this problem, we propose to map every developer to a specific synthetic stack trace, more specifically, a sequence of stack frames that they edited. In order not to deal with large-scale re-indexing, we do not use all the available stack traces, but only the stack trace of the current (query) bug. This way, the developer embedding will be bug-dependent: different vector representations are built for different errors, there is no single developer representation. This approach allows us to build the embedding of a developer much faster. The average length of a stack trace in our datasets is 50 frames, therefore, it is enough to look at about 50 files in order to map the developer to their stack trace. Furthermore, the resulting “developer stack trace” can be handled in the exact same way as the bug stack trace, and it is possible to use the same network architecture for the bug and for the developer, because each of them is represented in the same form.</p>
+</div>
+<div id="S3.SS3.p4" class="ltx_para">
+<p class="ltx_p"><a href="#S3.SS3" title="III-C Representing Developers as Vectors ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-C</span></a> shows the pseudo-code for the building of this developer stack trace. In this algorithm, we look at all frames from the stack trace of the current bug from first to last. If the developer has edited at least one line from the file of the given frame, then this frame is included in the developer stack trace. Each stack trace is an ordered sequence of frames, they are numbered starting from the top of the stack. While building the developer stack trace, the order of the frames is preserved. The order of the frames is significant, because generally frames at the top of the stack are more revealing.</p>
+</div>
+<div id="S3.SS3.p5" class="ltx_para">
+<span class="ltx_ERROR undefined">{algorithm}</span>
+<p class="ltx_p"><span class="ltx_text ltx_caption">The building of the developer stack trace.</span>
+<span class="ltx_ERROR undefined">{algorithmic}</span>
+<span class="ltx_ERROR undefined">\Input</span>Developer <math id="S3.SS3.p5.m1" class="ltx_Math" alttext="dev" display="inline"><mrow><mi>d</mi><mo>⁢</mo><mi>e</mi><mo>⁢</mo><mi>v</mi></mrow></math>, stack trace <math id="S3.SS3.p5.m2" class="ltx_Math" alttext="stack" display="inline"><mrow><mi>s</mi><mo>⁢</mo><mi>t</mi><mo>⁢</mo><mi>a</mi><mo>⁢</mo><mi>c</mi><mo>⁢</mo><mi>k</mi></mrow></math>
+<span class="ltx_ERROR undefined">\Output</span>Developer stack trace <math id="S3.SS3.p5.m3" class="ltx_Math" alttext="dev\_stack" display="inline"><mrow><mi>d</mi><mo>⁢</mo><mi>e</mi><mo>⁢</mo><mi>v</mi><mo>⁢</mo><mi mathvariant="normal">_</mi><mo>⁢</mo><mi>s</mi><mo>⁢</mo><mi>t</mi><mo>⁢</mo><mi>a</mi><mo>⁢</mo><mi>c</mi><mo>⁢</mo><mi>k</mi></mrow></math>
+<span class="ltx_ERROR undefined">\State</span>dev_stack <math id="S3.SS3.p5.m4" class="ltx_Math" alttext="\leftarrow" display="inline"><mo stretchy="false">←</mo></math> emptyList</p>
+</div>
+<div id="S3.SS3.p6" class="ltx_para">
+<span class="ltx_ERROR undefined">\For</span>
+<p class="ltx_p">frame in stack
+<span class="ltx_ERROR undefined">\State</span>file <math id="S3.SS3.p6.m1" class="ltx_Math" alttext="\leftarrow" display="inline"><mo stretchy="false">←</mo></math> getFrameFile(frame)
+<span class="ltx_ERROR undefined">\State</span>authors <math id="S3.SS3.p6.m2" class="ltx_Math" alttext="\leftarrow" display="inline"><mo stretchy="false">←</mo></math> getFileAuthors(file)</p>
+</div>
+<div id="S3.SS3.p7" class="ltx_para">
+<span class="ltx_ERROR undefined">\If</span>
+<p class="ltx_p">dev <math id="S3.SS3.p7.m1" class="ltx_Math" alttext="\in" display="inline"><mo>∈</mo></math> authors
+dev_stack.append(frame)
+<span class="ltx_ERROR undefined">\EndIf</span></p>
+</div>
+<div id="S3.SS3.p8" class="ltx_para">
+<span class="ltx_ERROR undefined">\EndFor</span><span class="ltx_ERROR undefined">\Return</span>
+<p class="ltx_p">dev_stack</p>
+</div>
+<div id="S3.SS3.p9" class="ltx_para">
+<p class="ltx_p">It is important to note that the inner frames in the stack trace can include files from various libraries, in which case they will not have been edited by any of the developers in the project. We leave dealing with this case specifically for future work, for example, it might be possible to use the history of the developer’s work to see whether they fixed bugs that relate to this particular library.</p>
+</div>
+<div id="S3.SS3.p10" class="ltx_para">
+<p class="ltx_p">Overall, for each bug and each developer, we obtain a special stack trace that contains only the frames that concern files that this developer has edited. This allows us to compare the resulting embeddings.</p>
+</div>
+<figure id="S3.T1" class="ltx_table">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_table">TABLE I: </span>Additional features obtained from the VCS annotations and their normalizations.</figcaption>
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_th_row ltx_border_tt"><span class="ltx_text ltx_font_bold">Category</span></th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt"><span class="ltx_text ltx_font_bold">Description</span></th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt"><span class="ltx_text ltx_font_bold">Normalizations</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="8"><span class="ltx_text ltx_font_bold">Frame</span></th>
+<td class="ltx_td ltx_align_left ltx_border_t">Minimum distance from the edited line to the error line</td>
+<td class="ltx_td ltx_align_left ltx_border_t">Raw; annotation length; min</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">Did the developer edit the error line?</td>
+<td class="ltx_td ltx_align_left">Raw</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">Normalized number of edited lines in the file</td>
+<td class="ltx_td ltx_align_left">Annotation length; max</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">Normalized number of edited lines weighted by time</td>
+<td class="ltx_td ltx_align_left">Annotation length; max</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">Normalized number of edited lines in the window of size 10</td>
+<td class="ltx_td ltx_align_left">Window size; max</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">Number of different developer’s timestamps</td>
+<td class="ltx_td ltx_align_left">Raw; max</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">Time passed since the last edit</td>
+<td class="ltx_td ltx_align_left">Exp(-x); Log(x)</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">Time passed since the first edit</td>
+<td class="ltx_td ltx_align_left">Log(x)</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_bb ltx_border_t" rowspan="5"><span class="ltx_text ltx_font_bold">Stack</span></th>
+<td class="ltx_td ltx_align_left ltx_border_t">The order of the first edited frame</td>
+<td class="ltx_td ltx_align_left ltx_border_t">Raw; stack length; number of annotated frames; min</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">Normalized number of edited error lines</td>
+<td class="ltx_td ltx_align_left">Stack length; max</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">Normalized number of edited lines</td>
+<td class="ltx_td ltx_align_left">Total number of lines; max</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">Normalized number of edited lines in the frame with maximum IDF</td>
+<td class="ltx_td ltx_align_left">Annotation length</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_bb">Normalized number of edited frames</td>
+<td class="ltx_td ltx_align_left ltx_border_bb">Stack length; number of annotated frames; max</td>
+</tr>
+</tbody>
+</table>
+</figure>
+</section>
+<section id="S3.SS4" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">III-D </span><span class="ltx_text ltx_font_italic">Additional Features</span>
+</h3>
+
+<div id="S3.SS4.p1" class="ltx_para">
+<p class="ltx_p">To improve the performance of the model, we enrich the embedding with the features built from the VCS annotations.
+The annotations provide information about who was the last person to have changed each line in the file, and when this change took place. The rationale behind using annotations is the following: if a developer has recently edited some file, it is more likely that their changes resulted in a bug. Therefore, such a developer should probably fix the current bug.</p>
+</div>
+<div id="S3.SS4.p2" class="ltx_para">
+<p class="ltx_p">An example of the first five lines of an annotation is shown in <a href="#S3.F3" title="In III-D Additional Features ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>. Each developer is encoded with a unique identifier, and the time is represented in the Unix epoch format.</p>
+</div>
+<figure id="S3.F3" class="ltx_figure"><img src="x3.png" id="S3.F3.g1" class="ltx_graphics ltx_img_landscape" width="831" height="205" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 3: </span>An example of the first lines of an annotation.</figcaption>
+</figure>
+<div id="S3.SS4.p3" class="ltx_para">
+<p class="ltx_p">Additional features can be constructed both on the level of individual stack frame (<span class="ltx_text ltx_font_italic">e.g.</span>, how many lines in the file of a specific frame the developer edited) and on the level of the entire stack trace (<span class="ltx_text ltx_font_italic">e.g.</span>, how many stack frames have files that the developer edited), and are applied in different ways.</p>
+</div>
+<div id="S3.SS4.p4" class="ltx_para">
+<p class="ltx_p">Features that relate to individual frames can be concatenated to the trainable embeddings before applying the RNN (<a href="#S3.SS2" title="III-B Representing Stack Traces as Vectors ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-B</span></a>). <a href="#S3.F4" title="In III-D Additional Features ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4</span></a> shows the proposed approach: a text token is extracted from the frame, each text token is associated with a trainable embedding, and the additional feature vector is concatenated to the embedding. The resulting vector becomes the input of the RNN.</p>
+</div>
+<figure id="S3.F4" class="ltx_figure"><img src="x4.png" id="S3.F4.g1" class="ltx_graphics ltx_img_landscape" width="831" height="254" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 4: </span>The application of the frame-based features.</figcaption>
+</figure>
+<div id="S3.SS4.p5" class="ltx_para">
+<p class="ltx_p">The features that relate to the entire stack trace can be concatenated to the bug embedding and the developer embedding as presented in <a href="#S3.F5" title="In III-D Additional Features ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a>. The resulting vector is the input of the comparison module.</p>
+</div>
+<figure id="S3.F5" class="ltx_figure"><img src="x5.png" id="S3.F5.g1" class="ltx_graphics ltx_img_landscape" width="831" height="63" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 5: </span>The application of the stack-based features.</figcaption>
+</figure>
+<div id="S3.SS4.p6" class="ltx_para">
+<p class="ltx_p">We performed feature engineering on the private dataset, trying different combinations of metrics and their normalization methods. We ended up with 15 frame features and 24 stack trace features that worked best in our setting. They are presented in <a href="#S3.T1" title="In III-C Representing Developers as Vectors ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">I</span></a>.
+For example, from the first line of the table, we get three different features: a raw value of the minimum distance and two normalizations (by annotation length and by the minimum value).</p>
+</div>
+</section>
+<section id="S3.SS5" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">III-E </span><span class="ltx_text ltx_font_italic">Neural Annotation Processing</span>
+</h3>
+
+<div id="S3.SS5.p1" class="ltx_para">
+<p class="ltx_p">Manual feature engineering is a complex process that requires domain knowledge and expertise. As an alternative, we also propose using another neural network to extract features from annotations automatically.</p>
+</div>
+<div id="S3.SS5.p2" class="ltx_para">
+<p class="ltx_p">The idea behind the annotation processing is as follows: each line of an annotation is labelled with a timestamp of its last change. We suggest to represent annotation lines as elements of a time series — a sequence of values indexed in the chronological order. We propose to use the distance from the current line to the error line (simply subtracting the line numbers) as the values of the time series, and timestamps of the last modification as the corresponding time.
+The considered time series is irregular: code lines could be changed at any time.
+Since this is the first work using DL-based annotation processing, we decided to start with simple things first and use the most popular and straightforward solution for irregular time series processing: concatenate the time information to the time series value to form a vector of size 2.</p>
+</div>
+<div id="S3.SS5.p3" class="ltx_para">
+<p class="ltx_p"><a href="#S3.F6" title="In III-E Neural Annotation Processing ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">6</span></a> shows an example of the annotation processing for developer <span class="ltx_text ltx_font_italic">Mike</span>, this will be done for each developer and for each stack frame:</p>
+</div>
+<div id="S3.SS5.p4" class="ltx_para">
+<ul id="S3.I1" class="ltx_itemize">
+<li id="S3.I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S3.I1.i1.p1" class="ltx_para">
+<p class="ltx_p">Select lines from the annotation that were edited by Mike.</p>
+</div>
+</li>
+<li id="S3.I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S3.I1.i2.p1" class="ltx_para">
+<p class="ltx_p">Sort the lines by time. Each annotation line is mapped to a vector of length 2. The first component of the vector is the distance to the error line <math id="S3.I1.i2.p1.m1" class="ltx_Math" alttext="|error\_line-current\_line|" display="inline"><mrow><mo stretchy="false">|</mo><mrow><mrow><mi>e</mi><mo>⁢</mo><mi>r</mi><mo>⁢</mo><mi>r</mi><mo>⁢</mo><mi>o</mi><mo>⁢</mo><mi>r</mi><mo>⁢</mo><mi mathvariant="normal">_</mi><mo>⁢</mo><mi>l</mi><mo>⁢</mo><mi>i</mi><mo>⁢</mo><mi>n</mi><mo>⁢</mo><mi>e</mi></mrow><mo>−</mo><mrow><mi>c</mi><mo>⁢</mo><mi>u</mi><mo>⁢</mo><mi>r</mi><mo>⁢</mo><mi>r</mi><mo>⁢</mo><mi>e</mi><mo>⁢</mo><mi>n</mi><mo>⁢</mo><mi>t</mi><mo>⁢</mo><mi mathvariant="normal">_</mi><mo>⁢</mo><mi>l</mi><mo>⁢</mo><mi>i</mi><mo>⁢</mo><mi>n</mi><mo>⁢</mo><mi>e</mi></mrow></mrow><mo stretchy="false">|</mo></mrow></math> (in out example, the error line is line 3, highlighted in red). The second component of the vector is the coded line timestamp. In our data, time is measured in milliseconds, therefore we use <math id="S3.I1.i2.p1.m2" class="ltx_Math" alttext="\log{(report\_timestamp-line\_timestamp)}" display="inline"><mrow><mi>log</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><mrow><mrow><mi>r</mi><mo>⁢</mo><mi>e</mi><mo>⁢</mo><mi>p</mi><mo>⁢</mo><mi>o</mi><mo>⁢</mo><mi>r</mi><mo>⁢</mo><mi>t</mi><mo>⁢</mo><mi mathvariant="normal">_</mi><mo>⁢</mo><mi>t</mi><mo>⁢</mo><mi>i</mi><mo>⁢</mo><mi>m</mi><mo>⁢</mo><mi>e</mi><mo>⁢</mo><mi>s</mi><mo>⁢</mo><mi>t</mi><mo>⁢</mo><mi>a</mi><mo>⁢</mo><mi>m</mi><mo>⁢</mo><mi>p</mi></mrow><mo>−</mo><mrow><mi>l</mi><mo>⁢</mo><mi>i</mi><mo>⁢</mo><mi>n</mi><mo>⁢</mo><mi>e</mi><mo>⁢</mo><mi mathvariant="normal">_</mi><mo>⁢</mo><mi>t</mi><mo>⁢</mo><mi>i</mi><mo>⁢</mo><mi>m</mi><mo>⁢</mo><mi>e</mi><mo>⁢</mo><mi>s</mi><mo>⁢</mo><mi>t</mi><mo>⁢</mo><mi>a</mi><mo>⁢</mo><mi>m</mi><mo>⁢</mo><mi>p</mi></mrow></mrow><mo stretchy="false">)</mo></mrow></mrow></math> to account for the order of magnitude.</p>
+</div>
+</li>
+<li id="S3.I1.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S3.I1.i3.p1" class="ltx_para">
+<p class="ltx_p">The sequence of such vectors is processed using the RNN with attention as described in <a href="#S3.SS2" title="III-B Representing Stack Traces as Vectors ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-B</span></a>.</p>
+</div>
+</li>
+</ul>
+</div>
+<figure id="S3.F6" class="ltx_figure"><img src="x6.png" id="S3.F6.g1" class="ltx_graphics ltx_img_landscape" width="831" height="397" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 6: </span>The example processing of an annotation.</figcaption>
+</figure>
+<div id="S3.SS5.p5" class="ltx_para">
+<p class="ltx_p">The obtained annotation embedding can be used as an alternative to manual features extracted from annotations.</p>
+</div>
+</section>
+<section id="S3.SS6" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">III-F </span><span class="ltx_text ltx_font_italic">Similarity of Vector Representations</span>
+</h3>
+
+<div id="S3.SS6.p1" class="ltx_para">
+<p class="ltx_p">After obtaining the embeddings of the bug and the developer, we feed them into a comparison module. Here, we have applied the approach from the work of Severyn et al. <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib43" title="" class="ltx_ref">43</a>]</cite>, proposing to form the following vector:</p>
+<table id="S6.EGx3" class="ltx_equationgroup ltx_eqn_align ltx_eqn_table">
+
+<tbody id="S3.E3"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S3.E3.m1" class="ltx_Math" alttext="\displaystyle\mathbf{x}_{join}=[\mathbf{x}^{T}_{q};x_{sim};\mathbf{x}^{T}_{d};%
+\mathbf{x}^{T}_{feat}]," display="inline"><mrow><mrow><msub><mi>𝐱</mi><mrow><mi>j</mi><mo>⁢</mo><mi>o</mi><mo>⁢</mo><mi>i</mi><mo>⁢</mo><mi>n</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="false">[</mo><msubsup><mi>𝐱</mi><mi>q</mi><mi>T</mi></msubsup><mo>;</mo><msub><mi>x</mi><mrow><mi>s</mi><mo>⁢</mo><mi>i</mi><mo>⁢</mo><mi>m</mi></mrow></msub><mo>;</mo><msubsup><mi>𝐱</mi><mi>d</mi><mi>T</mi></msubsup><mo>;</mo><msubsup><mi>𝐱</mi><mrow><mi>f</mi><mo>⁢</mo><mi>e</mi><mo>⁢</mo><mi>a</mi><mo>⁢</mo><mi>t</mi></mrow><mi>T</mi></msubsup><mo stretchy="false">]</mo></mrow></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(3)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S3.SS6.p1.m1" class="ltx_Math" alttext="\mathbf{x}_{q}" display="inline"><msub><mi>𝐱</mi><mi>q</mi></msub></math>, <math id="S3.SS6.p1.m2" class="ltx_Math" alttext="\mathbf{x}_{d}" display="inline"><msub><mi>𝐱</mi><mi>d</mi></msub></math>, <math id="S3.SS6.p1.m3" class="ltx_Math" alttext="\mathbf{x}_{feat}" display="inline"><msub><mi>𝐱</mi><mrow><mi>f</mi><mo>⁢</mo><mi>e</mi><mo>⁢</mo><mi>a</mi><mo>⁢</mo><mi>t</mi></mrow></msub></math> stand for the bug embedding, the developer embedding, and additional stack trace features described in Sections <a href="#S3.SS4" title="III-D Additional Features ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-D</span></a> and <a href="#S3.SS5" title="III-E Neural Annotation Processing ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-E</span></a>. A scalar value <math id="S3.SS6.p1.m4" class="ltx_Math" alttext="x_{sim}" display="inline"><msub><mi>x</mi><mrow><mi>s</mi><mo>⁢</mo><mi>i</mi><mo>⁢</mo><mi>m</mi></mrow></msub></math> is obtained from <math id="S3.SS6.p1.m5" class="ltx_Math" alttext="\mathbf{x}^{T}_{q}\mathbf{M}\mathbf{x}_{d}" display="inline"><mrow><msubsup><mi>𝐱</mi><mi>q</mi><mi>T</mi></msubsup><mo>⁢</mo><msub><mi>𝐌𝐱</mi><mi>d</mi></msub></mrow></math> with a trainable matrix <math id="S3.SS6.p1.m6" class="ltx_Math" alttext="\mathbf{M}" display="inline"><mi>𝐌</mi></math>, which captures syntactic and semantic aspects between the queries and documents.</p>
+</div>
+<div id="S3.SS6.p2" class="ltx_para">
+<p class="ltx_p">After that, a feed-forward neural network with one hidden layer and ReLU activation function is applied, and the score is obtained which is used to rank developers.</p>
+</div>
+</section>
+</section>
+<section id="S4" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">IV </span><span class="ltx_text ltx_font_smallcaps">Evaluation</span>
+</h2>
+
+<div id="S4.p1" class="ltx_para">
+<p class="ltx_p">We evaluated our approach on stack traces collected from the internal system of JetBrains, a large software company. We aim to answer the following research questions:</p>
+</div>
+<div id="S4.p2" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">RQ1:</span> How do ranking models work in comparison with classifying models?</p>
+</div>
+<div id="S4.p3" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">RQ2:</span> Do frame-based features built from VCS annotations improve the model quality? Which of them affect the performance more, the manual ones or the features learned by the neural model automatically?</p>
+</div>
+<div id="S4.p4" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">RQ3:</span> How does adding stack-based features to frame-based features affect the model?</p>
+</div>
+<section id="S4.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">IV-A </span><span class="ltx_text ltx_font_italic">Dataset Collection</span>
+</h3>
+
+<div id="S4.SS1.p1" class="ltx_para">
+<p class="ltx_p">To collect data for the evaluation, we used the crash report processing system that handles reports from various JetBrains products. When a crash occurs in the user’s product (<span class="ltx_text ltx_font_italic">i.e.</span>, an IDE), an anonymous crash report is formed. If the user agreed to send such reports to the company, then it gets sent and is stored in the processing system. Since we are not able to publish internal company data, we have collected two datasets: from the company’s private and public code repositories. Our datasets were created from stack traces that are automatically created after every crash of a product. The public dataset is a subset of the private dataset that contains stack traces that relate to public repositories. The public dataset is published for further research and can be found in the DapStep repository: <a href="https://github.com/Sushentsev/DapStep" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://github.com/Sushentsev/DapStep</a>.</p>
+</div>
+<div id="S4.SS1.p2" class="ltx_para">
+<p class="ltx_p">The larger, private dataset contains a total of 11,139 bug reports from the crash system from October 2018 to April 2021. These bug stack traces include files from three JVM languages: Java, Kotlin, and Scala. The proposed solution is language-agnostic, files in different languages are processed in the same way. The developer who fixed the bug in the system will be referred to as the <span class="ltx_text ltx_font_italic">target developer</span>. For each error from the dataset, the target developer is known. As mentioned earlier, we use annotations to improve the quality of our model. Annotations can be obtained from the Git version control system using the file name and the file commit hash.</p>
+</div>
+<div id="S4.SS1.p3" class="ltx_para">
+<p class="ltx_p">The private dataset contains annotations for all files that are present in the stack trace, with the total number of annotations being 99,591. However, not all annotations are present in public repositories, only 32,908 of them. The public dataset contains stack traces, in which at least 75% of the annotations are present publicly. This results in 3,361 different stack traces. Thus, a public dataset consists of a subset of reports from a private dataset, for which a sufficient number of annotations are available. We believe that this dataset can be useful for further research in the field and can facilitate the development of models, which work with the systems that process the reports in the form of stack traces.</p>
+</div>
+</section>
+<section id="S4.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">IV-B </span><span class="ltx_text ltx_font_italic">Baseline Implementations</span>
+</h3>
+
+<div id="S4.SS2.p1" class="ltx_para">
+<p class="ltx_p">To compare our stack-trace-based approach with approaches that use reports description, we implement several baseline models. It is important to note that we are comparing models from the point of view of stack trace processing, because we have no textual descriptions of bugs. We apply preprocessing (<a href="#S3.SS1" title="III-A Preprocessing ‣ III Approach ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III-A</span></a>) that converts a stack trace into a set of text tokens that can be processed as text data. As baseline models, we chose Logistic Regression and Random Forest. In addition, we have implemented a heuristic solution, which is based on counting the number of edited files by each developer. Let us describe these baselines in more detail.</p>
+</div>
+<div id="S4.SS2.p2" class="ltx_para">
+<p class="ltx_p">Logistic regression <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib44" title="" class="ltx_ref">44</a>]</cite> is one of the simplest and most popular machine learning models that demonstrated its capabilities in the bug triage problem <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib11" title="" class="ltx_ref">11</a>]</cite>. Logistic regression performs a linear transformation on a vector of features; to obtain the distribution of probabilities by class, the sigmoid function is used.
+In addition to logistic regression, we used Random Forest <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib45" title="" class="ltx_ref">45</a>]</cite> as a baseline model. Unlike Logistic Regression, Random Forests are capable of constructing a non-linear decision boundary. Thus, Random Forest is able to capture more complex data dependencies.
+We used <span class="ltx_text ltx_font_italic">SGDClassifier</span> and <span class="ltx_text ltx_font_italic">
+RandomForestClassifier</span> from the <span class="ltx_text ltx_font_italic">scikit-learn</span> package as the implementations of the models.
+To apply classification algorithms, each stack trace must be represented with a feature vector. One of the most popular approaches that works well in practice is the TF-IDF approach <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib46" title="" class="ltx_ref">46</a>]</cite>.</p>
+</div>
+<div id="S4.SS2.p3" class="ltx_para">
+<p class="ltx_p">We also propose a baseline model based on a simple heuristic. For each frame of the stack trace, we know exactly which line in the file caused the bug. From the VCS annotation, we can find out which developer edited the given line last. Thus, for each developer, we count the number of edited lines that led to an error. The developer who edited the most error lines should be assigned to fix the bug. Additionally, we use the following ideas to improve the quality of this solution. Firstly, the frames at the top of the stack are usually more explanatory, therefore we can consider not all frames in the trace stack, but only Top-20 frames. Secondly, we consider each line edit with a weight that depends on the edit time: the later the line edit happened, the higher the weight is. As a weight function, we used <math id="S4.SS2.p3.m1" class="ltx_Math" alttext="f(x)=e^{-x}" display="inline"><mrow><mrow><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>x</mi></mrow></msup></mrow></math>, where <math id="S4.SS2.p3.m2" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> stands for the time elapsed from editing a line until a bug occurred in the system.</p>
+</div>
+</section>
+<section id="S4.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">IV-C </span><span class="ltx_text ltx_font_italic">Model Parameters</span>
+</h3>
+
+<div id="S4.SS3.p1" class="ltx_para">
+<p class="ltx_p">Since we collected two different datasets from public and private repositories, for each dataset, the parameters of the models were selected independently. The model parameters are selected according to the results on the validation datasets.</p>
+</div>
+<figure id="S4.T2" class="ltx_table">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_table">TABLE II: </span>Parameters used for different models.</figcaption>
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_tt"><span class="ltx_text ltx_font_bold">Parameter</span></th>
+<td class="ltx_td ltx_align_center ltx_border_tt"><span class="ltx_text ltx_font_bold">Public dataset</span></td>
+<td class="ltx_td ltx_align_center ltx_border_tt"><span class="ltx_text ltx_font_bold">Private dataset</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" colspan="3"><span class="ltx_text ltx_font_bold">Logistic Regression</span></th>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_t"><span class="ltx_text ltx_font_bold">Loss</span></th>
+<td class="ltx_td ltx_align_center ltx_border_t">log</td>
+<td class="ltx_td ltx_align_center ltx_border_t">log</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text ltx_font_bold">Regularization coefficient</span></th>
+<td class="ltx_td ltx_align_center">1e-5</td>
+<td class="ltx_td ltx_align_center">1e-5</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" colspan="3"><span class="ltx_text ltx_font_bold">Random Forest</span></th>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_t"><span class="ltx_text ltx_font_bold">Number of estimators</span></th>
+<td class="ltx_td ltx_align_center ltx_border_t">100</td>
+<td class="ltx_td ltx_align_center ltx_border_t">100</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text ltx_font_bold">Maximum depth</span></th>
+<td class="ltx_td ltx_align_center"><math id="S4.T2.m1" class="ltx_Math" alttext="\infty" display="inline"><mi mathvariant="normal">∞</mi></math></td>
+<td class="ltx_td ltx_align_center"><math id="S4.T2.m2" class="ltx_Math" alttext="\infty" display="inline"><mi mathvariant="normal">∞</mi></math></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text ltx_font_bold">Minimum samples in a leaf</span></th>
+<td class="ltx_td ltx_align_center">1</td>
+<td class="ltx_td ltx_align_center">1</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" colspan="3"><span class="ltx_text ltx_font_bold">CNN</span></th>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_t"><span class="ltx_text ltx_font_bold">Number of convolutional filters</span></th>
+<td class="ltx_td ltx_align_center ltx_border_t">32</td>
+<td class="ltx_td ltx_align_center ltx_border_t">64</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text ltx_font_bold">Size of trainable embeddings</span></th>
+<td class="ltx_td ltx_align_center">50</td>
+<td class="ltx_td ltx_align_center">70</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" colspan="3"><span class="ltx_text ltx_font_bold">RNN</span></th>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_t"><span class="ltx_text ltx_font_bold">Hidden size</span></th>
+<td class="ltx_td ltx_align_center ltx_border_t">70</td>
+<td class="ltx_td ltx_align_center ltx_border_t">100</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_bb"><span class="ltx_text ltx_font_bold">Size of trainable embeddings</span></th>
+<td class="ltx_td ltx_align_center ltx_border_bb">50</td>
+<td class="ltx_td ltx_align_center ltx_border_bb">70</td>
+</tr>
+</tbody>
+</table>
+</figure>
+<div id="S4.SS3.p2" class="ltx_para">
+<p class="ltx_p">The detailed information about the parameters can be found in <a href="#S4.T2" title="In IV-C Model Parameters ‣ IV Evaluation ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">II</span></a>.
+In the proposed neural network models, the dropout <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib47" title="" class="ltx_ref">47</a>]</cite> and weight decay <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib48" title="" class="ltx_ref">48</a>]</cite> are applied to prevent overfitting. We used the Adam optimizer <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib49" title="" class="ltx_ref">49</a>]</cite> with a learning rate of <math id="S4.SS3.p2.m1" class="ltx_Math" alttext="1\mathrm{e}{-3}" display="inline"><mrow><mrow><mn>1</mn><mo>⁢</mo><mi mathvariant="normal">e</mi></mrow><mo>−</mo><mn>3</mn></mrow></math> and a weight decay of <math id="S4.SS3.p2.m2" class="ltx_Math" alttext="1\mathrm{e}{-3}" display="inline"><mrow><mrow><mn>1</mn><mo>⁢</mo><mi mathvariant="normal">e</mi></mrow><mo>−</mo><mn>3</mn></mrow></math>, dropout rate was <math id="S4.SS3.p2.m3" class="ltx_Math" alttext="0.2" display="inline"><mn>0.2</mn></math>. The classifying models were trained for 25 epochs, and the ranking models were trained for 10 epochs because our experiments have shown that a larger number of epochs leads to the model overfitting.</p>
+</div>
+</section>
+<section id="S4.SS4" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">IV-D </span><span class="ltx_text ltx_font_italic">Loss Function</span>
+</h3>
+
+<div id="S4.SS4.p1" class="ltx_para">
+<p class="ltx_p">Since we considered bug triage as a ranking problem, it is necessary to prepare labels for the ranking problem: the target developer must be the first in the list of the ranked developers. For our problem statement, a pairwise approach to RankNet <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib50" title="" class="ltx_ref">50</a>]</cite> loss is often used.</p>
+</div>
+<div id="S4.SS4.p2" class="ltx_para">
+<p class="ltx_p">The RankNet algorithm assumes that the training data consists of pairs of documents <math id="S4.SS4.p2.m1" class="ltx_Math" alttext="(d_{1},d_{2})" display="inline"><mrow><mo stretchy="false">(</mo><msub><mi>d</mi><mn>1</mn></msub><mo>,</mo><msub><mi>d</mi><mn>2</mn></msub><mo stretchy="false">)</mo></mrow></math> together with a target probability <math id="S4.SS4.p2.m2" class="ltx_Math" alttext="\bar{P}" display="inline"><mover accent="true"><mi>P</mi><mo>¯</mo></mover></math> of <math id="S4.SS4.p2.m3" class="ltx_Math" alttext="d_{1}" display="inline"><msub><mi>d</mi><mn>1</mn></msub></math> being ranked higher than <math id="S4.SS4.p2.m4" class="ltx_Math" alttext="d_{2}" display="inline"><msub><mi>d</mi><mn>2</mn></msub></math>. For each query, there is only one relevant document (target developer), all other documents (developers) are considered irrelevant.</p>
+</div>
+<div id="S4.SS4.p3" class="ltx_para">
+<p class="ltx_p">As a result, the final loss function with simplification for several pairs <math id="S4.SS4.p3.m1" class="ltx_Math" alttext="(d_{i},d_{j})" display="inline"><mrow><mo stretchy="false">(</mo><msub><mi>d</mi><mi>i</mi></msub><mo>,</mo><msub><mi>d</mi><mi>j</mi></msub><mo stretchy="false">)</mo></mrow></math> and query <math id="S4.SS4.p3.m2" class="ltx_Math" alttext="q" display="inline"><mi>q</mi></math> has the following form:</p>
+<table id="S6.EGx4" class="ltx_equationgroup ltx_eqn_align ltx_eqn_table">
+
+<tbody id="S4.E4"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S4.E4.m1" class="ltx_Math" alttext="\displaystyle L=\sum_{d_{i}\prec d_{j}}\log{\left(1+e^{-(f(q,d_{i})-f(q,d_{j})%
+)}\right)}" display="inline"><mrow><mi>L</mi><mo>=</mo><mrow><mstyle displaystyle="true"><munder><mo movablelimits="false">∑</mo><mrow><msub><mi>d</mi><mi>i</mi></msub><mo>≺</mo><msub><mi>d</mi><mi>j</mi></msub></mrow></munder></mstyle><mrow><mi>log</mi><mo>⁡</mo><mrow><mo>(</mo><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mrow><mo stretchy="false">(</mo><mrow><mrow><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>q</mi><mo>,</mo><msub><mi>d</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow></mrow><mo>−</mo><mrow><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>q</mi><mo>,</mo><msub><mi>d</mi><mi>j</mi></msub><mo stretchy="false">)</mo></mrow></mrow></mrow><mo stretchy="false">)</mo></mrow></mrow></msup></mrow><mo>)</mo></mrow></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(4)</span></td>
+</tr></tbody>
+</table>
+</div>
+<div id="S4.SS4.p4" class="ltx_para">
+<p class="ltx_p">To evaluate our approach, we take a random query (bug stack trace) <math id="S4.SS4.p4.m1" class="ltx_Math" alttext="q" display="inline"><mi>q</mi></math> and a set of documents (developer vector representations) <math id="S4.SS4.p4.m2" class="ltx_Math" alttext="\{d_{1},\ldots,d_{n}\}" display="inline"><mrow><mo stretchy="false">{</mo><msub><mi>d</mi><mn>1</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>d</mi><mi>n</mi></msub><mo stretchy="false">}</mo></mrow></math>,
+and make a gradient descent step according to (<a href="#S4.E4" title="In IV-D Loss Function ‣ IV Evaluation ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4</span></a>).
+Furthermore, we use the following heuristic observation: if the developer stack trace is empty, then they did not edit any file from the bug stack trace. It is unlikely that this developer will fix the current bug, therefore, we exclude such a developer from the list of possible assignees. It is also essential that the calculation of the loss function requires the score of the target developer. However, the target developer representation in the stack trace form may be empty, therefore, in such cases we remove such reports from the training data.</p>
+</div>
+</section>
+<section id="S4.SS5" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">IV-E </span><span class="ltx_text ltx_font_italic">Performance Metrics</span>
+</h3>
+
+<figure id="S4.T3" class="ltx_table">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_table">TABLE III: </span>Comparison of the models on the public and private datasets.</figcaption>
+<table class="ltx_tabular ltx_centering ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_tt" rowspan="2"><span class="ltx_text ltx_font_bold">№</span></td>
+<td class="ltx_td ltx_align_center ltx_border_tt" rowspan="2"><span class="ltx_text ltx_font_bold">Model</span></td>
+<td class="ltx_td ltx_align_center ltx_border_tt" colspan="4"><span class="ltx_text ltx_font_bold">Public dataset</span></td>
+<td class="ltx_td ltx_align_center ltx_border_tt" colspan="4"><span class="ltx_text ltx_font_bold">Private dataset</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_t"><span class="ltx_text ltx_font_bold">Acc@1</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t"><span class="ltx_text ltx_font_bold">Acc@5</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t"><span class="ltx_text ltx_font_bold">Acc@10</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t"><span class="ltx_text ltx_font_bold">MRR</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t"><span class="ltx_text ltx_font_bold">Acc@1</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t"><span class="ltx_text ltx_font_bold">Acc@5</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t"><span class="ltx_text ltx_font_bold">Acc@10</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t"><span class="ltx_text ltx_font_bold">MRR</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_t">1</td>
+<td class="ltx_td ltx_align_left ltx_border_t">Heuristics</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.26</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.50</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.52</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.36</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.41</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.73</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.80</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.54</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">2</td>
+<td class="ltx_td ltx_align_left">Logistic Regression</td>
+<td class="ltx_td ltx_align_center">0.19</td>
+<td class="ltx_td ltx_align_center">0.35</td>
+<td class="ltx_td ltx_align_center">0.45</td>
+<td class="ltx_td ltx_align_center">0.27</td>
+<td class="ltx_td ltx_align_center">0.43</td>
+<td class="ltx_td ltx_align_center">0.56</td>
+<td class="ltx_td ltx_align_center">0.62</td>
+<td class="ltx_td ltx_align_center">0.50</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">3</td>
+<td class="ltx_td ltx_align_left">Random Forest</td>
+<td class="ltx_td ltx_align_center">0.16</td>
+<td class="ltx_td ltx_align_center">0.33</td>
+<td class="ltx_td ltx_align_center">0.40</td>
+<td class="ltx_td ltx_align_center">0.25</td>
+<td class="ltx_td ltx_align_center">0.42</td>
+<td class="ltx_td ltx_align_center">0.57</td>
+<td class="ltx_td ltx_align_center">0.64</td>
+<td class="ltx_td ltx_align_center">0.50</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">4</td>
+<td class="ltx_td ltx_align_left">CNN classification</td>
+<td class="ltx_td ltx_align_center">0.14</td>
+<td class="ltx_td ltx_align_center">0.29</td>
+<td class="ltx_td ltx_align_center">0.38</td>
+<td class="ltx_td ltx_align_center">0.22</td>
+<td class="ltx_td ltx_align_center">0.42</td>
+<td class="ltx_td ltx_align_center">0.55</td>
+<td class="ltx_td ltx_align_center">0.60</td>
+<td class="ltx_td ltx_align_center">0.48</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">5</td>
+<td class="ltx_td ltx_align_left">RNN classification</td>
+<td class="ltx_td ltx_align_center">0.14</td>
+<td class="ltx_td ltx_align_center">0.27</td>
+<td class="ltx_td ltx_align_center">0.34</td>
+<td class="ltx_td ltx_align_center">0.21</td>
+<td class="ltx_td ltx_align_center">0.42</td>
+<td class="ltx_td ltx_align_center">0.54</td>
+<td class="ltx_td ltx_align_center">0.60</td>
+<td class="ltx_td ltx_align_center">0.48</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">6</td>
+<td class="ltx_td ltx_align_left">CNN ranking (without VCS)</td>
+<td class="ltx_td ltx_align_center">0.13</td>
+<td class="ltx_td ltx_align_center">0.37</td>
+<td class="ltx_td ltx_align_center">0.47</td>
+<td class="ltx_td ltx_align_center">0.25</td>
+<td class="ltx_td ltx_align_center">0.35</td>
+<td class="ltx_td ltx_align_center">0.60</td>
+<td class="ltx_td ltx_align_center">0.72</td>
+<td class="ltx_td ltx_align_center">0.48</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">7</td>
+<td class="ltx_td ltx_align_left">RNN ranking (without VCS)</td>
+<td class="ltx_td ltx_align_center">0.21</td>
+<td class="ltx_td ltx_align_center">0.37</td>
+<td class="ltx_td ltx_align_center">0.50</td>
+<td class="ltx_td ltx_align_center">0.30</td>
+<td class="ltx_td ltx_align_center">0.46</td>
+<td class="ltx_td ltx_align_center">0.69</td>
+<td class="ltx_td ltx_align_center">0.76</td>
+<td class="ltx_td ltx_align_center">0.57</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_t">8</td>
+<td class="ltx_td ltx_align_left ltx_border_t">CNN ranking (VCS: manual frame-based)</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.28</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.48</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.54</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.38</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.53</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.79</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.84</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.65</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">9</td>
+<td class="ltx_td ltx_align_left">CNN ranking (VCS: neural frame-based)</td>
+<td class="ltx_td ltx_align_center">0.29</td>
+<td class="ltx_td ltx_align_center">0.48</td>
+<td class="ltx_td ltx_align_center">0.54</td>
+<td class="ltx_td ltx_align_center">0.39</td>
+<td class="ltx_td ltx_align_center">0.54</td>
+<td class="ltx_td ltx_align_center">0.80</td>
+<td class="ltx_td ltx_align_center">0.84</td>
+<td class="ltx_td ltx_align_center">0.66</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">10</td>
+<td class="ltx_td ltx_align_left">RNN ranking (VCS: manual frame-based)</td>
+<td class="ltx_td ltx_align_center"><span class="ltx_text ltx_font_bold">0.35</span></td>
+<td class="ltx_td ltx_align_center"><span class="ltx_text ltx_font_bold">0.52</span></td>
+<td class="ltx_td ltx_align_center"><span class="ltx_text ltx_font_bold">0.60</span></td>
+<td class="ltx_td ltx_align_center"><span class="ltx_text ltx_font_bold">0.44</span></td>
+<td class="ltx_td ltx_align_center">0.58</td>
+<td class="ltx_td ltx_align_center">0.82</td>
+<td class="ltx_td ltx_align_center">0.86</td>
+<td class="ltx_td ltx_align_center">0.68</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center">11</td>
+<td class="ltx_td ltx_align_left">RNN ranking (VCS: neural frame-based)</td>
+<td class="ltx_td ltx_align_center">0.27</td>
+<td class="ltx_td ltx_align_center">0.46</td>
+<td class="ltx_td ltx_align_center">0.56</td>
+<td class="ltx_td ltx_align_center">0.37</td>
+<td class="ltx_td ltx_align_center">0.54</td>
+<td class="ltx_td ltx_align_center">0.79</td>
+<td class="ltx_td ltx_align_center">0.83</td>
+<td class="ltx_td ltx_align_center">0.65</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_t">12</td>
+<td class="ltx_td ltx_align_left ltx_border_t">CNN ranking (VCS: manual frame-based &amp; stack-based)</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.31</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.49</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.56</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.40</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.57</td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.82</td>
+<td class="ltx_td ltx_align_center ltx_border_t"><span class="ltx_text ltx_font_bold">0.87</span></td>
+<td class="ltx_td ltx_align_center ltx_border_t">0.68</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_center ltx_border_bb">13</td>
+<td class="ltx_td ltx_align_left ltx_border_bb">RNN ranking (VCS: manual frame-based &amp; stack-based)</td>
+<td class="ltx_td ltx_align_center ltx_border_bb">0.34</td>
+<td class="ltx_td ltx_align_center ltx_border_bb"><span class="ltx_text ltx_font_bold">0.52</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb">0.56</td>
+<td class="ltx_td ltx_align_center ltx_border_bb">0.43</td>
+<td class="ltx_td ltx_align_center ltx_border_bb"><span class="ltx_text ltx_font_bold">0.60</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb"><span class="ltx_text ltx_font_bold">0.83</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb"><span class="ltx_text ltx_font_bold">0.87</span></td>
+<td class="ltx_td ltx_align_center ltx_border_bb"><span class="ltx_text ltx_font_bold">0.70</span></td>
+</tr>
+</tbody>
+</table>
+</figure>
+<div id="S4.SS5.p1" class="ltx_para">
+<p class="ltx_p">To answer the research questions, we compared the proposed ranking model with the classification models adapted for stack traces. The most common quality metric for classification problems is Accuracy at K. Accuracy at K corresponds to the number of relevant results among the first <math id="S4.SS5.p1.m1" class="ltx_Math" alttext="K" display="inline"><mi>K</mi></math> positions. However, this metric does not take into account the position of the relevant document, therefore, we used different values of <math id="S4.SS5.p1.m2" class="ltx_Math" alttext="k" display="inline"><mi>k</mi></math> from the <math id="S4.SS5.p1.m3" class="ltx_Math" alttext="\{1,5,10\}" display="inline"><mrow><mo stretchy="false">{</mo><mn>1</mn><mo>,</mo><mn>5</mn><mo>,</mo><mn>10</mn><mo stretchy="false">}</mo></mrow></math> set. More formally, the Accuracy at K metric is defined as follows:</p>
+<table id="S6.EGx5" class="ltx_equationgroup ltx_eqn_align ltx_eqn_table">
+
+<tbody id="S4.E5"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S4.E5.m1" class="ltx_Math" alttext="\displaystyle acc@k=\frac{1}{|D|}\sum_{(d,q)\in D}\mathbb{I}\left(d\in\{d_{q_{%
+i}}\}_{i=1}^{k}\right)," display="inline"><mrow><mrow><mrow><mi>a</mi><mo>⁢</mo><mi>c</mi><mo>⁢</mo><mi>c</mi><mo>⁢</mo><mi mathvariant="normal">@</mi><mo>⁢</mo><mi>k</mi></mrow><mo>=</mo><mrow><mstyle displaystyle="true"><mfrac><mn>1</mn><mrow><mo stretchy="false">|</mo><mi>D</mi><mo stretchy="false">|</mo></mrow></mfrac></mstyle><mo>⁢</mo><mrow><mstyle displaystyle="true"><munder><mo movablelimits="false">∑</mo><mrow><mrow><mo stretchy="false">(</mo><mi>d</mi><mo>,</mo><mi>q</mi><mo stretchy="false">)</mo></mrow><mo>∈</mo><mi>D</mi></mrow></munder></mstyle><mrow><mi>𝕀</mi><mo>⁢</mo><mrow><mo>(</mo><mrow><mi>d</mi><mo>∈</mo><msubsup><mrow><mo stretchy="false">{</mo><msub><mi>d</mi><msub><mi>q</mi><mi>i</mi></msub></msub><mo stretchy="false">}</mo></mrow><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></msubsup></mrow><mo>)</mo></mrow></mrow></mrow></mrow></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(5)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S4.SS5.p1.m4" class="ltx_Math" alttext="\mathbb{I}" display="inline"><mi>𝕀</mi></math> stands for the indicator function and <math id="S4.SS5.p1.m5" class="ltx_Math" alttext="\{d_{q_{i}}\}" display="inline"><mrow><mo stretchy="false">{</mo><msub><mi>d</mi><msub><mi>q</mi><mi>i</mi></msub></msub><mo stretchy="false">}</mo></mrow></math> is the ranked list of documents for query <math id="S4.SS5.p1.m6" class="ltx_Math" alttext="q" display="inline"><mi>q</mi></math>.</p>
+</div>
+<div id="S4.SS5.p2" class="ltx_para">
+<p class="ltx_p">In the ranking problem, we use mean reciprocal rank (MRR) for evaluation, which corresponds to the harmonic mean of the relevant documents’ ranks. It should be noted that only the rank of the first relevant document is considered in MRR. However, it is suitable for our task, since there is always one relevant document for each query. MRR can be calculated using the following formula:</p>
+<table id="S6.EGx6" class="ltx_equationgroup ltx_eqn_align ltx_eqn_table">
+
+<tbody id="S4.E6"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="S4.E6.m1" class="ltx_Math" alttext="\displaystyle MRR=\frac{1}{|D|}\sum_{(d,q)\in D}\frac{1}{rank_{d}^{q}}," display="inline"><mrow><mrow><mrow><mi>M</mi><mo>⁢</mo><mi>R</mi><mo>⁢</mo><mi>R</mi></mrow><mo>=</mo><mrow><mstyle displaystyle="true"><mfrac><mn>1</mn><mrow><mo stretchy="false">|</mo><mi>D</mi><mo stretchy="false">|</mo></mrow></mfrac></mstyle><mo>⁢</mo><mrow><mstyle displaystyle="true"><munder><mo movablelimits="false">∑</mo><mrow><mrow><mo stretchy="false">(</mo><mi>d</mi><mo>,</mo><mi>q</mi><mo stretchy="false">)</mo></mrow><mo>∈</mo><mi>D</mi></mrow></munder></mstyle><mstyle displaystyle="true"><mfrac><mn>1</mn><mrow><mi>r</mi><mo>⁢</mo><mi>a</mi><mo>⁢</mo><mi>n</mi><mo>⁢</mo><msubsup><mi>k</mi><mi>d</mi><mi>q</mi></msubsup></mrow></mfrac></mstyle></mrow></mrow></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(6)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="S4.SS5.p2.m1" class="ltx_Math" alttext="rank_{d}^{q}" display="inline"><mrow><mi>r</mi><mo>⁢</mo><mi>a</mi><mo>⁢</mo><mi>n</mi><mo>⁢</mo><msubsup><mi>k</mi><mi>d</mi><mi>q</mi></msubsup></mrow></math> refers to the rank position of the target document <math id="S4.SS5.p2.m2" class="ltx_Math" alttext="d" display="inline"><mi>d</mi></math> for the query <math id="S4.SS5.p2.m3" class="ltx_Math" alttext="q" display="inline"><mi>q</mi></math>.</p>
+</div>
+</section>
+<section id="S4.SS6" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">IV-F </span><span class="ltx_text ltx_font_italic">Experiment Methodology</span>
+</h3>
+
+<div id="S4.SS6.p1" class="ltx_para">
+<p class="ltx_p">To evaluate our models, we divided both datasets into three sets: train, validation, and test. For the private dataset, the sizes of the train, validation, and test sets were 8139, 1500, and 1500 bug stack traces, respectively. For the public dataset, the split was 2461, 450, and 450, respectively. This corresponds to the validation and test sets being about 15% of the sizes of the entire datasets, which is a common practice. This partitioning helps to prevent overfitting of the model. Since the data has a time component, the dataset is divided by time in order to avoid data leakage.</p>
+</div>
+<div id="S4.SS6.p2" class="ltx_para">
+<p class="ltx_p">Our methodology for the experiment with the classification models is as follows: we select hyperparameters using the validation datasets, then fit the model on the training and validation datasets, and, finally, evaluate the quality of the models on the test datasets. If the developer is found only in the test dataset, then we cannot correctly classify the bug, since the model was not trained for this class. In this case, we consider that the bug was assigned incorrectly.</p>
+</div>
+<div id="S4.SS6.p3" class="ltx_para">
+<p class="ltx_p">For the ranking problem, the model was evaluated as follows. During the training, a random stack trace is taken from the training dataset. Then, for each developer, their stack trace representation is built. If the target developer has an empty stack trace representation, then this means that the developer did not fix frames from this stack trace. In this case, we exclude this stack trace from the training dataset. When evaluating, the model considers only those developers whose stack trace representation is not empty. If the developer’s stack trace representation is empty, then his score is equal to the minimum score predicted by the model.</p>
+</div>
+<div id="S4.SS6.p4" class="ltx_para">
+<p class="ltx_p">To test the statistical significance of our results, we use bootstrap <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib51" title="" class="ltx_ref">51</a>]</cite> to construct the confidence intervals. When comparing two models, we form 100 bootstrapping resamplings with the same size as the test dataset. Next, a 95% confidence interval for the difference of the metric scores is calculated. If zero falls into the constructed interval, then there are no statistically significant differences between the models, otherwise, we say that there is statistical significance.</p>
+</div>
+<div id="S4.SS6.p5" class="ltx_para">
+<p class="ltx_p">All the experiments were run on a server with the following technical characteristics: 8-core Intel Xeon CPU @2.3 GHz, NVidia K80 GPU, and 60 GB of RAM.</p>
+</div>
+</section>
+<section id="S4.SS7" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">IV-G </span><span class="ltx_text ltx_font_italic">Results</span>
+</h3>
+
+<div id="S4.SS7.p1" class="ltx_para">
+<p class="ltx_p">The experimental results of running various models on both datasets are presented in <a href="#S4.T3" title="In IV-E Performance Metrics ‣ IV Evaluation ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III</span></a>. Resulting confidence intervals for all the experiments can be found in the online appendix: <a href="https://doi.org/10.5281/zenodo.5596294" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://doi.org/10.5281/zenodo.5596294</a>.</p>
+</div>
+<div id="S4.SS7.p2" class="ltx_para">
+<p class="ltx_p">First of all, it can be seen that the results are different for the public and the private datasets. We assume that this happened for three reasons. Firstly, the public dataset is several times smaller than the private dataset, which can affect the approaches that rely on a lot of data. Secondly, not all annotations are available for the public dataset, with the missing annotations likely containing some important information. Thirdly, we found that the test set from the public dataset contains more target developers who have not edited files from stack traces than the private dataset. Thus, their stack trace representation will be empty, and the result of the model will be incorrect on these reports.</p>
+</div>
+<section id="S4.SS7.SSS1" class="ltx_subsubsection">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">IV-G1 </span>Research Question 1</h4>
+
+<div id="S4.SS7.SSS1.p1" class="ltx_para">
+<p class="ltx_p">To answer RQ1, let us evaluate and compare the quality of the classifying and ranking models. Our results show that classifying models based on classical machine learning algorithms perform as well as classifying algorithms based on RNNs or CNNs (<a href="#S4.T3" title="In IV-E Performance Metrics ‣ IV Evaluation ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III</span></a>, lines 2–5). We believe that this can be explained by the fact that neural networks are most likely to extract features similar to TF-IDF features, so the results are similar.</p>
+</div>
+<div id="S4.SS7.SSS1.p2" class="ltx_para">
+<p class="ltx_p">The RNN ranking model performs better than the others (<a href="#S4.T3" title="In IV-E Performance Metrics ‣ IV Evaluation ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III</span></a>, line 7, 0.21 Acc@1 on the Public dataset, 0.46 Acc@1 on the Private dataset), but the differences would be more significant if there were many developers in the test dataset that were not in the training dataset. We found that for the public and private datasets, there were 27 bug reports in the test data with developers that were not presented in train data. Thus, this represents only 6% and 1.8% of the total size of the test data, and the advantage of the ranking approach is not very noticeable. On the other hand, for projects that have a larger variety of developers (for example, some large open-source projects) the ranking approach can be expected to significantly improve the quality of the models.</p>
+</div>
+<div id="S4.SS7.SSS1.p3" class="ltx_para">
+<p class="ltx_p">Another interesting observation is that the heuristic-based baseline shows the quality comparable to the ML-based approaches. Such high performance of the heuristic solution can be explained by the fact that the data was collected from industrial projects of a large software company with well-functioning bug fixing pipelines, and the proposed heuristic might be a good fit for such a pipeline. In open-source projects, error processing workflows might be different, and as a result, such a heuristic solution might work worse. However, this observation suggests that sometimes a simple heuristic might work better than complex statistical models that are not interpretable and need a lot of sophisticated data to train on.</p>
+</div>
+<div id="S4.SS7.SSS1.p4" class="ltx_para">
+<p class="ltx_p ltx_align_center">
+
+<span class="ltx_inline-block ltx_minipage ltx_align_middle ltx_framed ltx_framed_rectangle" style="width:403.3pt;">
+<span class="ltx_p"><span class="ltx_text ltx_font_bold">Answer to RQ1:</span> <span class="ltx_text ltx_font_italic">On our datasets, the ranking models perform slightly better, but the difference can be more significant in other settings, future research is required.</span></span>
+</span>
+</p>
+</div>
+</section>
+<section id="S4.SS7.SSS2" class="ltx_subsubsection">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">IV-G2 </span>Research Question 2</h4>
+
+<div id="S4.SS7.SSS2.p1" class="ltx_para">
+<p class="ltx_p">Next, let us address RQ2 and investigate the significance of manual and neural frame-based features built from the VCS annotations. We trained a ranking model with only manual frame-based features and another model with only neural frame-based features. It can be seen (<a href="#S4.T3" title="In IV-E Performance Metrics ‣ IV Evaluation ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III</span></a>, lines 8–11 compared to lines 6–7) that frame-based features increase the model quality, but the impact of the neural features is not as significant as in the case of manually extracted features in the RNN model (0.27 and 0.35 Acc@1 on the public dataset, 0.54 and 0.58 Acc@1 on the private dataset, respectively). However, in the case of the CNN-based approaches, manual and neural features show similar results. CNN captures the entire stack trace, rather than processing it in a sequential form like the RNN does. Therefore, feature normalization in the case of CNN may be necessary, since a lot of raw values are harmful. The difference between manual frame-based features and neural frame-based features turned out to be statistically significant for RNN and not significant for CNN on both datasets.</p>
+</div>
+<div id="S4.SS7.SSS2.p2" class="ltx_para">
+<p class="ltx_p">An important disadvantage of the neural network annotation processing is the slow model training (one epoch takes 3-4 times longer compared to the manual features): each pass requires hundreds of annotations to be processed, each of them can contain thousands of lines, and since we use RNN, it takes a significant amount of time. On the other hand, the DL approach learns annotation embeddings automatically, and these embeddings could be useful in other related tasks (bug localization, bug report deduplication, etc.). This seems like a promising direction for future work.</p>
+</div>
+<div id="S4.SS7.SSS2.p3" class="ltx_para">
+<p class="ltx_p ltx_align_center">
+
+<span class="ltx_inline-block ltx_minipage ltx_align_middle ltx_framed ltx_framed_rectangle" style="width:403.3pt;">
+<span class="ltx_p"><span class="ltx_text ltx_font_bold">Answer to RQ2:</span> <span class="ltx_text ltx_font_italic">Adding frame-based features from the VCS annotations improves the quality of models. Manual features worked better for the RNN models, while in CNN models, the difference between manual and learned features is insignificant. Learning features takes noticeably more time, but leads to obtaining embeddings of annotations, which might be useful for other tasks.</span></span>
+</span>
+</p>
+</div>
+</section>
+<section id="S4.SS7.SSS3" class="ltx_subsubsection">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">IV-G3 </span>Research Question 3</h4>
+
+<div id="S4.SS7.SSS3.p1" class="ltx_para">
+<p class="ltx_p">Finally, to answer RQ3, we trained models with both the frame-based and stack-based features from the VCS annotations. Since manual frame-based features demonstrated better results than neural features, we only used manual features. First, we can notice that the RNN-based model outperforms the CNN-based one by 3 percentage points according to Acc@1 (<a href="#S4.T3" title="In IV-E Performance Metrics ‣ IV Evaluation ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III</span></a>, lines 12–13), however, in the case of the public dataset, this difference is not statistically significant.
+Better performance of RNNs compared to CNNs may be attributed to the CNN training pipeline: to reduce the training time, stack traces are processed in batches. At the same time, CNN is not designed to process sequences of different lengths in batches, therefore, padding is necessary. Moreover, the length of the sequences must not be shorter than the size of the convolution kernel, that is, 5. It is possible that padding in the training data leads to worse results.</p>
+</div>
+<div id="S4.SS7.SSS3.p2" class="ltx_para">
+<p class="ltx_p">Secondly, we can see that adding stack-based features has a positive statistically significant effect on the model performance (<a href="#S4.T3" title="In IV-E Performance Metrics ‣ IV Evaluation ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III</span></a>, lines 8, 10, 12–13).
+We believe that frame-based features are not taken into account in the best way in CNN models, therefore, stack-based features add new information to the model. However, in the case of RNN models, stack-based features do not lead to such improvements. Perhaps, better feature engineering could help us overcome this issue, future research is required.</p>
+</div>
+<div id="S4.SS7.SSS3.p3" class="ltx_para">
+<p class="ltx_p ltx_align_center">
+
+<span class="ltx_inline-block ltx_minipage ltx_align_middle ltx_framed ltx_framed_rectangle" style="width:403.3pt;">
+<span class="ltx_p"><span class="ltx_text ltx_font_bold">Answer to RQ3:</span> <span class="ltx_text ltx_font_italic">Combining stack-based and frame-based has a positive effect on the CNN-based appoaches, but for the RNN-based models the effect is not significant.</span></span>
+</span>
+</p>
+</div>
+<div id="S4.SS7.SSS3.p4" class="ltx_para">
+<p class="ltx_p">In the end, the RNN ranking model with frame-based and stack-based manual features obtained from the VCS annotations turned out to be the best performing model for bug assignee prediction based on the stack traces data.
+It outperforms all the other models on the private dataset (<a href="#S4.T3" title="In IV-E Performance Metrics ‣ IV Evaluation ‣ DapStep: Deep Assignee Prediction for Stack Trace Error rePresentation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">III</span></a>, line 13, 0.60 Acc@1 and 0.70 MRR) and achieves a significant boost in all metrics (17–18 percentage points) compared to the classical machine learning approaches. We release this model as <span class="ltx_text ltx_font_italic">DapStep</span> and plan to conduct more thorough experiments on it in the future work.</p>
+</div>
+<div id="S4.SS7.SSS3.p5" class="ltx_para">
+<p class="ltx_p">Thus, the results of our experiments demonstrate that reformulating bug triage as a ranking problem is appropriate. Moreover, adding features from VCS annotations to the model has a positive effect on its performance, and the RNN-based models work slightly better in this setting than the CNN-based ones. From the practical standpoint, the RNN ranking model with all the features can be trained on the data of any specific project or company and be employed there. As for the research implications, the results show that more research is needed to improve the state-of-the-art solutions to the bug triage problem, employing more information about the stack traces. We hope that our results of using VCS annotations as the sources of features and the provided dataset can assist in conducting such research.</p>
+</div>
+</section>
+</section>
+</section>
+<section id="S5" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">V </span><span class="ltx_text ltx_font_smallcaps">Threats to validity</span>
+</h2>
+
+<div id="S5.p1" class="ltx_para">
+<p class="ltx_p">Our study suffers from the following threats to validity.</p>
+</div>
+<div id="S5.p2" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Subject selection bias.</span> The performance of the model depends on the data. Since stack traces for the bug triage task are being used for the first time, there is no dataset available for this task. We collected a dataset from the products of a large software company and evaluated the proposed approach on them. However, applying the model to other dataset may lead to different results. For instance, workflows in open-source projects could be more volatile and unstable. The results for such datasets can be noticeably lower.</p>
+</div>
+<div id="S5.p3" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Limited scope of application.</span> Our solution is applicable for software systems that report stack traces when a bug happens, which might be not be typical for some projects and companies. However, we believe this practice to be common enough for our approach to be helpful in practice.
+Secondly, deep learning models are over-parameterized. A modern neural network contains thousands or millions of parameters. A sufficient amount of data is required to train a neural network. We use 11,139 different stack traces in our private dataset and regularization techniques to prevent overfitting. However, in cases when this amount of data is not available, the results may differ. We hope our research will encourage other researchers and practitioners to invest time and effort into collecting a larger dataset of such kind.</p>
+</div>
+<div id="S5.p4" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Programming language bias.</span> Our datasets consist of stack traces that were obtained from the JVM languages. Therefore, the results of our models for other languages may differ. Firstly, stack trace characteristics change from one language to another. The performance of the model depends on the average length of the stack trace, as well as the variety of methods and files used. Secondly, an essential component of our approach is the use of features from annotations. The characteristics of these files also strongly affect the model performance. The distribution of developers for each file can vary between teams, companies, and maybe even programming languages. Future research is needed to assess how much all of this affects the resulting model.</p>
+</div>
+<div id="S5.p5" class="ltx_para">
+<p class="ltx_p">While these threats to validity are important to note, we believe that they do not invalidate the overal results of our study and its practical usefulness.</p>
+</div>
+</section>
+<section id="S6" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">VI </span><span class="ltx_text ltx_font_smallcaps">Conclusion and future work</span>
+</h2>
+
+<div id="S6.p1" class="ltx_para">
+<p class="ltx_p">In this paper, we explore the applicability of using stack traces for solving the bug triage problem.</p>
+</div>
+<div id="S6.p2" class="ltx_para">
+<p class="ltx_p">Firstly, we suggest an approach for handling error reports that do not have text descriptions, but only a stack trace for the given error. We transform each stack trace into a set of text tokens, which are processed as sequences. As a result, existing solutions can be applied to such data as well.</p>
+</div>
+<div id="S6.p3" class="ltx_para">
+<p class="ltx_p">Secondly, we collected two datasets—the public one and the private one—from the data of JetBrains. The public dataset is a subset of the private dataset that only contains stack frames that relate to public repositories, with a total of 3,361 stack traces. To facilitate further research in this area, the source code of all the models, as well as the public dataset, are available online at <a href="https://github.com/Sushentsev/DapStep" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://github.com/Sushentsev/DapStep</a>.</p>
+</div>
+<div id="S6.p4" class="ltx_para">
+<p class="ltx_p">Thirdly, we propose a ranking neural network model that outperforms classifying models by 15-20 percentage points of the Acc@1 metric on the public dataset, and 17-18 percentage points on the private dataset. The significant advantage of this model is the independence from the fixed set of classes (the list of developers working on a given project). Finally, we suggest to use an additional source of information (VSC annotations), which significantly improves the performance of the models. We propose two ways features could be built from such annotations. First of all, features can be extracted manually from annotations — this approach shows better results, but requires effort and domain knowledge. On the other hand, it is possible to use an additional neural network to learn the annotation-based features. This approach requires to train an additional neural network, so it takes more time compared to the manual approach, however, this way we obtain explicit embeddings of annotations, which might be employed in other related research tasks.</p>
+</div>
+<div id="S6.p5" class="ltx_para">
+<p class="ltx_p">We hope that our work will be of use for researchers and practitioners, especially in the tasks that rely on stack traces.</p>
+</div>
+</section>
+<section id="bib" class="ltx_bibliography">
+<h2 class="ltx_title ltx_title_bibliography">References</h2>
+
+<ul class="ltx_biblist">
+      
+<li id="bib.bib1" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[1]</span>
+<span class="ltx_bibblock">
+W. E. Wong, X. Li, and P. A. Laplante, “Be more familiar with our enemies and
+pave the way forward: A review of the roles bugs played in software
+failures,” <em class="ltx_emph ltx_font_italic">Journal of Systems and Software</em>, vol. 133, pp. 68–94,
+2017.
+
+</span>
+</li>
+      
+<li id="bib.bib2" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[2]</span>
+<span class="ltx_bibblock">
+J. Anvik, L. Hiew, and G. Murphy, “Who should fix this bug?”
+<em class="ltx_emph ltx_font_italic">Proceedings of the 28th international conference on Software
+engineering</em>, 2006.
+
+</span>
+</li>
+      
+<li id="bib.bib3" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[3]</span>
+<span class="ltx_bibblock">
+J. Xuan, H. Jiang, Z. Ren, and W. Zou, “Developer prioritization in bug
+repositories,” <em class="ltx_emph ltx_font_italic">2012 34th International Conference on Software
+Engineering (ICSE)</em>, pp. 25–35, 2012.
+
+</span>
+</li>
+      
+<li id="bib.bib4" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[4]</span>
+<span class="ltx_bibblock">
+G. Jeong, S. Kim, and T. Zimmermann, “Improving bug triage with bug tossing
+graphs,” in <em class="ltx_emph ltx_font_italic">ESEC/FSE ’09</em>, 2009.
+
+</span>
+</li>
+      
+<li id="bib.bib5" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[5]</span>
+<span class="ltx_bibblock">
+Y. Tian, D. Wijedasa, D. Lo, and C. L. Goues, “Learning to rank for bug report
+assignee recommendation,” <em class="ltx_emph ltx_font_italic">2016 IEEE 24th International Conference on
+Program Comprehension (ICPC)</em>, pp. 1–10, 2016.
+
+</span>
+</li>
+      
+<li id="bib.bib6" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[6]</span>
+<span class="ltx_bibblock">
+A. Tamrawi, T. Nguyen, and J. M. Al-Kofahi, “Fuzzy set and cache-based
+approach for bug triaging,” in <em class="ltx_emph ltx_font_italic">ESEC/FSE ’11</em>, 2011.
+
+</span>
+</li>
+      
+<li id="bib.bib7" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[7]</span>
+<span class="ltx_bibblock">
+R. Shokripour, J. Anvik, Z. M. Kasirun, and S. Zamani, “A time-based approach
+to automatic bug report assignment,” <em class="ltx_emph ltx_font_italic">J. Syst. Softw.</em>, vol. 102, pp.
+109–122, 2015.
+
+</span>
+</li>
+      
+<li id="bib.bib8" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[8]</span>
+<span class="ltx_bibblock">
+H.-J. Hu, H. Zhang, J. Xuan, and W. Sun, “Effective bug triage based on
+historical bug-fix information,” <em class="ltx_emph ltx_font_italic">2014 IEEE 25th International
+Symposium on Software Reliability Engineering</em>, pp. 122–132, 2014.
+
+</span>
+</li>
+      
+<li id="bib.bib9" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[9]</span>
+<span class="ltx_bibblock">
+H. Naguib, N. Narayan, B. Brügge, and D. Helal, “Bug report assignee
+recommendation using activity profiles,” <em class="ltx_emph ltx_font_italic">2013 10th Working Conference
+on Mining Software Repositories (MSR)</em>, pp. 22–30, 2013.
+
+</span>
+</li>
+      
+<li id="bib.bib10" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[10]</span>
+<span class="ltx_bibblock">
+X. Xia, D. Lo, Y. Ding, J. M. Al-Kofahi, T. Nguyen, and X. Wang, “Improving
+automated bug triaging with specialized topic model,” <em class="ltx_emph ltx_font_italic">IEEE
+Transactions on Software Engineering</em>, vol. 43, pp. 272–297, 2017.
+
+</span>
+</li>
+      
+<li id="bib.bib11" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[11]</span>
+<span class="ltx_bibblock">
+A. Sarkar, P. C. Rigby, and B. Bartalos, “Improving bug triaging with high
+confidence predictions at ericsson,” in <em class="ltx_emph ltx_font_italic">2019 IEEE International
+Conference on Software Maintenance and Evolution (ICSME)</em>.   IEEE, 2019, pp. 81–91.
+
+</span>
+</li>
+      
+<li id="bib.bib12" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[12]</span>
+<span class="ltx_bibblock">
+S.-R. Lee, M.-J. Heo, C.-G. Lee, M. Kim, and G. Jeong, “Applying deep learning
+based automatic bug triager to industrial projects,” <em class="ltx_emph ltx_font_italic">Proceedings of
+the 2017 11th Joint Meeting on Foundations of Software Engineering</em>, 2017.
+
+</span>
+</li>
+      
+<li id="bib.bib13" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[13]</span>
+<span class="ltx_bibblock">
+S. Guo, X. Zhang, X. Yang, R. Chen, C. Guo, H. Li, and T. Li, “Developer
+activity motivated bug triaging: Via convolutional neural network,”
+<em class="ltx_emph ltx_font_italic">Neural Processing Letters</em>, vol. 51, pp. 2589–2606, 2020.
+
+</span>
+</li>
+      
+<li id="bib.bib14" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[14]</span>
+<span class="ltx_bibblock">
+S. Mani, A. Sankaran, and R. Aralikatte, “DeepTriage: Exploring the
+effectiveness of deep learning for bug triaging,” <em class="ltx_emph ltx_font_italic">Proceedings of the
+ACM India Joint International Conference on Data Science and Management of
+Data</em>, 2019.
+
+</span>
+</li>
+      
+<li id="bib.bib15" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[15]</span>
+<span class="ltx_bibblock">
+S. Xi, Y. Yao, X. Xiao, F. Xu, and J. Lu, “Bug triaging based on tossing
+sequence modeling,” <em class="ltx_emph ltx_font_italic">Journal of Computer Science and Technology</em>,
+vol. 34, pp. 942 – 956, 2019.
+
+</span>
+</li>
+      
+<li id="bib.bib16" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[16]</span>
+<span class="ltx_bibblock">
+T. Wolf, L. Debut, V. Sanh, J. Chaumond, C. Delangue, A. Moi, P. Cistac,
+T. Rault, R. Louf, M. Funtowicz, and J. Brew, “Transformers:
+State-of-the-art natural language processing,” in <em class="ltx_emph ltx_font_italic">EMNLP</em>, 2020.
+
+</span>
+</li>
+      
+<li id="bib.bib17" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[17]</span>
+<span class="ltx_bibblock">
+J. Schmidhuber, “Deep learning in neural networks: An overview,” <em class="ltx_emph ltx_font_italic">Neural
+networks : the official journal of the International Neural Network Society</em>,
+vol. 61, pp. 85–117, 2015.
+
+</span>
+</li>
+      
+<li id="bib.bib18" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[18]</span>
+<span class="ltx_bibblock">
+C.-P. Wong, Y. Xiong, H. Zhang, D. Hao, L. Zhang, and H. Mei, “Boosting
+bug-report-oriented fault localization with segmentation and stack-trace
+analysis,” <em class="ltx_emph ltx_font_italic">2014 IEEE International Conference on Software Maintenance
+and Evolution</em>, pp. 181–190, 2014.
+
+</span>
+</li>
+      
+<li id="bib.bib19" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[19]</span>
+<span class="ltx_bibblock">
+L. Moreno, J. Treadway, A. Marcus, and W. Shen, “On the use of stack traces to
+improve text retrieval-based bug localization,” <em class="ltx_emph ltx_font_italic">2014 IEEE
+International Conference on Software Maintenance and Evolution</em>, pp.
+151–160, 2014.
+
+</span>
+</li>
+      
+<li id="bib.bib20" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[20]</span>
+<span class="ltx_bibblock">
+K. C. Youm, J. Ahn, J. Kim, and E. Lee, “Bug localization based on code change
+histories and bug reports,” <em class="ltx_emph ltx_font_italic">2015 Asia-Pacific Software Engineering
+Conference (APSEC)</em>, pp. 190–197, 2015.
+
+</span>
+</li>
+      
+<li id="bib.bib21" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[21]</span>
+<span class="ltx_bibblock">
+Y. Dang, R. Wu, H. Zhang, D. Zhang, and P. Nobel, “ReBucket: A method for
+clustering duplicate crash reports based on call stack similarity,”
+<em class="ltx_emph ltx_font_italic">2012 34th International Conference on Software Engineering (ICSE)</em>, pp.
+1084–1093, 2012.
+
+</span>
+</li>
+      
+<li id="bib.bib22" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[22]</span>
+<span class="ltx_bibblock">
+K. Sabor, A. Hamou-Lhadj, and A. Larsson, “DURFEX: A feature extraction
+technique for efficient detection of duplicate bug reports,” <em class="ltx_emph ltx_font_italic">2017 IEEE
+International Conference on Software Quality, Reliability and Security
+(QRS)</em>, pp. 240–250, 2017.
+
+</span>
+</li>
+      
+<li id="bib.bib23" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[23]</span>
+<span class="ltx_bibblock">
+A. Khvorov, R. Vasiliev, G. Chernishev, I. M. Rodrigues, D. Koznov, and
+N. Povarov, “S3M: Siamese stack (trace) similarity measure,” <em class="ltx_emph ltx_font_italic">2021
+IEEE/ACM 18th International Conference on Mining Software Repositories
+(MSR)</em>, pp. 266–270, 2021.
+
+</span>
+</li>
+      
+<li id="bib.bib24" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[24]</span>
+<span class="ltx_bibblock">
+H. Kagdi, M. Gethers, D. Poshyvanyk, and M. Hammad, “Assigning change requests
+to software developers,” <em class="ltx_emph ltx_font_italic">Journal of Software: Evolution and Process</em>,
+vol. 24, 2012.
+
+</span>
+</li>
+      
+<li id="bib.bib25" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[25]</span>
+<span class="ltx_bibblock">
+R. Shokripour, Z. M. Kasirun, S. Zamani, and J. Anvik, “Automatic bug
+assignment using information extraction methods,” <em class="ltx_emph ltx_font_italic">2012 International
+Conference on Advanced Computer Science Applications and Technologies
+(ACSAT)</em>, pp. 144–149, 2012.
+
+</span>
+</li>
+      
+<li id="bib.bib26" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[26]</span>
+<span class="ltx_bibblock">
+R. Shokripour, J. Anvik, Z. M. Kasirun, and S. Zamani, “Why so complicated?
+Simple term filtering and weighting for location-based bug report
+assignment recommendation,” <em class="ltx_emph ltx_font_italic">2013 10th Working Conference on Mining
+Software Repositories (MSR)</em>, pp. 2–11, 2013.
+
+</span>
+</li>
+      
+<li id="bib.bib27" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[27]</span>
+<span class="ltx_bibblock">
+M. Vásquez, K. Hossen, H. Dang, H. Kagdi, M. Gethers, and D. Poshyvanyk,
+“Triaging incoming change requests: Bug or commit history, or code
+authorship?” <em class="ltx_emph ltx_font_italic">2012 28th IEEE International Conference on Software
+Maintenance (ICSM)</em>, pp. 451–460, 2012.
+
+</span>
+</li>
+      
+<li id="bib.bib28" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[28]</span>
+<span class="ltx_bibblock">
+T. Zhang and B. Lee, “A hybrid bug triage algorithm for developer
+recommendation,” in <em class="ltx_emph ltx_font_italic">SAC ’13</em>, 2013.
+
+</span>
+</li>
+      
+<li id="bib.bib29" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[29]</span>
+<span class="ltx_bibblock">
+Z. Lin, F. Shu, Y. Yang, C. Hu, and Q. Wang, “An empirical study on bug
+assignment automation using chinese bug data,” <em class="ltx_emph ltx_font_italic">2009 3rd International
+Symposium on Empirical Software Engineering and Measurement</em>, pp. 451–455,
+2009.
+
+</span>
+</li>
+      
+<li id="bib.bib30" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[30]</span>
+<span class="ltx_bibblock">
+S. Banitaan and M. Alenezi, “TRAM: An approach for assigning bug reports
+using their metadata,” <em class="ltx_emph ltx_font_italic">2013 Third International Conference on
+Communications and Information Technology (ICCIT)</em>, pp. 215–219, 2013.
+
+</span>
+</li>
+      
+<li id="bib.bib31" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[31]</span>
+<span class="ltx_bibblock">
+S. Ahsan, J. Ferzund, and F. Wotawa, “Automatic software bug triage system
+(BTS) based on latent semantic indexing and support vector machine,”
+<em class="ltx_emph ltx_font_italic">2009 Fourth International Conference on Software Engineering Advances</em>,
+pp. 216–221, 2009.
+
+</span>
+</li>
+      
+<li id="bib.bib32" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[32]</span>
+<span class="ltx_bibblock">
+S. F. A. Zaidi, F. M. Awan, M. soo Lee, H. Woo, and C.-G. Lee, “Applying
+convolutional neural networks with different word representation techniques
+to recommend bug fixers,” <em class="ltx_emph ltx_font_italic">IEEE Access</em>, vol. 8, pp.
+213 729–213 747, 2020.
+
+</span>
+</li>
+      
+<li id="bib.bib33" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[33]</span>
+<span class="ltx_bibblock">
+T. Mikolov, K. Chen, G. S. Corrado, and J. Dean, “Efficient estimation of word
+representations in vector space,” in <em class="ltx_emph ltx_font_italic">ICLR</em>, 2013.
+
+</span>
+</li>
+      
+<li id="bib.bib34" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[34]</span>
+<span class="ltx_bibblock">
+J. Pennington, R. Socher, and C. D. Manning, “GloVe: Global vectors for word
+representation,” in <em class="ltx_emph ltx_font_italic">EMNLP</em>, 2014.
+
+</span>
+</li>
+      
+<li id="bib.bib35" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[35]</span>
+<span class="ltx_bibblock">
+M. E. Peters, M. Neumann, M. Iyyer, M. Gardner, C. Clark, K. Lee, and
+L. Zettlemoyer, “Deep contextualized word representations,” in
+<em class="ltx_emph ltx_font_italic">NAACL</em>, 2018.
+
+</span>
+</li>
+      
+<li id="bib.bib36" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[36]</span>
+<span class="ltx_bibblock">
+J. Chen, X. He, Q. Lin, Y. Xu, H. Zhang, D. Hao, F. Gao, Z. Xu, Y. Dang, and
+D. Zhang, “An empirical investigation of incident triage for online service
+systems,” <em class="ltx_emph ltx_font_italic">2019 IEEE/ACM 41st International Conference on Software
+Engineering: Software Engineering in Practice (ICSE-SEIP)</em>, pp. 111–120,
+2019.
+
+</span>
+</li>
+      
+<li id="bib.bib37" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[37]</span>
+<span class="ltx_bibblock">
+S. Hochreiter and Y. Bengio, “Gradient flow in recurrent nets: the difficulty
+of learning long-term dependencies,” 2001.
+
+</span>
+</li>
+      
+<li id="bib.bib38" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[38]</span>
+<span class="ltx_bibblock">
+S. Hochreiter and J. Schmidhuber, “Long short-term memory,” <em class="ltx_emph ltx_font_italic">Neural
+Computation</em>, vol. 9, pp. 1735–1780, 1997.
+
+</span>
+</li>
+      
+<li id="bib.bib39" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[39]</span>
+<span class="ltx_bibblock">
+A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez,
+Ł. Kaiser, and I. Polosukhin, “Attention is all you need,” in
+<em class="ltx_emph ltx_font_italic">Advances in neural information processing systems</em>, 2017, pp.
+5998–6008.
+
+</span>
+</li>
+      
+<li id="bib.bib40" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[40]</span>
+<span class="ltx_bibblock">
+A. Graves, S. Fernández, and J. Schmidhuber, “Bidirectional LSTM
+networks for improved phoneme classification and recognition,” in
+<em class="ltx_emph ltx_font_italic">ICANN</em>, 2005.
+
+</span>
+</li>
+      
+<li id="bib.bib41" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[41]</span>
+<span class="ltx_bibblock">
+D. Bahdanau, K. Cho, and Y. Bengio, “Neural machine translation by jointly
+learning to align and translate,” <em class="ltx_emph ltx_font_italic">CoRR</em>, vol. abs/1409.0473, 2015.
+
+</span>
+</li>
+      
+<li id="bib.bib42" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[42]</span>
+<span class="ltx_bibblock">
+R. Collobert and J. Weston, “A unified architecture for natural language
+processing: deep neural networks with multitask learning,” in <em class="ltx_emph ltx_font_italic">ICML
+’08</em>, 2008.
+
+</span>
+</li>
+      
+<li id="bib.bib43" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[43]</span>
+<span class="ltx_bibblock">
+A. Severyn and A. Moschitti, “Learning to rank short text pairs with
+convolutional deep neural networks,” <em class="ltx_emph ltx_font_italic">Proceedings of the 38th
+International ACM SIGIR Conference on Research and Development in Information
+Retrieval</em>, 2015.
+
+</span>
+</li>
+      
+<li id="bib.bib44" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[44]</span>
+<span class="ltx_bibblock">
+D. W. Hosmer and S. Lemeshow, “Applied logistic regression,” 1989.
+
+</span>
+</li>
+      
+<li id="bib.bib45" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[45]</span>
+<span class="ltx_bibblock">
+L. Breiman, “Random forests,” <em class="ltx_emph ltx_font_italic">Machine Learning</em>, vol. 45, pp. 5–32,
+2004.
+
+</span>
+</li>
+      
+<li id="bib.bib46" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[46]</span>
+<span class="ltx_bibblock">
+J. E. Ramos, “Using TF-IDF to determine word relevance in document
+queries,” 2003.
+
+</span>
+</li>
+      
+<li id="bib.bib47" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[47]</span>
+<span class="ltx_bibblock">
+N. Srivastava, G. E. Hinton, A. Krizhevsky, I. Sutskever, and R. Salakhutdinov,
+“Dropout: a simple way to prevent neural networks from overfitting,”
+<em class="ltx_emph ltx_font_italic">J. Mach. Learn. Res.</em>, vol. 15, pp. 1929–1958, 2014.
+
+</span>
+</li>
+      
+<li id="bib.bib48" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[48]</span>
+<span class="ltx_bibblock">
+I. Loshchilov and F. Hutter, “Decoupled weight decay regularization,” in
+<em class="ltx_emph ltx_font_italic">ICLR</em>, 2019.
+
+</span>
+</li>
+      
+<li id="bib.bib49" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[49]</span>
+<span class="ltx_bibblock">
+D. P. Kingma and J. Ba, “Adam: A method for stochastic optimization,”
+<em class="ltx_emph ltx_font_italic">CoRR</em>, vol. abs/1412.6980, 2015.
+
+</span>
+</li>
+      
+<li id="bib.bib50" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[50]</span>
+<span class="ltx_bibblock">
+C. Burges, T. Shaked, E. Renshaw, A. Lazier, M. Deeds, N. Hamilton, and
+G. Hullender, “Learning to rank using gradient descent,” <em class="ltx_emph ltx_font_italic">Proceedings
+of the 22nd international conference on Machine learning</em>, 2005.
+
+</span>
+</li>
+      
+<li id="bib.bib51" class="ltx_bibitem">
+<span class="ltx_tag ltx_tag_bibitem">[51]</span>
+<span class="ltx_bibblock">
+B. Efron, “Bootstrap methods: Another look at the jackknife,” <em class="ltx_emph ltx_font_italic">Annals of
+Statistics</em>, vol. 7, pp. 1–26, 1979.
+
+</span>
+</li>
+    
+</ul>
+</section>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Thu Dec  5 01:36:48 2024 by <a href="http://dlmf.nist.gov/LaTeXML/" class="ltx_LaTeXML_logo"><span style="letter-spacing:-0.2em; margin-right:0.1em;">L<span class="ltx_font_smallcaps" style="position:relative; bottom:2.2pt;">a</span>T<span class="ltx_font_smallcaps" style="font-size:120%;position:relative; bottom:-0.2ex;">e</span></span><span style="font-size:90%; position:relative; bottom:-0.2ex;">XML</span><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="Mascot Sammy"></a>
+</div></footer>
+</div>
+</body>
+</html>

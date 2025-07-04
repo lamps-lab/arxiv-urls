@@ -1,0 +1,43 @@
+\centering \small
+\begin{tabular}{lcc}
+\toprule
+ & \multicolumn{2}{c}{\textbf{WMT2014}} \\
+\textbf{ Models} & \textbf{EN-DE} & \textbf{DE-EN} \\
+\midrule\midrule
+AR Transformer-base \citep{vaswani2017attention} & 27.30 & -- \\
+\midrule\midrule
+AR \citep{gu2018nonauto} & 23.4 & -- \\
+NAR (+Distill +FT +NPD S=100) & 21.61 & -- \\
+\midrule\midrule
+AR \citep{lee2018deterministic} & 24.57 & 28.47 \\
+Adaptive NAR Model & 16.56 & -- \\ 
+Adaptive NAR Model (+Distill) & 21.54 & 25.43 \\
+\midrule\midrule
+AR \citep{wang2019nonautoaux} & 27.3 & 31.29 \\
+NAT-REG (+Distill) & 20.65 & 24.77 \\ 
+NAT-REG (+Distill +AR rescoring) & 24.61 & 28.90 \\
+\midrule\midrule
+AR \citep{ghazvininejad2019constant} & 27.74 & 31.09 \\
+CMLM with 4 iterations & 22.25 & -- \\
+CMLM with 4 iterations (+Distill) & 25.94 & 29.90 \\
+CMLM with 10 iterations & 24.61 & -- \\
+CMLM with 10 iterations (+Distill) & 27.03 & 30.53 \\
+\midrule\midrule
+AR \citep{shu2019lvnar} & 26.1 & -- \\
+Latent-Variable NAR & 11.8 & -- \\
+Latent-Variable NAR (+Distill) & 22.2 & -- \\
+Latent-Variable NAR (+Distill +AR Rescoring) & 25.1 & -- \\
+\midrule\midrule
+AR \citep{ma2019flowseq} & 27.16 & 31.44 \\
+FlowSeq-base (+NPD n = 30) & 21.15 & 26.04 \\
+FlowSeq-base (+Distill +NPD n = 30) & 23.48 & 28.40 \\
+\midrule\midrule
+AR (ours) & 26.84 & 30.92 \\
+Contant-time 10 iterations & 21.98 & 27.14 \\
+Contant-time 10 iterations (+AR Rescoring) & 24.53 & 28.63 \\
+Contant-time 20 iterations & 23.92 & 28.54 \\
+Contant-time 20 iterations (+AR Rescoring) & 25.69 & 30.13 \\
+\bottomrule
+\end{tabular}
+\caption{BLEU scores on WMT'14 En$\rightarrow$De and De$\rightarrow$En datasets showing performance of various constant-time machine translation approaches. Each block shows the performance of autoregressive model baseline with their proposed approach. AR denotes autoregressive model. Distill denotes distillation. AR rescoring denotes rescoring of samples with autoregressive model. FT denotes fertility. NPD denotes noisy parallel decoding followed by rescoring with autoregressive model. }
+\label{tab:contant_time_comparison}

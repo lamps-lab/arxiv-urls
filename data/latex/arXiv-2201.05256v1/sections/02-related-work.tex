@@ -1,0 +1,24 @@
+\section{Related work}\label{sec:related-work}
+
+The bug triage task is a well-established area of research, with a large number of proposed approaches. Previous works can be broadly divided into three large groups: based on \textit{heuristics}, on \textit{classic machine learning}, and on \textit{deep learning}.
+
+Heuristic-based approaches tend to consider the relevance scores of developers and errors based on domain knowledge. Kagdi et al.~\cite{Kagdi2012AssigningCR}, Shokripour et al.~\cite{Shokripour2012AutomaticBA, Shokripour2013WhySC}, and V{\'a}squez et al.~\cite{Vsquez2012TriagingIC} use the information about code authorship, commit messages, comments in the source code, etc. Also, various indexing and NLP techniques are used to search for files related to the query bug report. The most appropriate developers are then selected based on their activities in the relevant files.
+
+Since the software development process is impossible without team work, developers often interact with each other. The result is a collaboration network that can be used as another source of information. Hu et al.~\cite{Hu2014EffectiveBT} and Zhang et al.~\cite{Zhang2013AHB} use collaboration networks and information retrieval techniques on graphs to choose the most appropriate developer. 
+
+As the influence of machine learning spread, it became actively applied in the assignee recommendation as well. Often, such approaches vectorize the text of the bug summary and description using TF-IDF or Bag-of-words (BOW), and classify them using a machine learning algorithm: Naive Bayes, Random Forest, or SVM~\cite{Anvik2006WhoSF, Lin2009AnES, Banitaan2013TRAMAA, Ahsan2009AutomaticSB}. 
+
+Recently, deep learning solutions also became popular. 
+Lee et al.~\cite{Lee2017ApplyingDL} present one of the first DL models based on the CNN and Word2Vec embeddings used for assigning a developer to fix the bug. Their approach achieved higher accuracy in industrial projects at LG compared to an open source project.
+
+The application of CNN for the bug triage problem has been reported to be useful in more recent approaches. Guo et al.~\cite{Guo2020DeveloperAM} compare the CNN-based model to the models based on Naive Bayes, SVM, kNN, and Random Forest. The experimental results show that the CNN-based approach outperforms other solutions. Since some of the developers can change jobs or leave the company indefinitely, the authors also propose to reorder developers based on their activity.
+
+Zaidi et al.~\cite{Zaidi2020ApplyingCN} explore different word embeddings for the CNN model: Word2Vec~\cite{Mikolov2013EfficientEO}, GloVe~\cite{Pennington2014GloVeGV}, and ELMo~\cite{Peters2018DeepCW}. The experimental results suggest that the ELMo embeddings are the best for the bug triage problem. 
+
+Chen et al.~\cite{Chen2019AnEI} extend the work on incident triaging (unplanned interruptions or outages of the service) and perform an empirical study on the datasets provided by Microsoft. They explore different bug triage techniques: based on machine learning, deep learning, topic modeling, tossing graphs, and fuzzy sets. On average, the DL technique performs best. 
+
+An alternative to CNNs are RNNs, which are one of the most popular and effective approaches for processing sequences of variable length. Mani et al.~\cite{Mani2019DeepTriageET} use RNNs for assigning the developer to fix a bug. To address the common issue of RNNs ``forgetting'' long sequences~\cite{Hochreiter2001GradientFI}, they propose to apply a bidirectional network with an attention mechanism. Moreover, the neural network learns syntactic and semantic features in an unsupervised manner, which means that it has the ability to use unfixed bug reports. Their work shows that the proposed approach provides a higher average accuracy rank than BOW features with softmax classifier, SVM, Naive Bayes, and cosine distance.
+
+Finally, Xi et al.~\cite{Xi2019BugTB} propose to use a bug tossing sequence to improve the DL model that helps to reassign the bug if the assignment was incorrect. The proposed approach was evaluated on three different open-source projects and outperforms baseline RNN and CNN models. 
+
+In our work, we strive to overcome the limitations of the existing approaches: namely, their reliance on textual descriptions and their use of classification models.

@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="UTF-8"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes MIT SAFEPATHS CARD (MISACA): AUGMENTING PAPER BASED VACCINATION CARDS WITH PRINTED CODES</title>
+				<funder>
+					<orgName type="full">CodeX</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2021-01-21">21 Jan 2021</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Joseph</forename><surname>Bae</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+							<affiliation key="aff2">
+								<orgName type="department">Renaissance School of Medicine</orgName>
+								<orgName type="institution">Stony Brook University</orgName>
+								<address>
+									<postCode>11794</postCode>
+									<settlement>Stony Brook</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Rohan</forename><surname>Sukumaran</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sheshank</forename><surname>Shankar</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Saurish</forename><surname>Srivastava</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Rohan</forename><surname>Iyer</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Aryan</forename><surname>Mahindra</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Qamil</forename><surname>Mirza</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Maurizio</forename><surname>Arseni</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Anshuman</forename><surname>Sharma</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Saras</forename><surname>Agrawal</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Orna</forename><surname>Mukhopadhyay</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Colin</forename><surname>Kang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Priyanshi</forename><surname>Katiyar</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Apurv</forename><surname>Shekhar</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sifat</forename><surname>Hasan</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Krishnendu</forename><surname>Dasgupta</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Darshan</forename><surname>Gandhi</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Sethuraman</forename><surname>Tv</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Parth</forename><surname>Patwa</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Ishaan</forename><surname>Singh</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Abhishek</forename><surname>Singh</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">MIT Media Lab</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author role="corresp">
+							<persName><forename type="first">Ramesh</forename><surname>Raskar</surname></persName>
+							<email>raskar@media.mit.edu</email>
+							<affiliation key="aff0">
+								<orgName type="department">PathCheck Foundation</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+							<affiliation key="aff1">
+								<orgName type="institution">MIT Media Lab</orgName>
+								<address>
+									<postCode>02139</postCode>
+									<settlement>Cambridge</settlement>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes MIT SAFEPATHS CARD (MISACA): AUGMENTING PAPER BASED VACCINATION CARDS WITH PRINTED CODES</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2021-01-21">21 Jan 2021</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">A445BD9343425DA44563588F59161533</idno>
+					<idno type="arXiv">arXiv:2101.07931v2[cs.CY]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2025-01-29T07:29+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>In this early draft, we describe a user-centric, card-based system for vaccine distribution. Our system makes use of digitally signed QR codes and their use for phased vaccine distribution, vaccine administration/record-keeping, immunization verification, and follow-up symptom reporting. Furthermore, we propose and describe a complementary scanner app system to be used by vaccination clinics, public health officials, and immunization verification parties to effectively utilize card-based framework. We believe that the proposed system provides a privacypreserving and efficient framework for vaccine distribution in both developed and developing regions.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">INTRODUCTION</head><p>Without an effective curative or preventative measure, the unprecedented coronavirus disease 2019  pandemic has led to a significant amount of human deaths (1,900,000 at the time of publication (for Disease Control &amp; Prevention (2020c))). However, now with the advent of vaccines, we face the challenges of strategic, equitable and privacy preserved ways for last-mile vaccine distribution <ref type="bibr" target="#b1">(Bae et al. (2020)</ref>; MPH (2020)).</p><p>First, the vaccine recipients must be dynamically prioritized to ensure an equitable reach, especially as multiple vaccines with different protocols are approved in various areas. In addition, once a citizen's first dose is administered, they must follow through with their second dose as well. Also, a communication plan must also be put in place to combat inevitable rumours, misinformation, and conspiracy theories aiming to disrupt citizen engagement in the vaccination process <ref type="bibr" target="#b6">( Morales et al. (2021);</ref><ref type="bibr" target="#b8">Omer (2021)</ref>). It must also address the mistrust of vaccines in society <ref type="bibr" target="#b9">(Palamenghi et al. (2020)</ref>), especially within previously marginalized minority populations <ref type="bibr" target="#b12">(Toner et al. (2020)</ref>). This is why we must take a user-centric approach that preserves trust -vaccines are meaningless if citizens aren't willing to take them <ref type="bibr">(M et al. (2020)</ref>). Lastly, the health outcomes (effectiveness, safety, long-term effects, etc) of the vaccines must be effectively monitored in a privacy-preserving way <ref type="bibr" target="#b2">(Borenstein &amp; Weintraub (2020)</ref>).</p><p>In today's society, multiple technological systems are being utilized by the Center for Disease Control (CDC) to combat these challenges ( for Disease Control &amp; Prevention (2020a); <ref type="bibr" target="#b11">Smith &amp; Mennis (2020)</ref>; for Disease Control &amp; Prevention (2020b)). For example, the Vaccine Administration Management System (VAMS) streamlines the vaccine distribution process for jurisdictions, employers, and healthcare providers. In addition, it's an effective user-centric system as it allows for vaccine recipients to schedule appointments, receive records of their visit, and receive reminders for a sec-ond dose (for Disease Control (CDC)). The Immunization Information Systems (IIS) are a group of privacy preserving database systems that track all vaccinations within various areas (for Disease Control (CDC)). Lastly, the Vaccine Adverse Event Reporting System (VAERS) is the prominent system for the monitoring of health outcomes ( for Disease Control (CDC); ADMINISTRATION (2019)).</p><p>In our previous work, we detail the MIT SafePaths app-based protocol for vaccine distribution. In this paper, we introduce a separate user-centric card protocol that uses printed codes as a supplement to traditional paper based vaccination cards.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">CARD FLOW</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">OVERVIEW</head><p>Here we present a vaccine distribution system utilizing physical SafePaths cards and four digitally signed QR code stickers (henceforth termed Coupon, Badge, Passkey, and Status). The digital signing of a QR code is simply a secure process of verifying the authenticity of the information contained in the QR code <ref type="bibr" target="#b10">(Singh et al. (2020)</ref>). These QR code stickers are simply QR codes printed onto adhesive stickers that can then be attached to a user's physical card.  The digital signature of the QR codes take place as below Certificate = (message, signature(messages))</p><p>For each sticker below the message is as follows -</p><p>• Coupon = (number, total, city, phase, (age, job, comorbidities/sick))</p><p>• Badge = (coupon, dose info, Hash(passkey())</p><p>• Status = ((vaccinated = 0,1,2), Hash(passkey())</p><p>• Passkey = (name, DOB, salt) = hash:sj2d8k8hy7j</p><p>Our solution is intended to decouple the health information and personally identifiable information (PII) in this process. Thereby, we are essentially proposing to separate the eligibility of the vaccination from the distribution of it. This way we can have the health information centralised, whilst the PII information decentralised.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">VACCINE ELIGIBILITY CONFIRMATION</head><p>To accommodate the several-stage vaccination policies that countries have begun to employ, SafePaths cards will be distributed containing one digitally-signed Coupon QR code. This would Table <ref type="table">1</ref>: This outlines the four QR codes and what information is digitally signed in it.</p><p>be provided by a central government agency such as the CDC and made available to users either by an employer or local government location. A pseudo random identifier generated for this Coupon serves as the identifying information for the user throughout the remaining workflow. This Coupon would initially come with SafePaths cards while the remaining three adhesive stickers must be obtained and placed onto the card following vaccination events.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">VACCINE ADMINISTRATION</head><p>Check-in at a vaccination clinic would require the verification of a user's Coupon.</p><p>Upon vaccination, the vaccination clinic would create a digitally-signed record of immunization and print it as a QR code on an adhesive sticker. This adhesive sticker (henceforth referred to as the Badge) would contain information regarding vaccine lot, manufacturer, and first/second dose information. The Badge would also contain information regarding the time, date, and location of vaccination.</p><p>The vaccination clinic would also create a unique encryption key to encrypt the Badge. This key, as well as encrypted PII such as name, age, sex, etc. would be stored on a Passkey QR code, printed onto a Passkey QR sticker. This Passkey is required for decryption of PII and in-depth vaccination information (time, date, location of vaccination).</p><p>At this stage, a vaccine recipient would then have Coupon, Badge, and Passkey QR stickers.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.4">SECOND DOSE</head><p>When a user attempts to receive a second dose of a vaccine, the vaccination clinic would utilize a user's Badge to determine the appropriate vaccine type and dose and the Passkey to confirm a user's identity. Again, the user Passkey contains information that solely exists on the physical card carried by a user. Use of this sticker is required to decrypt in depth vaccination information for a patient contained in the Badge (location of vaccination, date, etc.). Once final vaccination has been performed, the vaccine clinic would create a fourth and final Status QR code sticker for a recipient's SafePaths card, which would simply indicate whether or not a user has been vaccinated. Status would not contain any further information and therefore would be unencrypted.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.5">RECORD-KEEPING</head><p>User vaccination records could be linked by anonymized upload to a centralized system using a user's pseudorandom identifier. The user's Passkey, containing their encryption key that decrypts their PII, would not be uploaded to the CDC without consent. Alternatively, we propose an anonymous record keeping function in our Scanner App section.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.6">VACCINATION VERIFICATION</head><p>Verification of immunization status might be required in various scenarios such as airline travel, return to school/work, etc. Vaccine verification at these venues would follow the receipt of a second COVID-19 dose.</p><p>Information regarding an individual's vaccination status would be digitally signed by the vaccine clinic onto the Status sticker. When scanned, this sticker would provide the verifier with information regarding whether or not an individual has been vaccinated. If further verification of identity is required, the verifier could make use of a consenting individual's Passkey sticker to decrypt the holder's name. With this method, a user would have multiple levels of information they can share, beginning with vaccination status in the unencrypted Status sticker, basic personal information (i.e. name) that must be decrypted using the Passkey sticker, and finally full personal vaccination information encrypted in the Badge.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.7">SAFETY AND EFFICACY MONITORING</head><p>Short and long-term monitoring of health outcomes would rely on self-reporting. These cards could still facilitate the anonymous information upload by interacting with existing centralized systems such as VAERS or V-Safe while bypassing PII input. All health and symptom information could instead be tied to a user's pseudorandom ID. We also propose a scanner app solution in the Scanner Flow section that could aggregate symptom reporting and vaccine record data anonymously.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">SCANNER FLOW</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">OVERVIEW</head><p>Here we discuss the systems that must be built for vaccine clinics and distributors in order to enable the use of the SafePaths card framework presented above. We present several relevant protocols as well as the functionality of a proposed vaccine distributor/verifier scanner app. This scanner app would be necessary to function with the encrypted QR codes described above.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>PathCheck Foundation Card Protocol Flow</head><p>The </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">VACCINE ELIGIBILITY CONFIRMATION</head><p>Phased vaccination using the SafePaths card system requires the distribution of SafePaths cards containing signed Coupons to appropriate subsets of the population during each stage vaccination. There are several ways that might be achieved. We potential solutions below, though we recognize that these strategies must be determined by individual jurisdictions to meet the circumstances in different locations.</p><p>1. Disseminate to businesses to provide to employees (eg: hospitals, restaurants, etc. as appropriate)</p><p>2. Make available local building DMV of obtaining a license)</p><p>3. Mail out to individuals on employment/other factors (via background check systems, centralized databases such as IRS)</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">VACCINE ADMINISTRATION</head><p>To confirm an individual for vaccination scheduling/check-in, a clinic must verify the authenticity of a vaccine recipient's QR Coupons. The first function of our proposed scanner app would be to scan a vaccine recipient's Coupon to determine authenticity and prevent the use of a single Coupon by multiple individuals. This would be achieved by scanning the digital signature present on a SafePaths Coupon and verifying its digital signature.</p><p>The second function of our proposed scanner app would be to create digitally signed Badge and Passkey stickers for post vaccination. This would make use of our previously described algorithm <ref type="bibr" target="#b10">(Singh et al. (2020)</ref>) for secure recording of vaccine information into a Badge sticker, encrypted using the encryption key present in the Passkey. After creating these stickers, the proposed scanner app would not store any information regarding a recipient's encryption key; that information would only exist within the Passkey sticker.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>PathCheck Foundation</head><p>Vaccine Scanner</p><p>App Flow</p><p>Vaccinators will be required to login to confirm their names and affiliation, while selecting a vaccination location.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4">SECOND DOSE</head><p>Second dose administration functionality would be implemented into the scanner app in the same manner as described in the previous section for 'Vaccine Administration'. A Status sticker would be created by the scanner app in a similar manner to the Badge sticker, also drawing on the methods described in our cryptographic protocol <ref type="bibr" target="#b10">(Singh al. (2020)</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.5">RECORD-KEEPING</head><p>Another critical function of our app would be the ability to integrate with existing systems, such VAMS in the United States. our app would be able to provide vaccination record to VAMS replacing with pseudo identifiers.</p><p>our scanner system also have capability to directly aggregate record data in an anonymized fashion, retaining population-level statistics such as vaccination prevalence in a given jurisdiction that might be important health policy development. Details concerning clinic location, vaccine dose, and vaccine manufacturer could be stored by the scanner app and aggregated for public health official viewing.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.6">VACCINATION VERIFICATION</head><p>Our proposed scanner app would enable vaccination verification simply by reading immunization status contained in a user's Status sticker. For further identity verification, a form of ID (such as driver's license) can be compared with the decrypted PII from the scanner app using an individual's Passkey sticker. The scanner app would not store this information following completion of the immunization confirmation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">CONCLUSION</head><p>In this early draft, we present a complete protocol for a physical card-based system for phased vaccine distribution, individual vaccination, second-dose adherence, and symptom follow-up. Due to their physical nature and simplicity, digitally-signed QR codes may be a convenient and nonintrusive modality for some users seeking vaccination. Digitally-signed QR stickers enable verification of authentically created immunization records, and the encryption schema presented using a unique passkey sticker ensures that user PII can only be decrypted with the user's consent. This information is stored physically on the user's SafePaths card in a decentralized manner wherein a user must provide their physical passkey sticker for decryption of PII. These cards also extend privacy-focused protocols to low-resource areas and populations, equalizing disparities in access to individual-centric solutions and frameworks for COVID-19 vaccination. The centralised health data collected (which is rid of all PIIs) can be by the concerned authorities to have population aggregated view of the vaccine adherence in a region. Furthermore, such privacy preserving dashboards which show aggregated data can help authorities take informed decisions.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: The 4 digitally signed QR code stickers (Coupon, Badge, Status, and Passkey) present on the SafePaths cards.</figDesc><graphic coords="2,306.80,405.66,55.25,55.25" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure</head><label/><figDesc>Figure 2: MIT SafePaths Card Mockup</figDesc><graphic coords="3,114.66,81.86,382.68,215.25" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 :</head><label>3</label><figDesc>scheme. This could uploads to current government systems. scanner could be used to anonymously upload vaccine data and symptom reporting data health officials and vaccine makers</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head/><label/><figDesc>show a list of people that have checked in today. If real time internet access is not availble daylong, data can uploaded to a central server, with an option to delete data from the app. Health Reporting Scans Scans can be performed by doctors or frontline healthcare workers monitor and send anonymized data to governments. 'Badge' code and passkey Select from a set of side effects symptoms CDC 2D Verification Verification scans can be performed by different venues to determine whether an individual has been vaccinated. Scan 'Status' QR code and user passkey: if all matches, screen will turn green In-person verification will prompt "Ask for government ID" 2C 'Badge' Scans First-dose Daily-updated dose-info: vaccine company and lot, vaccine location, Eligibility 'Coupon' Scan (2A) get user passkey Create Badge: coupon dose-info + passkey Deliver Badge, status, passkey via SMS, print, email, or onscreen photo QR code Second-dose Scan old Badge and old dosage-info Use same process to second-dose badge</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: app protocol workflow diagram.</figDesc></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>ACKNOWLEDGMENTS</head><p>We are grateful to <rs type="person">Riyanka Roy Choudhury</rs>, <rs type="funder">CodeX</rs> Fellow, <rs type="affiliation">Stanford University</rs>, <rs type="person">Adam Berrey</rs>, <rs type="affiliation">CEO of PathCheck Foundation</rs>, <rs type="person">Dr. Brooke Struck</rs>, Research Director at <rs type="affiliation">The Decision Lab, Canada</rs>, <rs type="person">Vinay Gidwaney</rs>, Entrepreneur and Advisor, <rs type="institution">PathCheck Foundation</rs>, and <rs type="person">Paola Heudebert</rs>, cofounder of <rs type="affiliation">Blockchain for Human Rights</rs>, <rs type="person">Alison Tinker</rs>, <rs type="person">Saswati Soumya</rs>, <rs type="person">Sunny Manduva</rs>, <rs type="person">Bhavya Pandey</rs>, and <rs type="person">Aarathi Prasad</rs> for their assistance in discussions, support and guidance in writing of this paper.</p></div>
+			</div>
+			<listOrg type="funding">
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<author>
+			<persName><forename type="first">U</forename><forename type="middle">S</forename><surname>Administration</surname></persName>
+		</author>
+		<ptr target="https://www.fda.gov/vaccines-blood-biologics/vaccine-adverse-events/vaers-overview"/>
+		<title level="m">Vaers overview</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">U.S. FOOD &amp; DRUG ADMINISTRATION. Vaers overview, 2019. URL https: //www.fda.gov/vaccines-blood-biologics/vaccine-adverse-events/ vaers-overview.</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Challenges of equitable vaccine distribution in the covid-19 pandemic</title>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Bae</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Darshan</forename><surname>Gandhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jil</forename><surname>Kothari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sheshank</forename><surname>Shankar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonah</forename><surname>Bae</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Parth</forename><surname>Patwa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohan</forename><surname>Sukumaran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">V</forename><surname>Sethuraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Srinidhi</forename><surname>Krutika Mishra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aishwariya</forename><surname>Murali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kasia</forename><surname>Saxena</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vivek</forename><surname>Jakimowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohan</forename><surname>Sharma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashley</forename><surname>Iyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alex</forename><surname>Mehra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Priyanshi</forename><surname>Radunsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sunaina</forename><surname>Katiyar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shailesh</forename><surname>Anand</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jagjit</forename><surname>Advani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ramesh</forename><surname>Dhaliwal</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Raskar</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Joseph Bae, Darshan Gandhi, Jil Kothari, Sheshank Shankar, Jonah Bae, Parth Patwa, Rohan Sukumaran, Sethuraman T. V., Krutika Mishra, Srinidhi Murali, Aishwariya Saxena, Kasia Jaki- mowicz, Vivek Sharma, Rohan Iyer, Ashley Mehra, Alex Radunsky, Priyanshi Katiyar, Sunaina Anand, Shailesh Advani, Jagjit Dhaliwal, and Ramesh Raskar. Challenges of equitable vaccine distribution in the covid-19 pandemic, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<author>
+			<persName><forename type="first">Joram</forename><surname>Borenstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rebecca</forename><surname>Weintraub</surname></persName>
+		</author>
+		<ptr target="https://www.cdc.gov/coronavirus/2019-ncov/hcp/telehealth.html"/>
+		<title level="m">Using telehealth to expand access to essential health services during covid-19 pandemic</title>
+		<imprint>
+			<date type="published" when="2020">2020. 2020</date>
+		</imprint>
+		<respStmt>
+			<orgName>Center for Disease Control and Prevention</orgName>
+		</respStmt>
+	</monogr>
+	<note>Rolling out the covid vaccine is a huge it challenge</note>
+	<note type="raw_reference">Joram Borenstein and Rebecca Weintraub. Rolling out the covid vaccine is a huge it challenge, 2020. URL https://hbr.org/2020/12/ rolling-out-the-covid-vaccine-is-a-huge-it-challenge. Center for Disease Control and Prevention. Using telehealth to expand access to essential health services during covid-19 pandemic, 2020a. URL https://www.cdc.gov/ coronavirus/2019-ncov/hcp/telehealth.html.</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Using digital technologies in precision public health: Covid-19 beyond</title>
+		<ptr target="https://blogs.cdc.gov/genomics/2020/04/06/using-digital/"/>
+	</analytic>
+	<monogr>
+		<title level="m">Cdc covid data tracker</title>
+		<imprint>
+			<date type="published" when="2020">2020. 2020c</date>
+		</imprint>
+		<respStmt>
+			<orgName>Center for Disease Control Prevention</orgName>
+		</respStmt>
+	</monogr>
+	<note type="raw_reference">Center for Disease Control Prevention. Using digital technologies in precision public health: Covid-19 beyond, 2020b. URL https://blogs.cdc.gov/genomics/2020/04/ 06/using-digital/. Disease Control and Prevention. Cdc covid data tracker, 2020c.</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">VAMS -COVID-19 Vaccination Reporting Systems -CDC</title>
+		<ptr target="https://www.cdc.gov/vaccines/covid-19/reporting/vams/index.html"/>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+		<respStmt>
+			<orgName>Center for Disease Control (CDC)</orgName>
+		</respStmt>
+	</monogr>
+	<note type="raw_reference">Center for Disease Control (CDC). VAMS -COVID-19 Vaccination Reporting Systems -CDC, 2020c. https://www.cdc.gov/vaccines/covid-19/reporting/vams/index. html.</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">The public's role in covid-19 vaccination: Human-centered recommendations to enhance pandemic vaccine awareness, access, and acceptance in the united states. vaccine</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Schoch-Spana</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">K</forename><surname>Brunson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Long</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ruth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">J</forename><surname>Ravi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Trotochaud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Borio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Brewer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Buccina</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Connell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">L</forename><surname>Hall</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Kass</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kirkland</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Koonin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Larson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">F</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">B</forename><surname>Omer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">A</forename><surname>Orenstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">A</forename><surname>Poland</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Privor-Dumm</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">C</forename><surname>Quinn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Salmon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>White</surname></persName>
+		</author>
+		<ptr target="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7598529/#b0160"/>
+		<imprint>
+			<date type="published" when="2020-10">Oct 2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Schoch-Spana M, Brunson EK, Long R, Ruth A, Ravi SJ, Trotochaud M, Borio L, Brewer J, Buccina J, Connell N, Hall LL, Kass N, Kirkland A, Koonin L, Larson H, Lu BF, Omer SB, Orenstein WA, Poland GA, Privor-Dumm L, Quinn SC, Salmon D, and White A. The public's role in covid-19 vaccination: Human-centered recommendations to enhance pandemic vaccine awareness, access, and acceptance in the united states. vaccine., Oct 2020. URL https://www.ncbi.nlm. nih.gov/pmc/articles/PMC7598529/#b0160.</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<author>
+			<persName><forename type="first">Manuel</forename><surname>Morales</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rachel</forename><surname>Barbar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sanskruti</forename><surname>Gandhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Landuge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arpita</forename><surname>Bae</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jil</forename><surname>Vats</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sheshank</forename><surname>Kothari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohan</forename><surname>Shankar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Himi</forename><surname>Sukumaran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Krutika</forename><surname>Mathur</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aishwarya</forename><surname>Misra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Parth</forename><surname>Saxena</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Patwa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">V</forename><surname>Sethuraman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shailesh</forename><surname>Maurizio Arseni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kasia</forename><surname>Advani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sunaina</forename><surname>Jakimowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Priyanshi</forename><surname>Anand</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashley</forename><surname>Katiyar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohan</forename><surname>Mehra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Srinidhi</forename><surname>Iyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aryan</forename><surname>Murali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mikhail</forename><surname>Mahindra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Saurish</forename><surname>Dmitrienko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ananya</forename><surname>Srivastava</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Steve</forename><surname>Gangavarapu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vivek</forename><surname>Penrod</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abhishek</forename><surname>Sharma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ramesh</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Raskar</surname></persName>
+		</author>
+		<title level="m">Covid-19 tests gone rogue: Privacy, efficacy,mismanagement and misunderstandings</title>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Manuel Morales, Rachel Barbar, Gandhi, Sanskruti Landuge, Joseph Bae, Arpita Vats, Jil Kothari, Sheshank Shankar, Rohan Sukumaran, Himi Mathur, Krutika Misra, Aishwarya Saxena, Parth Patwa, Sethuraman T. V., Maurizio Arseni, Shailesh Advani, Kasia Jakimowicz, Sunaina Anand, Priyanshi Katiyar, Ashley Mehra, Rohan Iyer, Srinidhi Murali, Aryan Mahindra, Mikhail Dmitrienko, Saurish Srivastava, Ananya Gangavarapu, Steve Penrod, Vivek Sharma, Abhishek Singh, and Ramesh Raskar. Covid-19 tests gone rogue: Privacy, efficacy,mismanagement and misunderstandings, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main">Phased allocation of covid-19 vaccines</title>
+		<author>
+			<persName><forename type="first">Kathleen</forename><surname>Dooling</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">D</forename><surname>Mph</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Kathleen Dooling MD MPH. Phased allocation of covid-19 vaccines, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">Rapid development of a vaccine won't help much if people refuse to take it</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Saad</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Omer</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Saad B. Omer. Rapid development of a vaccine won't help much if people refuse to take it, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Mistrust in biomedical research and vaccine hesitancy: the forefront challenge in the battle against covid-19 in italy</title>
+		<author>
+			<persName><forename type="first">Lorenzo</forename><surname>Palamenghi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Serena</forename><surname>Barello</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefania</forename><surname>Boccia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guendalina</forename><surname>Graffigna</surname></persName>
+		</author>
+		<idno type="DOI">10.1007/s10654-020-00675-8</idno>
+		<ptr target="https://pubmed.ncbi.nlm.nih.gov/32808095.32808095[pmid"/>
+	</analytic>
+	<monogr>
+		<title level="j">European journal of epidemiology</title>
+		<idno type="ISSN">1573-7284</idno>
+		<imprint>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page" from="785" to="788"/>
+			<date type="published" when="2020-08">Aug 2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Lorenzo Palamenghi, Serena Barello, Stefania Boccia, and Guendalina Graffigna. Mistrust in biomedical research and vaccine hesitancy: the forefront challenge in the battle against covid-19 in italy. European journal of epidemiology, 35(8):785-788, Aug 2020. ISSN 1573-7284. doi: 10. 1007/s10654-020-00675-8. URL https://pubmed.ncbi.nlm.nih.gov/32808095. 32808095[pmid].</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Safepaths: Vaccine diary protocol and decentralized vaccine coordination system using a privacy preserving user centric experience</title>
+		<author>
+			<persName><forename type="first">Abhishek</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ramesh</forename><surname>Raskar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anna</forename><surname>Lysyanskaya</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Abhishek Singh, Ramesh Raskar, and Anna Lysyanskaya. Safepaths: Vaccine diary protocol and decentralized vaccine coordination system using a privacy preserving user centric experience, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Incorporating geographic information science and technology in response to the covid-19 pandemic</title>
+		<author>
+			<persName><forename type="first">Charlotte</forename><forename type="middle">D</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeremy</forename><surname>Mennis</surname></persName>
+		</author>
+		<ptr target="https://www.cdc.gov/PCD/issues/2020/20_0246.htm"/>
+		<imprint>
+			<date type="published" when="2020-07">Jul 2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Charlotte D. Smith and Jeremy Mennis. Incorporating geographic information science and technol- ogy in response to the covid-19 pandemic, Jul 2020. URL https://www.cdc.gov/PCD/ issues/2020/20_0246.htm.</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Toner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anne</forename><surname>Barnill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Carleigh</forename><surname>Krubiner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Justin</forename><surname>Bernstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lois</forename><surname>Privor-Dumm</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mathew</forename><surname>Watson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Elena</forename><surname>Martin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christina</forename><surname>Potter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Divya</forename><surname>Hosangadi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nancy</forename><surname>Connell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Crystal</forename><surname>Watson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Monica</forename><surname>Schoch-Spana</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tener</forename><forename type="middle">Goodwin</forename><surname>Veenema</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Diane</forename><surname>Meyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">Lee</forename><surname>Daugherty Biddison</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alan</forename><surname>Regenberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tom</forename><surname>Inglesby</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anita</forename><surname>Cicero</surname></persName>
+		</author>
+		<ptr target="https://www.centerforhealthsecurity.org/our-work/publications/interim-framework-for-covid-19-vaccine-allocation-and-distribut\ion-in-the-us"/>
+		<title level="m">Interim framework for covid-19 vaccine allocation and distribution in the united states</title>
+		<imprint>
+			<date type="published" when="2020-08">Aug 2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Eric Toner, Anne Barnill, Carleigh Krubiner, Justin Bernstein, Lois Privor-Dumm, Mathew Watson, Elena Martin, Christina Potter, Divya Hosangadi, Nancy Connell, Crystal Wat- son, Monica Schoch-Spana, Tener Goodwin Veenema, Diane Meyer, E. Lee Daugh- erty Biddison, Alan Regenberg, Tom Inglesby, and Anita Cicero. Interim framework for covid-19 vaccine allocation and distribution in the united states, Aug 2020. URL https://www.centerforhealthsecurity.org/our-work/publications/ interim-framework-for-covid-19-vaccine-allocation-and-distribut\ ion-in-the-us.</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

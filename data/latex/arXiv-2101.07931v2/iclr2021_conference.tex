@@ -1,0 +1,60 @@
+
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2021_conference,times}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{url}
+
+
+\title{MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+\author{\\\textbf{Joseph Bae}\textsuperscript{1, 3}, \textbf{Rohan Sukumaran}\textsuperscript{1}, \textbf{Sheshank Shankar}\textsuperscript{1}, \textbf{Saurish Srivastava}\textsuperscript{1}, \textbf{Rohan Iyer}\textsuperscript{1}, \\\textbf{Aryan Mahindra}\textsuperscript{1}, \textbf{Qamil Mirza}\textsuperscript{1},  \textbf{Maurizio Arseni}\textsuperscript{1},  \textbf{Anshuman Sharma}\textsuperscript{1},  \textbf{Saras Agrawal}\textsuperscript{1}, \\ \textbf{Orna}  \textbf{Mukhopadhyay}\textsuperscript{1}, \textbf{Colin Kang}\textsuperscript{1},  \textbf{Priyanshi Katiyar}\textsuperscript{1},  \textbf{Apurv Shekhar}\textsuperscript{1},  \textbf{Sifat Hasan}\textsuperscript{1},\\ \textbf{Krishnendu} \textbf{Dasgupta}\textsuperscript{1}, \textbf{Darshan Gandhi}\textsuperscript{1},  \textbf{Sethuraman TV}\textsuperscript{1},  \textbf{Parth Patwa}\textsuperscript{1},  \textbf{Ishaan Singh}\textsuperscript{1},\\ \textbf{Abhishek Singh}\textsuperscript{2}, \textbf{Ramesh Raskar}\textsuperscript{1,2}  \\\\
+\textsuperscript{1}PathCheck Foundation, 02139 Cambridge, USA.\\
+\textsuperscript{2}MIT Media Lab, 02139 Cambridge, USA.\\
+\textsuperscript{3}Renaissance School of Medicine, Stony Brook University, 11794 Stony Brook, USA.\\
+\texttt{raskar@media.mit.edu} }
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+    In this early draft,  we describe a user-centric, card-based system for vaccine distribution. Our system makes use of digitally signed QR codes and their use for phased vaccine distribution, vaccine administration/record-keeping, immunization verification, and follow-up symptom reporting. Furthermore, we propose and describe a complementary scanner app system to be used by vaccination clinics, public health officials, and immunization verification parties to effectively utilize card-based framework. We believe that the proposed system provides a privacy-preserving and efficient framework for vaccine distribution in both developed and developing regions. 
+\end{abstract}
+
+
+\input{content/introduction}
+\input{content/card_flow}
+\input{content/scanner_flow}
+\input{content/conclusion}
+
+\subsubsection*{Acknowledgments}
+We are grateful to Riyanka Roy Choudhury, CodeX Fellow, Stanford University, Adam Berrey, CEO of PathCheck Foundation, Dr. Brooke Struck, Research Director at The Decision Lab, Canada, Vinay Gidwaney, Entrepreneur and Advisor, PathCheck Foundation, and Paola Heudebert, co-founder of Blockchain for Human Rights, Alison Tinker, Saswati Soumya, Sunny Manduva, Bhavya Pandey, and Aarathi Prasad for their assistance in discussions, support and guidance in writing of this paper.
+
+
+\bibliography{iclr2021_conference}
+\bibliographystyle{iclr2021_conference}
+
+
+\end{document}

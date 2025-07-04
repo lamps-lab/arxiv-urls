@@ -1,0 +1,12 @@
+\section{Conclusion and future work}\label{sec:conclusion}
+
+In this paper, we explore the applicability of using stack traces for solving the bug triage problem.
+
+Firstly, we suggest an approach for handling error reports that do not have text descriptions, but only a stack trace for the given error. We transform each stack trace into a set of text tokens, which are processed as sequences. As a result, existing solutions can be applied to such data as well.
+
+Secondly, we collected two datasets---the public one and the private one---from the data of JetBrains. The public dataset is a subset of the private dataset that only contains stack frames that relate to public repositories, with a total of 3,361 stack traces. To facilitate further research in this area, the source code of all the models, as well as the public dataset, are available online at \url{https://github.com/Sushentsev/DapStep}.
+
+Thirdly, we propose a ranking neural network model that outperforms classifying models by 15-20 percentage points of the Acc@1 metric on the public dataset, and 17-18 percentage points on the private dataset. The significant advantage of this model is the independence from the fixed set of classes (the list of developers working on a given project). Finally, we suggest to use an additional source of information (VSC annotations), which significantly improves the performance of the models. We propose two ways features could be built from such annotations. First of all, features can be extracted manually from annotations --- this approach shows better results, but requires effort and domain knowledge. On the other hand, it is possible to use an additional neural network to learn the annotation-based features. This approach requires to train an additional neural network, so it takes more time compared to the manual approach, however, this way we obtain explicit embeddings of annotations, which might be employed in other related research tasks.
+
+We hope that our work will be of use for researchers and practitioners, especially in the tasks that rely on stack traces.
+

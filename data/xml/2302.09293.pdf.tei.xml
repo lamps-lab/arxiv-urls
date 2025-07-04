@@ -1,0 +1,1122 @@
+<?xml version="1.0" encoding="UTF-8"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Periodicity Intensity Reveals Insights into Time Series Data: Three Use Cases</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author role="corresp">
+							<persName><forename type="first">Alan</forename><forename type="middle">F</forename><surname>Smeaton</surname></persName>
+							<email>alan.smeaton@dcu.ie</email>
+							<idno type="ORCID">0000-0003-1028-8389</idno>
+							<affiliation key="aff0">
+								<orgName type="department">Insight Centre for Data Analytics</orgName>
+								<orgName type="institution">Dublin City University</orgName>
+								<address>
+									<settlement>Glasnevin Dublin 9</settlement>
+									<country>Ireland;</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Feiyan</forename><surname>Hu</surname></persName>
+							<idno type="ORCID">0000-0001-7451-6438</idno>
+							<affiliation key="aff0">
+								<orgName type="department">Insight Centre for Data Analytics</orgName>
+								<orgName type="institution">Dublin City University</orgName>
+								<address>
+									<settlement>Glasnevin Dublin 9</settlement>
+									<country>Ireland;</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Periodicity Intensity Reveals Insights into Time Series Data: Three Use Cases</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">D943A4A844894A9AC77125EDD02E1743</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2025-01-29T07:34+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Periodicity intensity</term>
+					<term>periodogram</term>
+					<term>circadian rhythm</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Periodic phenomena are oscillating signals found in many naturally-occurring time series. A periodogram can be used to measure the intensities of oscillations at different frequencies over an entire time series but sometimes we are interested in measuring how periodicity intensity at a specific frequency varies throughout the time series. This can be done by calculating periodicity intensity within a window then sliding and recalculating the intensity for the window, giving an indication of how periodicity intensity at a specific frequency changes throughout the series. We illustrate three applications of this the first of which is movements of a herd of new-born calves where we show how intensity of the 24h periodicity increases and decreases synchronously across the herd. We also show how changes in 24h periodicity intensity of activities detected from in-home sensors can be indicative of overall wellness. We illustrate this on several weeks of sensor data gathered from each of the homes of 23 older adults. Our third application is the intensity of 7-day periodicity of hundreds of University students accessing online resources from a virtual learning environment (VLE) and how the regularity of their weekly learning behaviours changes throughout a teaching semester. The paper demonstrates how periodicity intensity reveals insights into time series data not visible using other forms of analysis.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>A common application of data analytics to data streams or time series is detecting anomalous behaviour or outliers which deviate in some way from normal behaviour, where normal behaviour is defined by the recurring patterns within the data stream. As noted by Li et al. in <ref type="bibr" target="#b0">[1]</ref> this is useful for applications like fraud detection, network intrusion detection, medical diagnosis, video surveillance, fault diagnosis and more. By definition, outlier detection detects baseline patterns within data and then detects and alert us to outliers or to subtle variations outside those baseline patterns.</p><p>Periodicity is defined as the characteristic or tendency for some pattern to recur at regular intervals within a data stream. The term is used to describe the regularity of phenomena which reoccur throughout nature as normal behaviour and from which deviations are characterised as outliers. Such temporal recurrence is an important property associated with complex systems and the study of such temporal recurrence is useful for gaining insights into the behaviour of the systems <ref type="bibr" target="#b1">[2]</ref>.</p><p>There is regular periodicity in the rotation of the earth, the lunar cycle, the earth's revolving around the sun, the seasons, the tides, and the rhythm of our daily 24-hour cycle. Humans, and most other living creatures, have a strong circadian rhythm, the 24-hour cycle which brings routine and structure to our lives. Chronobiology is the field within life sciences that explores how this 24-hour cycle influences the health, wellness and the behaviour of living organisms <ref type="bibr" target="#b2">[3]</ref>. <ref type="bibr" target="#b24">24</ref>-hour periodicities are observed in many human behaviours as we strive for homeostasis -equilibrium in our physiology and stability in the face of external and environmental changes <ref type="bibr" target="#b3">[4]</ref>. It is known that when we live our lives and behave in ways that map strongly to the arXiv:2302.09293v1 [cs.CY] 15 Feb 2023 periodicity of the circadian clock, then that is a sign of better health and improved overall wellness <ref type="bibr" target="#b4">[5]</ref>.</p><p>One approach to detecting recurrences in data streams is visualising them via recurrence plots (RPs) <ref type="bibr" target="#b5">[6]</ref>. These are visualisations of a matrix in which elements of the matrix correspond to instances at which there is a recurrence in a dynamic system. RPs operate by first performing a cluster analysis on the data and then building graphical patterns to illustrate recurrences in the data. RPs have been used in many applications for example fault diagnosis of machinery <ref type="bibr" target="#b6">[7]</ref> and in image transformations <ref type="bibr" target="#b7">[8]</ref>.</p><p>Recurrence plots are useful for providing analysis of short sequences with a limited amount of recurrence, but for longer time series with many iterations of recurrences they are designed to hide the volume of iterations and to mask variations that may occur among the iterations. Sometimes when we look for and find patterns in time series data we want to measure those patterns and to compare the patterns over time or even to compare them to other recurring patterns. This goes far beyond just using the patterns to detect outliers. If we could measure the patterns and how strong is their recurrence at different points throughout a dataset then this might reveal insights into the patterns and deeper insights into the data.</p><p>In previous work we developed a technique for calculating and visualising the strength of periodicity at a given frequency, throughout a time series. The technique was applied to the sleeping patterns of US war veterans who continuously wore wrist-worn accelerometers for 90 consecutive days each and we found that the 24h periodicity strength varied significantly across participants <ref type="bibr" target="#b8">[9]</ref>. That work also found that high levels of periodicity indicating regular sleep and movement patterns were associated with lower measures of LDL-cholesterol, triglycerides and hs-CRP as well as improved health-related quality of life measures <ref type="bibr" target="#b8">[9]</ref>. The same technique for visualising periodicity strength over time was used in an analysis of lifelog data defined as the automatic digital recording of everyday activities, and it provided insights into shifts in underlying behaviour of the subjects <ref type="bibr" target="#b9">[10]</ref>.</p><p>While Chegini et al. <ref type="bibr" target="#b10">[11]</ref> used the same term "periodicity intensity" in their work on the diagnosis of faults in machine bearings, their work defines periodicity intensity as the ratio of the energy of the local maxima to the total energy in the autocorrelation of vibration signals in faulty machinery and that is very different to the definition of periodicity used here.</p><p>Our research hypothesis is that computing a visualisation of the strength of 24-hour periodicity for a range of longitudinal time series data will reveal insights into the data not visible using other forms of analysis. In this paper we apply the calculation of periodicity strength to three different use cases and show how, in each case, deeper insights into the data that are revealed by the analysis. The paper's importance lies in the relative simplicity of the technique and of the computation, and the powerful insights into time series data that it provides. The technique can be used on any data series where underlying temporal patterns reoccur and where the strength of those patterns throughout the data is important to determine.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Materials and Methods</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1.">Calculating Periodicity Intensity Using Time-lagged Overlapping Windows</head><p>A periodogram <ref type="bibr" target="#b11">[12]</ref> is a well established technique for exploring the magnitudes of recurring patterns at different frequencies in a time series of data. A periodogram uses samples of a time series of data to measure the amplitude vs. the frequency characteristics of an underlying continuous function and thus it reveals the spectral power density of the underlying function. If the function is sampled unevenly or there is missing data from the sample, then the Lomb-Scargle periodogram is a well-known algorithm which can cope with such unevenly sampled data <ref type="bibr" target="#b12">[13]</ref>.</p><p>The Lomb-Scargle periodogram has been used widely within those domains where there is an interest in exploring both the frequencies and magnitudes of periodicity, such as data from astronomical observations. In the work here we are interested in the magnitude or amplitude of the data samples only at a known frequency such as the 24-hour circadian rhythm. Software implementations of the Lomb-Scargle periodogram are readily available across multiple platforms including MatLab and in Python.</p><p>To illustrate how we calculate the magnitude of the periodicity changes at a given frequency throughout a time series using time-lagged overlapping windows, we will describe this using the schematic presented in Figure <ref type="figure" target="#fig_0">1</ref>. Figure <ref type="figure" target="#fig_0">1(a)</ref> shows a plot of the first 10 days of a longer (synthetic) series of data points and we can see from the visualisation that there is a noticeable recurring daily pattern, i.e. when the frequency is 24 hours, although if we examine it carefully we see that each day is slightly different from the others. If we compute the magnitude of this 24-hour periodicity over the whole time series it has a value of, let us say, 0.78 on a scale of 0 to 1.</p><p>While such an analysis has benefit, if we have a long period of data (e.g. weeks, months or years, then calculating a single number (0.78 in the diagram) for the 24-hour periodicity over the whole duration will hide any variational details within the data. Instead, we calculate the 24-hour periodicity from a window of the first 7 days only as shown in Figure <ref type="figure" target="#fig_0">1</ref>(b) and this generates a value of, say, 0.82. We then shift the 7-day window forward in time by an interval of, say, 1 whole day and re-calculate the 24-hour periodicity as shown in Figure <ref type="figure" target="#fig_0">1(c)</ref> and this generates a value of, say, 0.76. We repeat this process of shifting the 7-day window and recalculating until we reach the end of the time series.</p><p>Three important parameters in this process are (1) the frequency of the recurring pattern Fo, often 24 hours if we are interested in circadian rhythms but not always so, (2) the size of the window in which the periodicity is calculated m and (3) the overlap between the windows l also referred to as stride length, namely the amount by which a window is shifted before calculating a new value for a periodicity window.</p><p>For a series of N data points such as that shown in Figure <ref type="figure" target="#fig_0">1</ref>(d) and a window size of m with a shifting or stride length of l for each periodicity re-calculation, this generates a time series of N-m+1 l data points as in Figure <ref type="figure" target="#fig_0">1</ref>(e). This captures gradual behaviour changes in the regularity of the data sampled over time rather than instances of particularly abnormal data values. Periodicity intensity graphs are just one of many possible forms of analysis of time series data but differs from each of the others. While we do perform a spectral analysis <ref type="bibr" target="#b13">[14]</ref> of the data, this is not carried out across a full spectrum. Instead we focus on 24-hour circadian periods because previous studies indicate that circadian periodicity carries most of the energy in the longitudinal accelerometer data <ref type="bibr" target="#b14">[15]</ref>. Likewise we do not map the time series data into another space like an embedded space, as has been done in <ref type="bibr" target="#b15">[16]</ref> with protein sequences. Discrete wavelet transforms <ref type="bibr" target="#b16">[17]</ref> can be used with time series data for noise filtering and data reduction, and specifically for detecting singularities like outliers <ref type="bibr" target="#b17">[18]</ref> but this is different to our use case where we are looking to identify for long term behaviour changes. Hilbert transforms (empirical mode decomposition) <ref type="bibr" target="#b18">[19]</ref> are often used with time series for gathering information about frequency characteristics like amplitude and phase but not long-term shifts in time series characteristics. The zero crossing rate (ZCR) <ref type="bibr" target="#b19">[20]</ref> is used extensively in speech and music audio processing and corresponds to the rate at which a signal transitions from positive to negative or negative to positive while historical volatility <ref type="bibr" target="#b20">[21]</ref> is a statistical measure from economics and finance measuring the degree of variation of adjacent values in a time series. Each of these latter forms of analysis measure the dynamic changes in a time series but do not give the longitudinal changes in 24-hour periodicity intensity which our measure does.</p><p>These signal processing techniques are used in a wide variety of applications such as data augmentation to support deep learning <ref type="bibr" target="#b21">[22]</ref> and in <ref type="bibr" target="#b23">[23]</ref> where time, frequency and spectral power domain feature vectors derived from vibration and acoustic emissions from bearings in machinery in order to detect faults. Empirical Mode Decomposition (EMD) is a technique used to decompose a signal into useful components similar to analysis methods like Fourier transforms and wavelets and it is particularly useful in exploratory analyses of data. The principal behind EMD is to split an original time series into a set of smooth curves or intrinsic mode functions. In the case of fault diagnosis it is typically used to decompose a vibration signal into components used to train classifiers, usually with high accuracy. However EMD is known to be sensitive to noise as well as requiring a manual selection of parameters <ref type="bibr" target="#b24">[24]</ref> to support its exploratory nature. Zerocross Density Decomposition (ZCD) is a more recently developed technique <ref type="bibr" target="#b25">[25]</ref> which is based on the concept of zero-crossings and is computationally more efficient than EMD. However EMD is more effective than DD in terms of accuracy and robustness when dealing with non-stationary signals <ref type="bibr" target="#b26">[26]</ref>. Our algorithm does not split a time series into constituents as EMD or ZCD do and our method is less sensitive to noise because we use the Lomb-Scargle periodogram <ref type="bibr" target="#b12">[13]</ref> to calculate periodicity, an algorithm which tolerates irregular sampling and missing data.</p><p>Algorithm 1 demonstrates the method to compute periodicity intensity. We assume we already know the optimal window size m, stride length l and the frequency Fo that we have identified and are interested in. In this case studies in this paper Fo can either be circadian <ref type="bibr">(24-hour)</ref> or weekly periodicity. X w is the windowed input data and S f is the periodogram computed with Fast Fourier Transform. IntensityFunc computes intensity by taking the periodogram of a windowed/local time series data and one focused frequency, Fo. We aggregate energy carried by all close frequencies that are around Fo in case of energy leakage.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Algorithm 1: Compute Periodicity Intensity</head><p>Input : A time series data x n ∈ X Where n = 1, 2, 3 . . . N with N data points. Optimal window size m and stride length l. Fo ∈ { 1 24h , 1 168h } Output : A time series data y t ∈ Y where t = 1, 2, 3, . . . N-m+1 l . The NEX project <ref type="bibr" target="#b27">[27]</ref> developed an integrated IoT system to offer unobtrusive health and wellness monitoring to support older adults living independently in their homes. This involved the use of ambient sensors non-intrusively placed around the home to detect various domestic, in-home activities. The resulting time series data gathered from each sensor can be combined and analysed to create a model of an individual's normal daily patterns of activity. During the first half of 2022, twenty-four healthy older adults aged 60 years or older and living independently at home participated in a trial of the NEX project. The gender profile was predominantly female (81% n=21) with a total population mean age of 73.2 years. The majority of participants were independent and high functioning with only 8% (n=2) reporting difficulties in completing activities of daily living (ADLS) <ref type="bibr" target="#b28">[28]</ref> such as dressing etc. and only 4% (n=1) reporting difficulties in completing more complex tasks defined as instrumental activities of daily living (IADLS) <ref type="bibr" target="#b29">[29]</ref> such as shopping for groceries etc.</p><formula xml:id="formula_0">1 for t ← 0 to N-m+1 l do 2 X w = x k×l . . . x k×l+m 3 S f = FFT (X w ) 4 y t = IntensityFunc (Fo, S f ) where 5 In this work IntensityFunc = ∑ f ∈ Fo S f</formula><p>A range of in-home sensors were installed in each participant's home including (1) contact sensors on the doors of cupboards or drawers which were used for kitchen crockery, cutlery, delph, food staples and pots, (2) contact sensors on the fridge door and (3) electrical plug sensors on the kettle, microwave and toaster. There were also contact sensors on wardrobe door(s) and on drawer(s) in the bedroom, a 6-in-1 environmental sensor for temperature, humidity, light and presence in the bathroom and contact sensors on the front door, the patio door or the back door. Collectively, data from these sensors capture the purposeful actions of the participants, i.e. they indicate a deliberate action thus the opening or closing of doors, the movement of a person and the switching on or off of electrical devices. Sensor data was gathered from the in-home sensors from the 24 participants' homes over periods varying from 6 weeks to 6 months each <ref type="bibr" target="#b27">[27]</ref>.</p><p>The importance of the 24h circadian rhythm and the conformance that each of the NEX project participants has to that 24-hour rhythm, can be shown by computing the strength of 24-hour periodicity over all data from multiple sensor devices in the home. The fusion of multiple data streams from multiple sensors captures the activities of daily living including food preparation and eating, self-grooming, cleaning, relaxing, and others. Periodicity intensity emphasises regularly and the regular recurrence of such activities in the home.</p><p>Periodicity intensity visualisations were presented to participants in the NEX project as a visualisation of their long-term behaviour and changes and the regularity of those trends over time. A periodicity intensity graph is a continuous timeline where high values indicate periods of regular behaviour as detected by the in-home sensors, and low values indicate periods of irregular activities. Such irregular activities are indicators of changes in the regular habits and can point to changes in their sleep patterns (sleep onset, duration, waking during the night, napping during the day), in their movement into and out of, as well as around the home (awake at night, sleeping during the day, staying in the home longer or shorter than normal), in self-grooming (using the restroom at irregular times) and in eating (snacking during the day or during the night as opposed to having regular meals).</p><p>For the NEX trial we used fused the data gathered from sensors in the homes of participants and computed a single overall periodicity intensity timeline for each participant and we present some of these in the Results section of this paper.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2.2.">Periodicity Intensity in Student Learning Habits</head><p>Many Universities have wellness programs to promote overall health and wellbeing of their staff and students <ref type="bibr" target="#b30">[30]</ref>. Their benefits lead to improved health literacy, healthier mindsets, healthier relationships with others and positive changes to lifestyles regarding exercise, nutrition and more. In our University we created and run an elective undergraduate course on wellness called FLOURISH. This also includes elements of data literacy by showing students how their own personal data, gathered from devices used to measure their sleep, exercise, nutrition, etc., can be used for good as part of students themselves monitoring these wellness factors.</p><p>The wellness course was delivered entirely online via the University's virtual learning environment (VLE) Loop, a variation of Moodle and was accredited by the University, earning 5 ECTS for students who successfully completed it. For each of the 10 wellness topics, the personal data that students were required to gather on themselves was not shared with the course instructor or with the University. However, as part of their participation in the course and to demonstrate how personal data gathered by the University as part of recording their online activities could also be used for good, each of the 169 students on the course authorised us to download their VLE access logs for all their taught courses for the semester. This included the date, time and the URL of the Loop resource for each time that a student accessed any resource on the VLE.</p><p>At the end of the teaching semester we used the log of all student accesses to all Loop resources on all their courses and generated a single periodicity intensity graph for each student covering all online accesses and shared the graph online privately with them. The resulting graphs provide an insight for each student into which period(s) of the preceding taught semester their learning habits as exemplified by their access to online resources, were more structured and regular. This may help them in reflecting back on their learning throughout the semester. Some sample graphs to illustrate this, as well as further insights, are presented in the Results section of this paper.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2.3.">Periodicity Intensity in Calf Movements</head><p>The regularity of the sleep-wake cycle is important not just for humans but for other living animals. We investigated the strength of the circadian periodicity of newborn calves on a commercial farm and how that strength of periodicity changes throughout their first 6-8 weeks after birth <ref type="bibr" target="#b31">[31]</ref>. Many animals including cattle are behaviourally synchronised with herds coordinating reactions to external zeitgebers <ref type="bibr" target="#b32">[32]</ref> so our interest in this use case is in the periodicity intensity of the circadian rhythm for the herd as a whole as well as for individual calves.</p><p>We gathered data from an Axivity AX3 wearable accelerometer <ref type="bibr" target="#b33">[33]</ref> affixed to a collar worn on the necks of each of 24 dairy calves from just after their birth. The calves were fed twice a day, were bedded daily and had human contact during these activities. Feeding times were at similar times to milking as they were fed whole milk thus their day-to-day activities would have been very structured and regular. Individual calf movements as detected by the accelerometers would have varied among calves as they play and interact and explore their surroundings so despite the regular structure to feeding and sleep, there is scope for a lot of individual variability among them.</p><p>Data from the accelerometers was sampled at 12.5Hz and gathered for up to 8 weeks for each calf. It was processed in the way described in <ref type="bibr" target="#b34">[34]</ref> by pre-processing into signal vector magnitude (SVM), a time-series independent of sensor orientation and thus invariant to movement of the collar around the neck. A Butterworth fourth-order band-pass filter <ref type="bibr" target="#b35">[35]</ref> with frequency in the range 0.5 Hz to 20 Hz was then applied to remove any white noise, and negative values were converted into absolute values. Movement values used for analysing periodicity were the aggregated mean of SVM calculated over non-overlapping 60-second windows.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Results</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.">Results of Periodicity Intensity in the Homes of Older Adults</head><p>We first examine and discuss the results of periodicity intensity calculation on sensor data from the homes of older citizens. The output from periodicity detection on data from the NEX project participants was calculated in real time and made available online. These visualisations were used in debriefings with participants by their clinical carers and project researchers and supported by a short-form informative YouTube video to explain the graphs and to ensure the participants understood how to interpret them.</p><p>Three example outputs are shown in Figure <ref type="figure" target="#fig_1">2</ref> where the values in each graph are normalised to a [0,1] range as actual periodicity intensity values will vary considerably across participants and each participant is interested in the relative changes in their own graph rather than in absolute values or in comparison to others. Following experimentation to determine the best parameters to use, for each of the graphs the frequency for periodicity calculation is 24 hours reflecting interest in the circadian rhythm, the window is 7 days thus eliminating changes between weekends/weekdays and the overlap or stride length is 1 hour making the computation fast. Each graph represents a periodicity intensity over a 3 month period. The first graph in Figure <ref type="figure" target="#fig_1">2</ref> shows a participant with relatively stable and regular lifestyle and only small variations in periodicity intensity. The gradual rise in periodicity intensity towards the end of the 3 months shows a slight improvement in lifestyle regularity and there are no major perturbations throughout the 3 months. This participant known to have a healthy, regular and comfortable lifestyle.</p><p>In the second graph in Figure <ref type="figure" target="#fig_1">2</ref> we see a participant with much more ups-and-downs in lifestyle. The increase in lifestyle regularity in the middle of the period corresponds to a constant presence at home due to catching Covid-19, self-isolating and recovering with regular behaviour and habits. For this period the volume of sensor activations was much lower than in the earlier period as the participant was not doing much at home except spending time in bed, but it is not the number of sensor activations but their timing that contributes to periodicity intensity. Towards the end of the 3 month monitoring period this participant moved out of the home to recuperate with family hence the flatlining at the end.</p><p>The third graph in Figure <ref type="figure" target="#fig_1">2</ref> shows a participant who also caught COVID-19 during the early part of the 3 month recording period, and then soon afterwards also moved out of their home to recuperate with family which was indicated by the flatlining in the graph. The slight rise in periodicity intensity during the second half of the 3 months indicates family calling to the home on semi-regular basis to collect mail and check it for security.</p><p>The result of this analysis is a form of self-monitoring of the individual but with deeper insights into overall behaviour and activities. This may be used to promote or sustain long-term behaviour change as the subject seeks to maintain high levels of rhythmicity in their lives.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.">Results of Periodicity Intensity in Student Learning Habits</head><p>We now present an in-depth analysis and discussion of the results of applying periodicity intensity to students' online learning habits. The periodicity intensity graphs for each student were made available to them at end of the teaching semester, supported by a short-form informative YouTube video to explain the graphs and to ensure they understood how to interpret them. Five sample graphs are shown in Figure <ref type="figure" target="#fig_2">3</ref>. In each graph the periodicity intensity values are normalised to a [0,1] range to smooth out variance across students and to make each graph equally legible. This is similar to the older adult participants in the previous study in that each student will be interested in the relative changes in their own graph rather than in absolute values or in comparison to others. We also added 3 coloured vertical bands to each graph, red indicating the period of lowest periodicity intensity, green indicating the period of highest and yellow indicating the period of greatest (steepest) change. The parameters used in the calculation of the graphs are a frequency of 24 hours, window size is 7 days and window shift or stride is 3 hours. The five graphs shown in Figure <ref type="figure" target="#fig_2">3</ref> have different start dates reflecting the different times students started studying and they reflect totally different study patterns with the first, second, third and fourth students peaking at different times during the semester in terms of the structured and regular nature of their online access. The first student has her/his peaks earliest in the semester while the fourth student has her/his peaks last. The graph for the fifth student shows a student with a gradual increase in regularly of studying throughout the semester with a burst of regular studying at the end, just before the course examinations.</p><p>While individual periodicity intensity graphs are of value for each student we can get further value from this analysis by time-aligning and stacking the 169 individual student graphs as shown in Figure <ref type="figure" target="#fig_3">4</ref>. For these we set a fixed start and end date/time before stacking the graphs. Since periodicity calculations are for windows of 7-days, there is a gap of 3.5 days at the beginning and the end of the graph. Figure <ref type="figure" target="#fig_3">4</ref> shows the aggregated periodicity intensities for the cohort of 169 students where the y-axis is a stack of periodicity intensities for each student, each student shown in a different colour. The top line of the overall graph show the aggregated periodicities from all students and it reveals three distinct peaks corresponding to the early part of semester as students settle into University life, the middle of semester as students take advantage of the mid-semester reading week to catch up on study, and at the end of semester, just before examinations, as students prepare for those examinations.</p><p>As shown by Byron and Wattenberg in <ref type="bibr" target="#b36">[36]</ref>, stacked line graphs may present an illusion of peaks and troughs which might be caused by a subset of students rather than the peaks and troughs appearing across all students. Thus the overall stacked line graph might be artificially boosted or deflated by peaks or troughs from a small number of students. To assess this, we divided the students into random sub-groups and plotted a stacked line graph for each sub-group. Since the stacked line graphs for the sub-groups show the same shape as the stacked line graph for the whole cohort there are no artificial boosts or troughs from a sub-group of students, and the pattern is generalised across the cohort.</p><p>We can see from Figure <ref type="figure" target="#fig_3">4</ref> that there is a fault line just before 1st November. The University's academic calendar shows this was the date for closing of registrations for the student course choices. A second interesting fault line appears just before 25th November. The semester's teaching period ended on 27th November and the pre-examination study period was between 29th November and 5th December. We can see an increase in the structured nature of VLE activities from students with their assignment submissions and revision of study materials in preparation for examinations, and this tails off as each student finishes their examinations.</p><p>The result of this analysis of periodicity intensity is personalised feedback for each student on their learning habits with deeper insights into the learning behaviour and activities of the overall student cohort. This has personal benefit for each student as well as benefit for the University and course directors.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.">Results of Periodicity Intensity in Calf Movements</head><p>Our final in-depth discussion is of the periodicity intensity algorithm applied to accelerometer data from new-born calves. The 24 calves used in the calf movement study had different dates of birth and their sensor data thus started on different dates. For the oldest calf (sensor ID 20714) the accelerometer data began on 2nd March at 09:00 and for the youngest calf the accelerometer data began on 5th April at 10:00. Though start dates varied, all calves in the herd were contributing accelerometer data by 5th April thus it is from that date onwards that we obtain a picture of the full herd's periodicity. Of the 24 calves, 5 are considered as outliers and did not contribute to the analysis of the overall herd because their collars had fallen off at some point during the data logging and if reattached it would have created a gap in the data which would have impacted the calculation of periodicity intensity for a period of more than 2 weeks. The 19 remaining calves were used in the analysis. The graphs of periodicity intensity for individual calves can be seen in Figure <ref type="figure" target="#fig_4">5</ref> and their x-axes are time-aligned. For these the periodicity frequency was set to 24 hours, the window size was 7 days and the stride length or shift of the time-lagged overlapping windows was 15 minutes. Figure <ref type="figure" target="#fig_4">5</ref> shows the 24 individual periodicity intensity graphs and the first 4 in the left column and the 3rd in the right column were discarded for reasons mentioned earlier. The vertical green lines in the graph indicate the dates of disbudding, a process of surgical removal of horn buds before the calves grow and cause a danger to other calves and to the farmer <ref type="bibr" target="#b37">[37]</ref>.</p><p>Looking across the set of 19 graphs it is difficult to discern any coordinated pattern across the herd. When we generate a stacked graph of the time-aligned periodicity intensities in the same way as was done for the student VLE accesses, we get the graph shown in Figure <ref type="figure" target="#fig_5">6</ref>, where each colour represents periodicity intensity for a different calf. The staked line graph of periodicity intensities shows a peak at around the beginning of May followed by a clear drop in 24h periodicity intensity across the herd, indicating a synchronous dis-improvement in herd welfare. This reached its low point after about 1 week, around 9 May and was followed by a return to better herd welfare, although not as high at around 2 May, Because of the 7-day windowing in our calculations the drop-off, which reached its minimum point around 9 May, was most likely caused by a stressful or traumatic event at around 2 May which is the time window during which the disbudding process took place.</p><p>As with the use case of student learning habits from a VLE, we divided the calves into random sub-groups and plotted a stacked line graph for each sub-group. These show the same shape as the stacked line graph for the whole herd thus there is no artificial boosts or troughs from a sub-group of calves, and the pattern is generalised across the herd.</p><p>The result of this analysis of periodicity intensity is similar to that from the analysis of student accesses to their VLE. We have individual feedback on a wellbeing indicator for each calf based on their movements with deeper insights into the wellbeing of the overall herd and this is of interest to the farmer.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Discussion</head><p>This paper presents three applications of calculating periodicity intensity throughout a time series on three very different real world use cases. In each case we gain deeper insights into the data than would have been revealed without periodicity analysis. These powerful insights into the underling time series data can be obtained from any data source that has underlying periodicity as an inherent feature.</p><p>The value of this form of data analysis is that it is unsupervised, requires no training data and thus it is generalisable. This makes the value of the technique in terms of economic impact quite attractive as it can be applied to any use case where there is longitudinal time series data to be analysed in order to detect gradual shifts or changes over time.</p><p>In terms of implementation, the choice of values for the three parameters are not difficult to determine. The frequency of the recurring pattern to be investigated, Fo, is often 24 hours but not always so and the use case usually already knows what this should be. The size of the window in which the periodicity is calculated m is also usually known in advance. For example if Fo is 24 hours then setting m to 7 days nullifies any effects of weekend/weekday behaviour transitions in the underlying data. The overlap between windows or stride length l is influenced by the demands of the use case and the amount of computation resources available and not any algorithmic limitation. The technique is agile in terms of the number and even the type of time series data used, and it is fast to compute. Because we use the Lomb-Scargle algorithm <ref type="bibr" target="#b12">[13]</ref> to calculate periodicity in windows it handles irregularly sampled data such as our student accesses to their VLE, as well as moderate amounts of missing data, though not completely missing data as in those calves who's collars fell off but were replaced quickly in our third use case. Finally, the algorithm for calculating periodicity intensity is mathematically deterministic, producing the same output from the same input repeatedly.</p><p>Periodicity intensity is a complex metric to fully comprehend because it is novel and non-conventional. In the two of our use cases which involved human participants -in-home sensors in the homes of older adults and students accessing their VLE -we needed the support of an animated helper video to describe what the periodicity intensity was because our users were healthcare professionals and older adults.</p><p>For future work we will concentrate on ways to make the metric more intuitively understandable by mapping changes in a periodicity intensity graph back to the underlying data thus showing exactly what data has caused changes in periodicity intensity and this would be useful in those use cases involving human subjects. We will also explore the robustness of the algorithm as a function of data quality by introducing noise to see how a decrease in data quality impacts the generated output. Finally we will focus the implementation of the Lomb-Scargle algorithm to determine periodicity at the 24 hour frequency only as our experience has been that this frequency setting is the one that most use cases are interested in.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 .</head><label>1</label><figDesc>Figure 1. Schematic demonstrating the calculation of periodicity intensity throughout a time series using time-lagged overlapping windows.</figDesc><graphic coords="3,166.39,187.93,409.61,341.34" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 .</head><label>2</label><figDesc>Figure 2. Normalised periodicity intensity from 3 sample ARC trial participants for 3 months duration. Frequency is 24 hours, window size is 7 days and window shift is 1 hour. X-axis values span 3 months, y-axis values have been normalised to the range 0 to 1.</figDesc><graphic coords="8,166.39,225.42,409.61,68.27" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 .</head><label>3</label><figDesc>Figure 3. Normalised periodicity intensity for a sample of five student participants. Frequency is 24 hours, window size is 7 days and window shift or stride is 3 hours. Y-axis values have been normalised to the range 0 to 1.</figDesc><graphic coords="9,166.39,444.32,480.39,83.57" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 .</head><label>4</label><figDesc>Figure 4. Stacked line chart of cumulative periodicity intensity from all 169 student participants. Y-axis values have been normalised to the range 0 to 1.</figDesc><graphic coords="10,166.40,124.74,409.60,159.01" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 .</head><label>5</label><figDesc>Figure 5. Line graphs of calf periodicity intensities for each of 24 calves. Frequency is 24 hours, window size is 7 days and window shift is 15 minutes. The vertical green lines indicates the dates of disbudding.</figDesc><graphic coords="11,166.39,225.59,409.59,356.75" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 6 .</head><label>6</label><figDesc>Figure 6. Stacked line chart of cumulative calf periodicity intensity from 19 of the 24 calves, from [31]. Y-axis values have been normalised to the range 0 to 1.</figDesc><graphic coords="12,166.39,86.89,409.61,190.82" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head/><label/><figDesc>where Fo is the close neighbours of Fo in terms of frequency satisfying | 1 Fo -1 Fo | &lt; 0.01. Use Cases for Calculating Periodicity Intensity 2.2.1. Periodicity Intensity in Sensor Data from the Homes of Older Adults</figDesc><table/><note><p><p><p><p>6</p>IntensityFunc can also be the same form as defined in</p><ref type="bibr" target="#b9">[10]</ref> </p>7 end for 2.2.</p></note></figure>
+		</body>
+		<back>
+
+			<div type="availability">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Data Availability Statement:</head><p>The data presented in the study involving sensor data from the homes of older adults are openly available in FigShare at <ref type="url" target="https://doi.org/10.6084/m9.figshare.21415836.v2">https://doi.org/10.6084/m9.figshare.21415836.v2</ref>. The data presented in the study involving student access to an online VLE are openly available in Figshare at <ref type="url" target="https://doi.org/10.6084/m9.figshare.20288763.v2">https://doi.org/10.6084/m9.figshare.20288763.v2</ref>. The data presented in the study involving movement and behaviour of a herd of cattle are openly available in Figshare at <ref type="url" target="https://doi.org/10.6084/m9.figshare.20039486.v1">https://doi.org/10.6084/m9.figshare. 20039486.v1</ref>.</p></div>
+			</div>
+
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Institutional Review Board Statement:</head><p>The study was conducted in accordance with the Declaration of Helsinki, and ethical approvals for (1) the study involving sensor data from the homes of older adults was obtained from the DCU Research Ethics Committee (DCUREC202221) and ( <ref type="formula">2</ref>) the study involving log data from student access to an online VLE was approved by DCU's Data Protection Unit 07042021-DPO with ethics approval was given by the School of Computing Research Ethics Committee. As ethical approval for (2) was deemed to be notification-only, the institutional policy is that only School-level ethics approval is needed. The animal study protocol for the study involving sensor data from movement and behaviour of the herd of cattle were collected under an ethical exemption from UCD Animal Research Ethics Committee, approval number AREC-E-19-46-McAloon.</p><p>Informed Consent Statement: Informed consent was obtained from all human subjects involved in the studies.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Conflicts of Interest:</head><p>The authors declare no conflict of interest. The funders had no role in the design of the study; in the collection, analyses, or interpretation of data; in the writing of the manuscript; or in the decision to publish the results.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Abbreviations</head><p>The </p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">An Auto-Encoder with Genetic Algorithm for High Dimensional Data: Towards Accurate and Interpretable Outlier Detection</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">J</forename><surname>Bah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Zhang</surname></persName>
+		</author>
+		<idno type="DOI">10.3390/a15110429</idno>
+		<ptr target="https://doi.org/10.3390/a15110429"/>
+	</analytic>
+	<monogr>
+		<title level="j">Algorithms</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Li, J.; Zhang, J.; Bah, M.J.; Wang, J.; Zhu, Y.; Yang, G.; Li, L.; Zhang, K. An Auto-Encoder with Genetic Algorithm for High Dimensional Data: Towards Accurate and Interpretable Outlier Detection. Algorithms 2022, 15. https://doi.org/10.3390/a15110429.</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Insights from the study of complex systems for the ecology and evolution of animal populations</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">N</forename><surname>Fisher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">N</forename><surname>Pruitt</surname></persName>
+		</author>
+		<idno type="DOI">10.1093/cz/zoz016</idno>
+		<ptr target="https://doi.org/10.1093/cz/zoz016"/>
+	</analytic>
+	<monogr>
+		<title level="j">Current Zoology</title>
+		<imprint>
+			<biblScope unit="volume">66</biblScope>
+			<biblScope unit="page" from="1" to="14"/>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Fisher, D.N.; Pruitt, J.N. Insights from the study of complex systems for the ecology and evolution of animal populations. Current Zoology 2019, 66, 1-14. https://doi.org/10.1093/cz/zoz016.</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Introduction to chronobiology</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">J</forename><surname>Kuhlman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">M</forename><surname>Craig</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">F</forename><surname>Duffy</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Cold Spring Harbor Perspectives in Biology</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="page">33613</biblScope>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Kuhlman, S.J.; Craig, L.M.; Duffy, J.F. Introduction to chronobiology. Cold Spring Harbor Perspectives in Biology 2018, 10, a033613.</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Wellness and the thermodynamics of a healthy lifestyle</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Cohen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Asia-Pacific Journal of Health, Sport and Physical Education</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="5" to="12"/>
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Cohen, M. Wellness and the thermodynamics of a healthy lifestyle. Asia-Pacific Journal of Health, Sport and Physical Education 2010, 1, 5-12.</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Circadian rhythm, lifestyle and health: a narrative review</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Farhud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Aryan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Iranian journal of public health</title>
+		<imprint>
+			<biblScope unit="volume">47</biblScope>
+			<biblScope unit="page">1068</biblScope>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Farhud, D.; Aryan, Z. Circadian rhythm, lifestyle and health: a narrative review. Iranian journal of public health 2018, 47, 1068.</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Recurrence plots for the analysis of complex systems</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Marwan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">C</forename><surname>Romano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Thiel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kurths</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Physics reports</title>
+		<imprint>
+			<biblScope unit="volume">438</biblScope>
+			<biblScope unit="page" from="237" to="329"/>
+			<date type="published" when="2007">2007</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Marwan, N.; Romano, M.C.; Thiel, M.; Kurths, J. Recurrence plots for the analysis of complex systems. Physics reports 2007, 438, 237-329.</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Improved Structural Rotor Fault Diagnosis Using Multi-Sensor Fuzzy Recurrence Plots and Classifier Fusion</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">G</forename><surname>Nath</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">S</forename><surname>Udmale</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Raghuwanshi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">K</forename><surname>Singh</surname></persName>
+		</author>
+		<idno type="DOI">10.1109/JSEN.2021.3079366</idno>
+		<ptr target="https://doi.org/10.1109/JSEN.2021.3079366"/>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Sensors Journal</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="page" from="21705" to="21717"/>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Nath, A.G.; Udmale, S.S.; Raghuwanshi, D.; Singh, S.K. Improved Structural Rotor Fault Diagnosis Using Multi-Sensor Fuzzy Recurrence Plots and Classifier Fusion. IEEE Sensors Journal 2021, 21, 21705-21717. https://doi.org/10.1109/JSEN.2021.3079366.</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">A Deep Clustering Model Leveraging Two-Dimensional Image Transformation and Enhancement</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Gw-Dc</surname></persName>
+		</author>
+		<idno type="DOI">10.3390/a14120349</idno>
+		<ptr target="https://doi.org/10.3390/a14120349"/>
+	</analytic>
+	<monogr>
+		<title level="j">Algorithms</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Li, X.; Li, T.; Wang, Y. GW-DC: A Deep Clustering Model Leveraging Two-Dimensional Image Transformation and Enhancement. Algorithms 2021, 14. https://doi.org/10.3390/a14120349.</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Behavioral periodicity detection from 24 h wrist accelerometry and associations with cardiometabolic risk and health-related quality of life</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">P</forename><surname>Buman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Newman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">F</forename><surname>Smeaton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">R</forename><surname>Epstein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">BioMed Research International</title>
+		<imprint>
+			<biblScope unit="page" from="485" to="506"/>
+			<date type="published" when="2016">2016. 2016</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Buman, M.P.; Hu, F.; Newman, E.; Smeaton, A.F.; Epstein, D.R. Behavioral periodicity detection from 24 h wrist accelerometry and associations with cardiometabolic risk and health-related quality of life. BioMed Research International 2016, 2016, 485-506.</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Periodicity intensity for indicating behaviour shifts from lifelog data</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">F</forename><surname>Smeaton</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2016 IEEE International Conference on Bioinformatics and Biomedicine (BIBM)</title>
+		<meeting>the 2016 IEEE International Conference on Bioinformatics and Biomedicine (BIBM)</meeting>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="970" to="977"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Hu, F.; Smeaton, A.F. Periodicity intensity for indicating behaviour shifts from lifelog data. In Proceedings of the 2016 IEEE International Conference on Bioinformatics and Biomedicine (BIBM). IEEE, 2016, pp. 970-977.</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">New fault diagnosis approaches for detecting the bearing slight degradation</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">N</forename><surname>Chegini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">J H</forename><surname>Manjili</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bagheri</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Meccanica</title>
+		<imprint>
+			<biblScope unit="volume">55</biblScope>
+			<biblScope unit="page" from="261" to="286"/>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Chegini, S.N.; Manjili, M.J.H.; Bagheri, A. New fault diagnosis approaches for detecting the bearing slight degradation. Meccanica 2020, 55, 261-286.</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Periodogram analysis and continuous spectra</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">S</forename><surname>Bartlett</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Biometrika</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="page" from="1" to="16"/>
+			<date type="published" when="1950">1950</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Bartlett, M.S. Periodogram analysis and continuous spectra. Biometrika 1950, 37, 1-16.</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Understanding the Lomb-Scargle Periodogram</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">T</forename><surname>Vanderplas</surname></persName>
+		</author>
+		<idno type="DOI">10.3847/1538-4365/aab766</idno>
+		<ptr target="https://doi.org/10.3847/1538-4365/aab766"/>
+	</analytic>
+	<monogr>
+		<title level="j">The Astrophysical Journal Supplement Series</title>
+		<imprint>
+			<biblScope unit="page">16</biblScope>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">VanderPlas, J.T. Understanding the Lomb-Scargle Periodogram. The Astrophysical Journal Supplement Series 2018, 236, 16. https: //doi.org/10.3847/1538-4365/aab766.</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Spectral Analysis of Data</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Azar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Fiat</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Karlin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Mcsherry</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Saia</surname></persName>
+		</author>
+		<idno type="DOI">10.1145/380752.380859</idno>
+		<ptr target="https://doi.org/10.1145/380752.380859"/>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Proceedings of the Thirty-Third Annual ACM Symposium on Theory of Computing</title>
+		<meeting>the the Thirty-Third Annual ACM Symposium on Theory of Computing<address><addrLine>New York, NY, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computing Machinery</publisher>
+			<date type="published" when="2001">2001</date>
+			<biblScope unit="page" from="619" to="626"/>
+		</imprint>
+	</monogr>
+	<note>STOC '01</note>
+	<note type="raw_reference">Azar, Y.; Fiat, A.; Karlin, A.; McSherry, F.; Saia, J. Spectral Analysis of Data. In Proceedings of the Proceedings of the Thirty-Third Annual ACM Symposium on Theory of Computing; Association for Computing Machinery: New York, NY, USA, 2001; STOC '01, p. 619-626. https://doi.org/10.1145/380752.380859.</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Biological rhythm and chronotype: new perspectives in health</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Montaruli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Castelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mulè</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Scurati</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Esposito</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Galasso</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Roveda</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Biomolecules</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="page">487</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Montaruli, A.; Castelli, L.; Mulè, A.; Scurati, R.; Esposito, F.; Galasso, L.; Roveda, E. Biological rhythm and chronotype: new perspectives in health. Biomolecules 2021, 11, 487.</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Using word embedding technique to efficiently represent protein sequences for identifying substrate specificities of transporters</title>
+		<author>
+			<persName><forename type="first">Q</forename><forename type="middle">T</forename><surname>Ho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">V</forename><surname>Phan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">Y</forename><surname>Ou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Analytical biochemistry</title>
+		<imprint>
+			<biblScope unit="volume">577</biblScope>
+			<biblScope unit="page" from="73" to="81"/>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Ho, Q.T.; Phan, D.V.; Ou, Y.Y.; et al. Using word embedding technique to efficiently represent protein sequences for identifying substrate specificities of transporters. Analytical biochemistry 2019, 577, 73-81.</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Wavelet transform application for/in non-stationary time-series analysis: a review</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Rhif</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ben Abbes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><forename type="middle">R</forename><surname>Farah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Martínez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Sang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Applied Sciences</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="page">1345</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Rhif, M.; Ben Abbes, A.; Farah, I.R.; Martínez, B.; Sang, Y. Wavelet transform application for/in non-stationary time-series analysis: a review. Applied Sciences 2019, 9, 1345.</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Discrete Wavelet Transform-Based Time Series Analysis and Mining</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Chaovalit</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gangopadhyay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Karabatis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="DOI">10.1145/1883612.1883613</idno>
+		<ptr target="https://doi.org/10.1145/1883612.1883613"/>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Comput. Surv</title>
+		<imprint>
+			<biblScope unit="page">43</biblScope>
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Chaovalit, P.; Gangopadhyay, A.; Karabatis, G.; Chen, Z. Discrete Wavelet Transform-Based Time Series Analysis and Mining. ACM Comput. Surv. 2011, 43. https://doi.org/10.1145/1883612.1883613.</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Empirical-mode decomposition with Hilbert transform for power-quality assessment</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Shukla</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mishra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Singh</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE transactions on power delivery</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="page" from="2159" to="2165"/>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Shukla, S.; Mishra, S.; Singh, B. Empirical-mode decomposition with Hilbert transform for power-quality assessment. IEEE transactions on power delivery 2009, 24, 2159-2165.</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">A Matlab toolbox for musical feature extraction from audio</title>
+		<author>
+			<persName><forename type="first">O</forename><surname>Lartillot</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Toiviainen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the International conference on digital audio effects</title>
+		<meeting>the International conference on digital audio effects<address><addrLine>Bordeaux</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2007">2007</date>
+			<biblScope unit="volume">237</biblScope>
+			<biblScope unit="page">244</biblScope>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Lartillot, O.; Toiviainen, P. A Matlab toolbox for musical feature extraction from audio. In Proceedings of the International conference on digital audio effects. Bordeaux, 2007, Vol. 237, p. 244.</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">A general approach to testing volatility models in time series</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">J</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Management Science and Engineering</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page" from="1" to="33"/>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Hong, Y.; Lee, Y.J. A general approach to testing volatility models in time series. Journal of Management Science and Engineering 2017, 2, 1-33.</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Empirical Mode Decomposition Based Data Augmentation for Time Series Prediction Using NARX Network</title>
+		<author>
+			<persName><forename type="first">O</forename><forename type="middle">O</forename><surname>Abayomi-Alli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Sidekerskien Ė</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Damaševičius</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Siłka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Połap</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the Artificial Intelligence and Soft Computing</title>
+		<meeting>the Artificial Intelligence and Soft Computing</meeting>
+		<imprint/>
+	</monogr>
+	<note type="raw_reference">Abayomi-Alli, O.O.; Sidekerskien ė, T.; Damaševičius, R.; Siłka, J.; Połap, D. Empirical Mode Decomposition Based Data Augmentation for Time Series Prediction Using NARX Network. In Proceedings of the Artificial Intelligence and Soft Computing;</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">L</forename><surname>Rutkowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Scherer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Korytkowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Pedrycz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Tadeusiewicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Zurada</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<publisher>Cham</publisher>
+			<biblScope unit="page" from="702" to="711"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Rutkowski, L.; Scherer, R.; Korytkowski, M.; Pedrycz, W.; Tadeusiewicz, R.; Zurada, J.M., Eds.; Springer International Publishing: Cham, 2020; pp. 702-711.</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">A New Statistical Features Based Approach for Bearing Fault Diagnosis Using Vibration Signals</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Altaf</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Akram</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Khan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Iqbal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">M I</forename><surname>Ch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">H</forename><surname>Hsu</surname></persName>
+		</author>
+		<idno type="DOI">10.3390/s22052012</idno>
+		<ptr target="https://doi.org/10.3390/s22052012"/>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Altaf, M.; Akram, T.; Khan, M.A.; Iqbal, M.; Ch, M.M.I.; Hsu, C.H. A New Statistical Features Based Approach for Bearing Fault Diagnosis Using Vibration Signals. Sensors 2022, 22. https://doi.org/10.3390/s22052012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Analyzing neural time series data: theory and practice</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">X</forename><surname>Cohen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+			<publisher>MIT Press</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Cohen, M.X. Analyzing neural time series data: theory and practice; MIT Press, 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Zerocross Density Decomposition: A Novel Signal Decomposition Method</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Sidekerskien Ė</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Damaševičius</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Woźniak</surname></persName>
+		</author>
+		<idno type="DOI">10.1007/978-3-030-39250-5_13</idno>
+		<ptr target="https://doi.org/10.1007/978-3-030-39250-5_13"/>
+	</analytic>
+	<monogr>
+		<title level="m">Data Science: New Issues, Challenges and Applications</title>
+		<editor>
+			<persName><forename type="first">G</forename><surname>Dzemyda</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">J</forename><surname>Bernatavičien Ė</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">J</forename><surname>Kacprzyk</surname></persName>
+		</editor>
+		<imprint>
+			<publisher>Cham</publisher>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="235" to="252"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Sidekerskien ė, T.; Damaševičius, R.; Woźniak, M., Zerocross Density Decomposition: A Novel Signal Decomposition Method. In Data Science: New Issues, Challenges and Applications; Dzemyda, G.; Bernatavičien ė, J.; Kacprzyk, J., Eds.; Springer International Publishing: Cham, 2020; pp. 235-252. https://doi.org/10.1007/978-3-030-39250-5_13.</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">A Comparative study of empirical and variational mode decomposition on high voltage discharges</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">P</forename><surname>Uzuno Glu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Electrica</title>
+		<imprint>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="page" from="72" to="77"/>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Uzuno glu, C.P. A Comparative study of empirical and variational mode decomposition on high voltage discharges. Electrica 2018, 18, 72-77.</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Development of an Internet of Things Technology Platform (the NEX System) to Support Older Adults to Live Independently: Protocol for a Development and Usability Study</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">M</forename><surname>Timon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Heffernan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">M</forename><surname>Kilcullen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Hopper</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Quinn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Mcdonald</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Gallagher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">F</forename><surname>Smeaton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Moran</surname></persName>
+		</author>
+		<idno type="DOI">10.2196/35277</idno>
+		<ptr target="https://doi.org/10.2196/35277"/>
+	</analytic>
+	<monogr>
+		<title level="j">JMIR Res Protoc</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="page">35277</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Timon, C.M.; Heffernan, E.; Kilcullen, S.M.; Lee, H.; Hopper, L.; Quinn, J.; McDonald, D.; Gallagher, P.; Smeaton, A.F.; Moran, K.; et al. Development of an Internet of Things Technology Platform (the NEX System) to Support Older Adults to Live Independently: Protocol for a Development and Usability Study. JMIR Res Protoc 2022, 11, e35277. https://doi.org/10.2196/35277.</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Studies of illness in the aged: the index of ADL: a standardized measure of biological and psychosocial function</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Katz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">B</forename><surname>Ford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">W</forename><surname>Moskowitz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">A</forename><surname>Jackson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">W</forename><surname>Jaffe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of the American Medical Association</title>
+		<imprint>
+			<biblScope unit="volume">185</biblScope>
+			<biblScope unit="page" from="914" to="919"/>
+			<date type="published" when="1963">1963</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Katz, S.; Ford, A.B.; Moskowitz, R.W.; Jackson, B.A.; Jaffe, M.W. Studies of illness in the aged: the index of ADL: a standardized measure of biological and psychosocial function. Journal of the American Medical Association 1963, 185, 914-919.</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Instrumental Activities of Daily Living (IADL) Scale</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lawton</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Psychopharmacol Bull</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="page" from="785" to="787"/>
+			<date type="published" when="1988">1988</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Lawton, M. Instrumental Activities of Daily Living (IADL) Scale. Psychopharmacol Bull 1988, 24, 785-787.</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">How universities can enhance student mental wellbeing: The student perspective</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Baik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Larcombe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Brooker</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Higher Education Research &amp; Development</title>
+		<imprint>
+			<biblScope unit="volume">38</biblScope>
+			<biblScope unit="page" from="674" to="687"/>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Baik, C.; Larcombe, W.; Brooker, A. How universities can enhance student mental wellbeing: The student perspective. Higher Education Research &amp; Development 2019, 38, 674-687.</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Periodicity Intensity of the 24 h Circadian Rhythm in Newborn Calves Show Indicators of Herd Welfare</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Rhodes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Maguire</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Shetty</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Mcaloon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">F</forename><surname>Smeaton</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">22</biblScope>
+			<biblScope unit="page">5843</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Rhodes, V.; Maguire, M.; Shetty, M.; McAloon, C.; Smeaton, A.F. Periodicity Intensity of the 24 h Circadian Rhythm in Newborn Calves Show Indicators of Herd Welfare. Sensors 2022, 22, 5843.</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Group decision-making in animals</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Conradt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">J</forename><surname>Roper</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature</title>
+		<imprint>
+			<biblScope unit="volume">421</biblScope>
+			<biblScope unit="page" from="155" to="158"/>
+			<date type="published" when="2003">2003</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Conradt, L.; Roper, T.J. Group decision-making in animals. Nature 2003, 421, 155-158.</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Comparison of Outcomes Derived from the ActiGraph GT3X+ and the Axivity AX3 Accelerometer to Objectively Measure 24-Hour Movement Behaviors in Adults: A Cross-Sectional Study</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>De Craemer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Verbestel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International Journal of Environmental Research and Public Health</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="page">271</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">De Craemer, M.; Verbestel, V. Comparison of Outcomes Derived from the ActiGraph GT3X+ and the Axivity AX3 Accelerometer to Objectively Measure 24-Hour Movement Behaviors in Adults: A Cross-Sectional Study. International Journal of Environmental Research and Public Health 2021, 19, 271.</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Evaluation of pre-processing methods for the prediction of cattle behaviour from accelerometer data</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Riaboff</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Aubin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Bedere</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Couvreur</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Madouasse</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Goumand</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Chauvin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Plantier</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Computers and Electronics in Agriculture</title>
+		<imprint>
+			<biblScope unit="volume">165</biblScope>
+			<biblScope unit="page">104961</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Riaboff, L.; Aubin, S.; Bedere, N.; Couvreur, S.; Madouasse, A.; Goumand, E.; Chauvin, A.; Plantier, G. Evaluation of pre-processing methods for the prediction of cattle behaviour from accelerometer data. Computers and Electronics in Agriculture 2019, 165, 104961.</note>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Effects of frequency filtering on intensity and noise in accelerometer-based physical activity measurements</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Fridolfsson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Börjesson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Buck</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ö</forename><surname>Ekblom</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Ekblom-Bak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hunsberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Lissner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Arvidsson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Sensors</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="page">2186</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Fridolfsson, J.; Börjesson, M.; Buck, C.; Ekblom, Ö.; Ekblom-Bak, E.; Hunsberger, M.; Lissner, L.; Arvidsson, D. Effects of frequency filtering on intensity and noise in accelerometer-based physical activity measurements. Sensors 2019, 19, 2186.</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Stacked graphs-geometry &amp; aesthetics</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Byron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wattenberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Visualization and Computer Graphics</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="page" from="1245" to="1252"/>
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Byron, L.; Wattenberg, M. Stacked graphs-geometry &amp; aesthetics. IEEE Transactions on Visualization and Computer Graphics 2008, 14, 1245-1252.</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">The effect of topical anaesthesia on the cortisol responses of calves undergoing dehorning</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Espinoza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lomax</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Windsor</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Animals</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="page">312</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Espinoza, C.; Lomax, S.; Windsor, P. The effect of topical anaesthesia on the cortisol responses of calves undergoing dehorning. Animals 2020, 10, 312.</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

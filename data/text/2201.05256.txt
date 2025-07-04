@@ -1,0 +1,1478 @@
+DAPSTEP: Deep Assignee Prediction
+for Stack Trace Error rePresentation
+Denis Sushentsev
+HSE University
+JetBrains
+Saint Petersburg, Russia
+denis.sushentsev@jetbrains.com
+Aleksandr Khvorov
+HSE University
+JetBrains
+Saint Petersburg, Russia
+aleksandr.khvorov@jetbrains.com
+Roman Vasiliev
+JetBrains
+Saint Petersburg, Russia
+roman.vasiliev@jetbrains.com
+Yaroslav Golubev
+JetBrains Research
+Saint Petersburg, Russia
+yaroslav.golubev@jetbrains.com
+Timofey Bryksin
+JetBrains Research
+HSE University
+Saint Petersburg, Russia
+timofey.bryksin@jetbrains.com
+Abstract—The task of ﬁnding the best developer to ﬁx a bug
+is called bug triage. Most of the existing approaches consider the
+bug triage task as a classiﬁcation problem, however, classiﬁcation
+is not appropriate when the sets of classes change over time
+(as developers often do in a project). Furthermore, to the best
+of our knowledge, all the existing models use textual sources of
+information, i.e., bug descriptions, which are not always available.
+In this work, we explore the applicability of existing solutions
+for the bug triage problem when stack traces are used as the
+main data source of bug reports. Additionally, we reformulate
+this task as a ranking problem and propose new deep learning
+models to solve it. The models are based on a bidirectional
+recurrent neural network with attention and on a convolutional
+neural network, with the weights of the models optimized using
+a ranking loss function. To improve the quality of ranking,
+we propose using additional information from version control
+system annotations. Two approaches are proposed for extracting
+features from annotations: manual and using an additional neural
+network. To evaluate our models, we collected two datasets of
+real-world stack traces. Our experiments show that the proposed
+models outperform existing models adapted to handle stack
+traces. To facilitate further research in this area, we publish
+the source code of our models and one of the collected datasets.
+I. INTRODUCTION
+Software bugs are an inevitable part of the development
+process. Bugs can lead to security problems, loss of company
+proﬁt, and in the worst case, even fatal accidents [1]. For these
+reasons, bugs need to be swiftly ﬁxed, which requires choosing
+the most appropriate developer. The problem of ﬁnding such
+a developer for a particular bug is called bug triage [2].
+The developer who should ﬁx the bug can be assigned
+manually, however, such an approach has several signiﬁcant
+disadvantages. Firstly, it is tedious and time-consuming work,
+and the situation gets more and more complicated as the
+number of developers grows. In large companies, hundreds
+of bug reports are received every day, which makes manual
+developer assignment very difﬁcult if not impossible. For
+example, 333,371 bugs were reported for the Eclipse IDE from
+October 2001 to December 2010, averaging at about 100 bugs
+every day [3]. Secondly, it is important to assign the most
+suitable developer right from the start to reduce the time of
+bug ﬁxing [2]. Otherwise, the error gets reassigned from one
+developer to another [4], and as a result, the time of each
+developer in such a chain is wasted, while the error remains
+in the system longer, which can be critical.
+A large number of approaches have been proposed to solve
+the bug triage problem automatically. Existing models can be
+roughly divided into three groups: based on heuristics [5]–
+[8], based on classic machine learning [9]–[11], and based on
+deep learning (DL) [12]–[15]. The works of Guo et al. [13]
+and Mani et al. [14] demonstrated that deep learning helps
+with the task of assigning a developer better than other
+approaches. This is to be expected, since the bug triage task
+is based on natural language processing, where deep learning
+shows promising results [16]. An additional advantage of deep
+learning algorithms is that they do not require sophisticated
+feature extraction methods [17].
+However, it should be noted that bugs can be reported
+in different forms. For example, in a bug tracking system,
+errors are usually present in the form of a bug report: a
+name, a small description in some natural language, and some
+additional meta information (the date the error was introduced,
+priority, severity, etc.). To the best of our knowledge, all
+the existing solutions are based on working with this kind
+of error representation. At the same time, errors can also
+come in the form of stack traces: sequences of function calls
+(called frames) that lead to an error in the system. Developers
+commonly use stack traces during debugging, and users can
+usually see a stack trace displayed as part of an error message.
+Stack traces help to solve the bug localization problem [18]–
+[20] and the bug report deduplication problem [21]–[23]. The
+example of a single stack frame is presented in Figure 1.
+Stack traces are a data source that is often easy to obtain:
+most modern software systems are able to automatically send
+back stack traces of the error that has occurred. In such a
+setting, predicting the assignee by the textual description of
+the error would require labeling all the error reports, which
+arXiv:2201.05256v1  [cs.SE]  14 Jan 2022
+
+{
+  "name": 
+,
+"org.mockito.internal.MockitoCore.mockStatic"
+  "ﬁle_name": 
+,
+"MockitoCore.java"
+  "line_number": 
+, 
+89
+  "commit_hash": 
+,
+"cca73123976b3f38663dc5a4da834452d188a8cc"
+  "subsystem": "org.mockito.internal"
+}
+Fig. 1. An example of a stack frame. The frame consists of the name of the
+function that led to the error, as well as various information about it.
+is almost impossible since the number of such reports per
+day could be enormous. Another important reason to process
+stack traces automatically is that they are more complicated
+to analyze manually by people who did not participate in
+the development of a particular system component, since the
+information is presented in a rather raw form. Thus, a new
+approach is needed that solves the bug triage problem for the
+case where only the stack trace information is available.
+Another important limitation of the existing approaches
+is that they consider the bug triage task as a classiﬁcation
+problem. The classiﬁcation setting might not be the best choice
+in practice, since the set of classes (developers) can change
+over time: developers can leave and join the team responsible
+for the product of even the company itself.
+To the best of our knowledge, no one has previously sug-
+gested using bug stack traces as the main source of information
+for the bug triage problem. In this work, we strive to ﬁll this
+gap in research to support working with the systems where
+stack traces are the primary type of data. To that end, we
+collected two datasets of real-world bug stack traces from
+JetBrains,1 the developer of a wide array of software products
+including IntelliJ-based IDEs. The larger dataset contains
+11,139 stack traces, however, it contains proprietary company
+code, so we also curate the second dataset — a smaller public
+subset of the ﬁrst one that contains 3,361 stack traces that we
+release for researchers and practitioners. The datasets consist
+of a labeled set of bug reports and annotations from the version
+control system (developer IDs and timestamps) that we apply
+to improve the quality of our model.
+We propose a new approach to solve the bug assignee
+prediction problem based on stack traces — a DL-based
+ranking model called DapStep (an RNN ranking model with
+manual frame-based & stack-based features). We compared
+the proposed model with existing approaches adapted for stack
+trace processing. The proposed model shows Acc@1 of 0.34
+and MRR of 0.43 on the public dataset and Acc@1 of 0.60
+and MRR of 0.70 on the private dataset.
+The main contributions of this paper are as follows:
+• We propose bug stack traces as a self-sufﬁcient source
+of information for the assignee prediction task and carry
+out the ﬁrst study in comparing various approaches in
+this setting.
+• We introduce two bug triage ranking models based on
+recurrent neural networks (RNN) with the attention mech-
+anism and convolutional neural networks (CNN). The
+1JetBrains: https://www.jetbrains.com/
+models outperform the existing classiﬁcation approaches
+by 15–20 percentage points on the public dataset, and
+17–18 percentage points on the private dataset.
+• We publish the source code of all the studied models,
+as well as the public dataset, for future researchers and
+practitioners: https://github.com/Sushentsev/DapStep.
+The remaining sections of this paper are organized as
+follows. Section II provides a brief overview of existing
+solutions, and in Section III, we propose a new deep learning
+solution. We evaluate our approach in Section IV, followed
+by a discussion of the threats to validity in Section V. Finally,
+Section VI summarizes the results of the paper.
+II. RELATED WORK
+The bug triage task is a well-established area of research,
+with a large number of proposed approaches. Previous works
+can be broadly divided into three large groups: based on
+heuristics, on classic machine learning, and on deep learning.
+Heuristic-based approaches tend to consider the relevance
+scores of developers and errors based on domain knowledge.
+Kagdi et al. [24], Shokripour et al. [25], [26], and V´asquez
+et al. [27] use the information about code authorship, commit
+messages, comments in the source code, etc. Also, various in-
+dexing and NLP techniques are used to search for ﬁles related
+to the query bug report. The most appropriate developers are
+then selected based on their activities in the relevant ﬁles.
+Since the software development process is impossible with-
+out team work, developers often interact with each other. The
+result is a collaboration network that can be used as another
+source of information. Hu et al. [8] and Zhang et al. [28] use
+collaboration networks and information retrieval techniques on
+graphs to choose the most appropriate developer.
+As the inﬂuence of machine learning spread, it became
+actively applied in the assignee recommendation as well.
+Often, such approaches vectorize the text of the bug summary
+and description using TF-IDF or Bag-of-words (BOW), and
+classify them using a machine learning algorithm: Naive
+Bayes, Random Forest, or SVM [2], [29]–[31].
+Recently, deep learning solutions also became popular. Lee
+et al. [12] present one of the ﬁrst DL models based on the CNN
+and Word2Vec embeddings used for assigning a developer
+to ﬁx the bug. Their approach achieved higher accuracy in
+industrial projects at LG compared to an open source project.
+The application of CNN for the bug triage problem has been
+reported to be useful in more recent approaches. Guo et al. [13]
+compare the CNN-based model to the models based on Naive
+Bayes, SVM, kNN, and Random Forest. The experimental
+results show that the CNN-based approach outperforms other
+solutions. Since some of the developers can change jobs or
+leave the company indeﬁnitely, the authors also propose to
+reorder developers based on their activity.
+Zaidi et al. [32] explore different word embeddings for the
+CNN model: Word2Vec [33], GloVe [34], and ELMo [35].
+The experimental results suggest that the ELMo embeddings
+are the best for the bug triage problem.
+
+Chen et al. [36] extend the work on incident triaging (un-
+planned interruptions or outages of the service) and perform an
+empirical study on the datasets provided by Microsoft. They
+explore different bug triage techniques: based on machine
+learning, deep learning, topic modeling, tossing graphs, and
+fuzzy sets. On average, the DL technique performs best.
+An alternative to CNNs are RNNs, which are one of
+the most popular and effective approaches for processing
+sequences of variable length. Mani et al. [14] use RNNs for
+assigning the developer to ﬁx a bug. To address the common
+issue of RNNs “forgetting” long sequences [37], they propose
+to apply a bidirectional network with an attention mechanism.
+Moreover, the neural network learns syntactic and semantic
+features in an unsupervised manner, which means that it has
+the ability to use unﬁxed bug reports. Their work shows that
+the proposed approach provides a higher average accuracy
+rank than BOW features with softmax classiﬁer, SVM, Naive
+Bayes, and cosine distance.
+Finally, Xi et al. [15] propose to use a bug tossing sequence
+to improve the DL model that helps to reassign the bug if the
+assignment was incorrect. The proposed approach was evalu-
+ated on three different open-source projects and outperforms
+baseline RNN and CNN models.
+In our work, we strive to overcome the limitations of
+the existing approaches: namely, their reliance on textual
+descriptions and their use of classiﬁcation models.
+III. APPROACH
+In this section, we describe our algorithm for assignee
+prediction. We consider bug triage as a ranking problem, which
+we believe to be more appropriate here, because it does not
+depend on the current set of developers. The classifying setting
+requires an immutable set of predicted classes. If a developer
+leaves the project, they should be ﬁltered out of the resulting
+prediction afterwards, and when a new developer joins, the
+classifying model will have to be retrained to take them into
+account. Since developers in the project may come and go, a
+more suitable option is the ranking problem setting, in which
+it is necessary to evaluate the relevance function f(q, d) for a
+bug q and a developer d.
+More formally, given a query q (bug) and a collection D of
+documents (developers) that match the query, the task is to ﬁnd
+a function f such that (q, d) ≺(q, d′) ⇔f(q, d) < f(q, d′),
+where (q, d) ≺(q, d′) means that d has a rank lower than d′.
+Function f maps query-documents pairs to a relevance score.
+The proposed model uses bug stack traces as the primary
+source of information for predicting assignees. In order to
+obtain better results, we also build features from the version
+control system (VCS) annotations, which provide information
+on which developer modiﬁed each line of the ﬁle and when.
+For example, Git annotations can be obtained via the git blame
+or git annotate commands.
+The overall pipeline of the proposed algorithm is presented
+in Figure 2. Using deep learning methods, the bug and the
+developer are mapped to a vector of a ﬁxed size (embedding).
+We transform each bug stack trace into a sequence of text
+Bug
+Developer
+Neural network 1
+Neural network 2
+Bug embedding
+Developer embedding
+Comparison module
+Score
+Fig. 2. The overall pipeline of the approach.
+tokens (Section III-A) and apply the ideas from text sequences
+processing to obtain embeddings of bugs (Section III-B). Then,
+to create an embedding of a developer, we process all the
+ﬁles in the given stack trace to ﬁnd ﬁles that the developer
+edited, and use this information to map this developer into
+the stack trace embedding space (section III-C). After all
+the embeddings are extracted, they are compared using the
+comparison module (Section III-F), and the score is obtained,
+which shows the relevance of the bug and the developer. To
+get the most appropriate developers for a given bug, we simply
+have to rank all the developers by their score.
+To improve our model, we use additional features based on
+the VCS annotations and propose to process the annotations
+in two different ways: manually (Section III-D) and using an
+additional neural network (Section III-E) that allows us to
+avoid complex feature engineering. Let us now describe these
+steps in greater detail.
+A. Preprocessing
+The stack trace is represented as a sequence of frames
+ST = {f1, f2, . . . , fn}, where fi is the i-th stack frame. Every
+frame has a method name, a ﬁle name, a subsystem name, a
+commit hash, and an error line. An example of a stack frame
+is presented in Figure 1.
+Our preliminary experiments showed that stack trace pre-
+processing is an essential step that can signiﬁcantly improve
+the model quality. In our work, we used the following data
+processing steps.
+Firstly, we noticed that the length of the stack trace can
+sometimes be quite large. For instance, the maximum stack
+trace length in our dataset reached as many as 15,000 frames. It
+is difﬁcult to make a neural network remember all the informa-
+tion as the frames are processed one by one. On the other hand,
+long stack traces tend to relate to a StackOverﬂowException
+error. Oftentimes, such a stack trace contains a loop: a set
+of frames that repeat at a speciﬁc frequency. Replacing the
+loop with the ﬁrst occurrence of the loop element allows us
+to signiﬁcantly reduce the length of the trace stack without
+degrading the model’s quality. We did this for every stack
+trace in the dataset where it is applicable.
+
+Secondly, because of the way the dataset was collected, not
+all information is available for every frame, the frame ﬁelds
+can be null. If the text token received from the frame is null,
+then we skip this frame.
+In order to apply existing approaches, we propose to rep-
+resent a stack trace as a sequence of text tokens using the
+following technique. Firstly, we extract the method name, the
+ﬁle name, or the subsystem name from each frame of the
+stack trace. For example, the stack frame in Figure 1 can
+be mapped to org.mockito.internal.MockitoCore.mockStatic,
+MockitoCore.java, or org.mockito.internal, respectively. Thus,
+the stack trace will be presented as a sequence of text tokens,
+which can be processed with various deep learning approaches.
+We conducted experiments with all three options (method
+name, ﬁle name, or subsystem), and since the difference was
+insigniﬁcant, we decided to extract the stack trace ﬁle name.
+B. Representing Stack Traces as Vectors
+To represent a stack trace with a vector of a ﬁxed length (i.e.,
+embedding), we were inspired by the architectures applied
+in the previous works, namely, RNNs with attention and
+CNNs [12]–[14], [32]. These two types of neural networks
+are among the most popular in the natural language processing
+ﬁeld. In our study, we experimented with both of them.
+1) Recurrent Neural Network: An RNN architecture called
+LSTM [38] is frequently used to handle sequential data.
+It takes a sequence of text tokens as input and produces
+the resulting vectors. However, LSTMs may have problems
+remembering long sequences [39], which can be ﬁxed with
+a bidirectional network [40] with attention. The attention
+technique allows to focus on important parts of the input
+data [41]. For instance, frames that are at the top of the stack
+trace are usually more informative and useful.
+We use the neural network architecture from the work of
+Maini et al. [14]. The input of the model is a sequence of
+vector representations of words, x = {x1, x2, . . . , xn}. In
+our approach, we use trainable embeddings for every text
+token. The network is bidirectional, therefore, the sequence is
+processed in both directions. The RNN produces a sequence
+of outputs y = {y1, y2, . . . , yn} from each direction. After
+that, the attention mechanism is applied, which is the weighted
+sum of the RNN outputs:
+an =
+n
+X
+i=1
+αiyi,
+(1)
+where αi represents an attention weight for the i-th output
+vector.
+The ﬁnal representation r is obtained as follows:
+r = yn ⊕an
+|
+{z
+}
+forward LSTM
+⊕
+yn ⊕an
+|
+{z
+}
+backward LSTM
+,
+(2)
+where ⊕represents the concatenation of vectors. It is easy
+to see that if the output vector has dimension d, then the
+embedding r will be of size 4 × d.
+2) Convolutional Neural Network: Another possible ap-
+proach to represent a stack trace with a vector is to use
+CNN. CNNs are most commonly applied to analyze visual
+information, however, they can also solve natural language
+processing tasks [42].
+In a CNN-based network, for each sequence of text tokens,
+we build a matrix S ∈Rs×d, where s is the sequence length
+and d is the embedding dimension. We were inspired by the
+work of Lee et al. [12] when building the model architecture.
+Similarly to them, we use trainable embeddings for text tokens.
+After that, a convolution layer with 1D convolutions is used
+to extract different patterns from the sequence of tokens. After
+applying each convolution ﬁlter, a feature vector is obtained.
+In the extracted feature vector, the subsampling process called
+max-pooling is applied, which is the operation of extracting
+the maximum element from a vector. The ﬁnal representation
+r is obtained by concatenating max-pooling values and has a
+dimension equal to the total number of convolutions.
+C. Representing Developers as Vectors
+Obtaining an embedding of a given bug is pretty straightfor-
+ward, since each bug has a stack trace that can be transformed
+into a sequence of text tokens. However, the process of
+extracting the embedding of a developer is not that obvious.
+One possible solution is to represent the developer as all the
+code they wrote in the system. This approach has a signiﬁcant
+drawback: the need to regularly re-index a large amount of
+data. If the developer has written new code in the system,
+then this must be taken into account. Continuous and efﬁcient
+updates of the developer’s embedding is a challenging task.
+To address this problem, we propose to map every developer
+to a speciﬁc synthetic stack trace, more speciﬁcally, a sequence
+of stack frames that they edited. In order not to deal with
+large-scale re-indexing, we do not use all the available stack
+traces, but only the stack trace of the current (query) bug.
+This way, the developer embedding will be bug-dependent:
+different vector representations are built for different errors,
+there is no single developer representation. This approach
+allows us to build the embedding of a developer much faster.
+The average length of a stack trace in our datasets is 50 frames,
+therefore, it is enough to look at about 50 ﬁles in order to map
+the developer to their stack trace. Furthermore, the resulting
+“developer stack trace” can be handled in the exact same way
+as the bug stack trace, and it is possible to use the same
+network architecture for the bug and for the developer, because
+each of them is represented in the same form.
+Algorithm 1 shows the pseudo-code for the building of this
+developer stack trace. In this algorithm, we look at all frames
+from the stack trace of the current bug from ﬁrst to last. If the
+developer has edited at least one line from the ﬁle of the given
+frame, then this frame is included in the developer stack trace.
+Each stack trace is an ordered sequence of frames, they are
+numbered starting from the top of the stack. While building the
+developer stack trace, the order of the frames is preserved. The
+order of the frames is signiﬁcant, because generally frames at
+the top of the stack are more revealing.
+
+Algorithm 1 The building of the developer stack trace.
+Input: Developer dev, stack trace stack
+Output: Developer stack trace dev stack
+dev stack ←emptyList
+for frame in stack do
+ﬁle ←getFrameFile(frame)
+authors ←getFileAuthors(ﬁle)
+if dev ∈authors then dev stack.append(frame)
+return dev stack
+It is important to note that the inner frames in the stack
+trace can include ﬁles from various libraries, in which case
+they will not have been edited by any of the developers in the
+project. We leave dealing with this case speciﬁcally for future
+work, for example, it might be possible to use the history of
+the developer’s work to see whether they ﬁxed bugs that relate
+to this particular library.
+Overall, for each bug and each developer, we obtain a
+special stack trace that contains only the frames that concern
+ﬁles that this developer has edited. This allows us to compare
+the resulting embeddings.
+D. Additional Features
+To improve the performance of the model, we enrich the
+embedding with the features built from the VCS annotations.
+The annotations provide information about who was the last
+person to have changed each line in the ﬁle, and when this
+change took place. The rationale behind using annotations is
+the following: if a developer has recently edited some ﬁle, it
+is more likely that their changes resulted in a bug. Therefore,
+such a developer should probably ﬁx the current bug.
+An example of the ﬁrst ﬁve lines of an annotation is shown
+in Figure 3. Each developer is encoded with a unique identiﬁer,
+and the time is represented in the Unix epoch format.
+Line #
+Commit hash
+Author ID
+Timestamp
+1
+367e005e1f28e093a664ce2fda4791862f475b65
+55194
+1585575447000
+2
+7460e5adae69c7b17c951f1198a6b6900721a1ee
+9
+1105649070000
+3
+7460e5adae69c7b17c951f1198a6b6900721a1ee
+9
+1105649070000
+4
+5e2c29d3146b1fc777a1e3cc5978fe770e2a7171c
+55194
+1595312119000
+5
+c25d825c4e69c75ab94a1373568e185d483d48c7
+55
+1151846082000
+Fig. 3. An example of the ﬁrst lines of an annotation.
+Additional features can be constructed both on the level of
+individual stack frame (e.g., how many lines in the ﬁle of a
+speciﬁc frame the developer edited) and on the level of the
+entire stack trace (e.g., how many stack frames have ﬁles that
+the developer edited), and are applied in different ways.
+Features that relate to individual frames can be concate-
+nated to the trainable embeddings before applying the RNN
+(Section III-B). Figure 4 shows the proposed approach: a text
+token is extracted from the frame, each text token is associated
+with a trainable embedding, and the additional feature vector is
+concatenated to the embedding. The resulting vector becomes
+the input of the RNN.
+Stack trace
+Token1
+Embedding1
+Features1
+Token1
+Token1
+Embedding2
+Features2
+Token2
+Token1
+EmbeddingN
+FeaturesN
+TokenN
+Fig. 4. The application of the frame-based features.
+The features that relate to the entire stack trace can be con-
+catenated to the bug embedding and the developer embedding
+as presented in Figure 5. The resulting vector is the input of
+the comparison module.
+Developer embedding
+Features
+Bug embedding
+Fig. 5. The application of the stack-based features.
+We performed feature engineering on the private dataset,
+trying different combinations of metrics and their normaliza-
+tion methods. We ended up with 15 frame features and 24
+stack trace features that worked best in our setting. They
+are presented in Table I. For example, from the ﬁrst line
+of the table, we get three different features: a raw value of
+the minimum distance and two normalizations (by annotation
+length and by the minimum value).
+E. Neural Annotation Processing
+Manual feature engineering is a complex process that re-
+quires domain knowledge and expertise. As an alternative, we
+also propose using another neural network to extract features
+from annotations automatically.
+The idea behind the annotation processing is as follows:
+each line of an annotation is labelled with a timestamp of
+its last change. We suggest to represent annotation lines as
+elements of a time series — a sequence of values indexed in
+the chronological order. We propose to use the distance from
+the current line to the error line (simply subtracting the line
+numbers) as the values of the time series, and timestamps of
+the last modiﬁcation as the corresponding time. The considered
+time series is irregular: code lines could be changed at any
+time. Since this is the ﬁrst work using DL-based annotation
+processing, we decided to start with simple things ﬁrst and
+use the most popular and straightforward solution for irregular
+time series processing: concatenate the time information to the
+time series value to form a vector of size 2.
+Figure 6 shows an example of the annotation processing for
+developer Mike, this will be done for each developer and for
+each stack frame:
+• Select lines from the annotation that were edited by Mike.
+• Sort the lines by time. Each annotation line is mapped
+to a vector of length 2. The ﬁrst component of the
+vector is the distance to the error line |error line −
+current line| (in out example, the error line is line
+3, highlighted in red). The second component of the
+
+TABLE I
+ADDITIONAL FEATURES OBTAINED FROM THE VCS ANNOTATIONS AND THEIR NORMALIZATIONS.
+Category
+Description
+Normalizations
+Frame
+Minimum distance from the edited line to the error line
+Raw; annotation length; min
+Did the developer edit the error line?
+Raw
+Normalized number of edited lines in the ﬁle
+Annotation length; max
+Normalized number of edited lines weighted by time
+Annotation length; max
+Normalized number of edited lines in the window of size 10
+Window size; max
+Number of different developer’s timestamps
+Raw; max
+Time passed since the last edit
+Exp(-x); Log(x)
+Time passed since the ﬁrst edit
+Log(x)
+Stack
+The order of the ﬁrst edited frame
+Raw; stack length; number of annotated frames; min
+Normalized number of edited error lines
+Stack length; max
+Normalized number of edited lines
+Total number of lines; max
+Normalized number of edited lines in the frame with maximum IDF
+Annotation length
+Normalized number of edited frames
+Stack length; number of annotated frames; max
+Line #
+Author 
+Timestamp
+1
+John
+October
+2
+Mike
+October
+3
+John
+January
+4
+Bob
+March
+5
+Mike
+January
+6
+Mike
+February
+Line #
+Author 
+Timestamp
+2
+Mike
+October
+5
+Mike
+January
+6
+Mike
+February
+Distance: 2 | Time: January
+Distance: 3 | Time: February
+Distance: 1 | Time: October
+RNN
+Annotation embedding
+Author:
+Mike
+Sort by time
+Fig. 6. The example processing of an annotation.
+vector
+is
+the
+coded
+line
+timestamp.
+In
+our
+data,
+time is measured in milliseconds, therefore we use
+log (report timestamp −line timestamp) to account
+for the order of magnitude.
+• The sequence of such vectors is processed using the RNN
+with attention as described in Section III-B.
+The obtained annotation embedding can be used as an
+alternative to manual features extracted from annotations.
+F. Similarity of Vector Representations
+After obtaining the embeddings of the bug and the devel-
+oper, we feed them into a comparison module. Here, we have
+applied the approach from the work of Severyn et al. [43],
+proposing to form the following vector:
+xjoin = [xT
+q ; xsim; xT
+d ; xT
+feat],
+(3)
+where xq, xd, xfeat stand for the bug embedding, the de-
+veloper embedding, and additional stack trace features de-
+scribed in Sections III-D and III-E. A scalar value xsim is
+obtained from xT
+q Mxd with a trainable matrix M, which
+captures syntactic and semantic aspects between the queries
+and documents.
+After that, a feed-forward neural network with one hidden
+layer and ReLU activation function is applied, and the score
+is obtained which is used to rank developers.
+IV. EVALUATION
+We evaluated our approach on stack traces collected from
+the internal system of JetBrains, a large software company.
+We aim to answer the following research questions:
+RQ1: How do ranking models work in comparison with
+classifying models?
+RQ2: Do frame-based features built from VCS annotations
+improve the model quality? Which of them affect the perfor-
+mance more, the manual ones or the features learned by the
+neural model automatically?
+RQ3: How does adding stack-based features to frame-based
+features affect the model?
+A. Dataset Collection
+To collect data for the evaluation, we used the crash report
+processing system that handles reports from various JetBrains
+products. When a crash occurs in the user’s product (i.e., an
+IDE), an anonymous crash report is formed. If the user agreed
+to send such reports to the company, then it gets sent and
+is stored in the processing system. Since we are not able to
+publish internal company data, we have collected two datasets:
+from the company’s private and public code repositories. Our
+datasets were created from stack traces that are automatically
+created after every crash of a product. The public dataset is
+a subset of the private dataset that contains stack traces that
+relate to public repositories. The public dataset is published for
+further research and can be found in the DapStep repository:
+https://github.com/Sushentsev/DapStep.
+The larger, private dataset contains a total of 11,139 bug
+reports from the crash system from October 2018 to April
+2021. These bug stack traces include ﬁles from three JVM
+languages: Java, Kotlin, and Scala. The proposed solution is
+language-agnostic, ﬁles in different languages are processed
+in the same way. The developer who ﬁxed the bug in the
+system will be referred to as the target developer. For each
+error from the dataset, the target developer is known. As
+mentioned earlier, we use annotations to improve the quality of
+our model. Annotations can be obtained from the Git version
+control system using the ﬁle name and the ﬁle commit hash.
+
+The private dataset contains annotations for all ﬁles that are
+present in the stack trace, with the total number of annotations
+being 99,591. However, not all annotations are present in
+public repositories, only 32,908 of them. The public dataset
+contains stack traces, in which at least 75% of the annotations
+are present publicly. This results in 3,361 different stack traces.
+Thus, a public dataset consists of a subset of reports from a
+private dataset, for which a sufﬁcient number of annotations
+are available. We believe that this dataset can be useful for
+further research in the ﬁeld and can facilitate the development
+of models, which work with the systems that process the
+reports in the form of stack traces.
+B. Baseline Implementations
+To compare our stack-trace-based approach with approaches
+that use reports description, we implement several baseline
+models. It is important to note that we are comparing models
+from the point of view of stack trace processing, because we
+have no textual descriptions of bugs. We apply preprocessing
+(Section III-A) that converts a stack trace into a set of text
+tokens that can be processed as text data. As baseline models,
+we chose Logistic Regression and Random Forest. In addition,
+we have implemented a heuristic solution, which is based on
+counting the number of edited ﬁles by each developer. Let us
+describe these baselines in more detail.
+Logistic regression [44] is one of the simplest and most pop-
+ular machine learning models that demonstrated its capabilities
+in the bug triage problem [11]. Logistic regression performs a
+linear transformation on a vector of features; to obtain the
+distribution of probabilities by class, the sigmoid function
+is used. In addition to logistic regression, we used Random
+Forest [45] as a baseline model. Unlike Logistic Regression,
+Random Forests are capable of constructing a non-linear
+decision boundary. Thus, Random Forest is able to capture
+more complex data dependencies. We used SGDClassiﬁer
+and
+RandomForestClassiﬁer from the scikit-learn package
+as the implementations of the models. To apply classiﬁcation
+algorithms, each stack trace must be represented with a feature
+vector. One of the most popular approaches that works well
+in practice is the TF-IDF approach [46].
+We also propose a baseline model based on a simple heuris-
+tic. For each frame of the stack trace, we know exactly which
+line in the ﬁle caused the bug. From the VCS annotation, we
+can ﬁnd out which developer edited the given line last. Thus,
+for each developer, we count the number of edited lines that
+led to an error. The developer who edited the most error lines
+should be assigned to ﬁx the bug. Additionally, we use the
+following ideas to improve the quality of this solution. Firstly,
+the frames at the top of the stack are usually more explanatory,
+therefore we can consider not all frames in the trace stack, but
+only Top-20 frames. Secondly, we consider each line edit with
+a weight that depends on the edit time: the later the line edit
+happened, the higher the weight is. As a weight function, we
+used f(x) = e−x, where x stands for the time elapsed from
+editing a line until a bug occurred in the system.
+TABLE II
+PARAMETERS USED FOR DIFFERENT MODELS.
+Parameter
+Public dataset
+Private dataset
+Logistic Regression
+Loss
+log
+log
+Regularization coefﬁcient
+1e-5
+1e-5
+Random Forest
+Number of estimators
+100
+100
+Maximum depth
+∞
+∞
+Minimum samples in a leaf
+1
+1
+CNN
+Number of convolutional ﬁlters
+32
+64
+Size of trainable embeddings
+50
+70
+RNN
+Hidden size
+70
+100
+Size of trainable embeddings
+50
+70
+C. Model Parameters
+Since we collected two different datasets from public and
+private repositories, for each dataset, the parameters of the
+models were selected independently. The model parameters
+are selected according to the results on the validation datasets.
+The detailed information about the parameters can be found
+in Table II. In the proposed neural network models, the
+dropout [47] and weight decay [48] are applied to prevent
+overﬁtting. We used the Adam optimizer [49] with a learning
+rate of 1e−3 and a weight decay of 1e−3, dropout rate was
+0.2. The classifying models were trained for 25 epochs, and
+the ranking models were trained for 10 epochs because our
+experiments have shown that a larger number of epochs leads
+to the model overﬁtting.
+D. Loss Function
+Since we considered bug triage as a ranking problem, it
+is necessary to prepare labels for the ranking problem: the
+target developer must be the ﬁrst in the list of the ranked
+developers. For our problem statement, a pairwise approach
+to RankNet [50] loss is often used.
+The RankNet algorithm assumes that the training data
+consists of pairs of documents (d1, d2) together with a target
+probability ¯P of d1 being ranked higher than d2. For each
+query, there is only one relevant document (target developer),
+all other documents (developers) are considered irrelevant.
+As a result, the ﬁnal loss function with simpliﬁcation for
+several pairs (di, dj) and query q has the following form:
+L =
+X
+di≺dj
+log
+
+1 + e−(f(q,di)−f(q,dj))
+(4)
+To evaluate our approach, we take a random query (bug
+stack trace) q and a set of documents (developer vector rep-
+resentations) {d1, . . . , dn}, and make a gradient descent step
+according to (4). Furthermore, we use the following heuristic
+observation: if the developer stack trace is empty, then they
+did not edit any ﬁle from the bug stack trace. It is unlikely that
+
+this developer will ﬁx the current bug, therefore, we exclude
+such a developer from the list of possible assignees. It is also
+essential that the calculation of the loss function requires the
+score of the target developer. However, the target developer
+representation in the stack trace form may be empty, therefore,
+in such cases we remove such reports from the training data.
+E. Performance Metrics
+To answer the research questions, we compared the pro-
+posed ranking model with the classiﬁcation models adapted for
+stack traces. The most common quality metric for classiﬁcation
+problems is Accuracy at K. Accuracy at K corresponds to
+the number of relevant results among the ﬁrst K positions.
+However, this metric does not take into account the position
+of the relevant document, therefore, we used different values
+of k from the {1, 5, 10} set. More formally, the Accuracy at
+K metric is deﬁned as follows:
+acc@k =
+1
+|D|
+X
+(d,q)∈D
+I
+ d ∈{dqi}k
+i=1
+
+,
+(5)
+where I stands for the indicator function and {dqi} is the
+ranked list of documents for query q.
+In the ranking problem, we use mean reciprocal rank (MRR)
+for evaluation, which corresponds to the harmonic mean of
+the relevant documents’ ranks. It should be noted that only
+the rank of the ﬁrst relevant document is considered in MRR.
+However, it is suitable for our task, since there is always one
+relevant document for each query. MRR can be calculated
+using the following formula:
+MRR =
+1
+|D|
+X
+(d,q)∈D
+1
+rankq
+d
+,
+(6)
+where rankq
+d refers to the rank position of the target document
+d for the query q.
+F. Experiment Methodology
+To evaluate our models, we divided both datasets into three
+sets: train, validation, and test. For the private dataset, the sizes
+of the train, validation, and test sets were 8139, 1500, and 1500
+bug stack traces, respectively. For the public dataset, the split
+was 2461, 450, and 450, respectively. This corresponds to the
+validation and test sets being about 15% of the sizes of the
+entire datasets, which is a common practice. This partitioning
+helps to prevent overﬁtting of the model. Since the data has
+a time component, the dataset is divided by time in order to
+avoid data leakage.
+Our methodology for the experiment with the classiﬁcation
+models is as follows: we select hyperparameters using the
+validation datasets, then ﬁt the model on the training and
+validation datasets, and, ﬁnally, evaluate the quality of the
+models on the test datasets. If the developer is found only
+in the test dataset, then we cannot correctly classify the bug,
+since the model was not trained for this class. In this case, we
+consider that the bug was assigned incorrectly.
+For the ranking problem, the model was evaluated as
+follows. During the training, a random stack trace is taken
+from the training dataset. Then, for each developer, their stack
+trace representation is built. If the target developer has an
+empty stack trace representation, then this means that the
+developer did not ﬁx frames from this stack trace. In this case,
+we exclude this stack trace from the training dataset. When
+evaluating, the model considers only those developers whose
+stack trace representation is not empty. If the developer’s stack
+trace representation is empty, then his score is equal to the
+minimum score predicted by the model.
+To test the statistical signiﬁcance of our results, we use
+bootstrap [51] to construct the conﬁdence intervals. When
+comparing two models, we form 100 bootstrapping resam-
+plings with the same size as the test dataset. Next, a 95%
+conﬁdence interval for the difference of the metric scores is
+calculated. If zero falls into the constructed interval, then there
+are no statistically signiﬁcant differences between the models,
+otherwise, we say that there is statistical signiﬁcance.
+All the experiments were run on a server with the following
+technical characteristics: 8-core Intel Xeon CPU @2.3 GHz,
+NVidia K80 GPU, and 60 GB of RAM.
+G. Results
+The experimental results of running various models on
+both datasets are presented in Table III. Resulting conﬁdence
+intervals for all the experiments can be found in the online
+appendix: https://doi.org/10.5281/zenodo.5596294.
+First of all, it can be seen that the results are different
+for the public and the private datasets. We assume that this
+happened for three reasons. Firstly, the public dataset is several
+times smaller than the private dataset, which can affect the
+approaches that rely on a lot of data. Secondly, not all
+annotations are available for the public dataset, with the miss-
+ing annotations likely containing some important information.
+Thirdly, we found that the test set from the public dataset
+contains more target developers who have not edited ﬁles from
+stack traces than the private dataset. Thus, their stack trace
+representation will be empty, and the result of the model will
+be incorrect on these reports.
+1) Research Question 1: To answer RQ1, let us evaluate
+and compare the quality of the classifying and ranking models.
+Our results show that classifying models based on classical
+machine learning algorithms perform as well as classifying
+algorithms based on RNNs or CNNs (Table III, lines 2–5).
+We believe that this can be explained by the fact that neural
+networks are most likely to extract features similar to TF-IDF
+features, so the results are similar.
+The RNN ranking model performs better than the others
+(Table III, line 7, 0.21 Acc@1 on the Public dataset, 0.46
+Acc@1 on the Private dataset), but the differences would be
+more signiﬁcant if there were many developers in the test
+dataset that were not in the training dataset. We found that
+for the public and private datasets, there were 27 bug reports
+in the test data with developers that were not presented in train
+data. Thus, this represents only 6% and 1.8% of the total size
+of the test data, and the advantage of the ranking approach
+is not very noticeable. On the other hand, for projects that
+
+TABLE III
+COMPARISON OF THE MODELS ON THE PUBLIC AND PRIVATE DATASETS.
+№
+Model
+Public dataset
+Private dataset
+Acc@1
+Acc@5
+Acc@10
+MRR
+Acc@1
+Acc@5
+Acc@10
+MRR
+1
+Heuristics
+0.26
+0.50
+0.52
+0.36
+0.41
+0.73
+0.80
+0.54
+2
+Logistic Regression
+0.19
+0.35
+0.45
+0.27
+0.43
+0.56
+0.62
+0.50
+3
+Random Forest
+0.16
+0.33
+0.40
+0.25
+0.42
+0.57
+0.64
+0.50
+4
+CNN classiﬁcation
+0.14
+0.29
+0.38
+0.22
+0.42
+0.55
+0.60
+0.48
+5
+RNN classiﬁcation
+0.14
+0.27
+0.34
+0.21
+0.42
+0.54
+0.60
+0.48
+6
+CNN ranking (without VCS)
+0.13
+0.37
+0.47
+0.25
+0.35
+0.60
+0.72
+0.48
+7
+RNN ranking (without VCS)
+0.21
+0.37
+0.50
+0.30
+0.46
+0.69
+0.76
+0.57
+8
+CNN ranking (VCS: manual frame-based)
+0.28
+0.48
+0.54
+0.38
+0.53
+0.79
+0.84
+0.65
+9
+CNN ranking (VCS: neural frame-based)
+0.29
+0.48
+0.54
+0.39
+0.54
+0.80
+0.84
+0.66
+10
+RNN ranking (VCS: manual frame-based)
+0.35
+0.52
+0.60
+0.44
+0.58
+0.82
+0.86
+0.68
+11
+RNN ranking (VCS: neural frame-based)
+0.27
+0.46
+0.56
+0.37
+0.54
+0.79
+0.83
+0.65
+12
+CNN ranking (VCS: manual frame-based & stack-based)
+0.31
+0.49
+0.56
+0.40
+0.57
+0.82
+0.87
+0.68
+13
+RNN ranking (VCS: manual frame-based & stack-based)
+0.34
+0.52
+0.56
+0.43
+0.60
+0.83
+0.87
+0.70
+have a larger variety of developers (for example, some large
+open-source projects) the ranking approach can be expected
+to signiﬁcantly improve the quality of the models.
+Another interesting observation is that the heuristic-based
+baseline shows the quality comparable to the ML-based ap-
+proaches. Such high performance of the heuristic solution can
+be explained by the fact that the data was collected from
+industrial projects of a large software company with well-
+functioning bug ﬁxing pipelines, and the proposed heuristic
+might be a good ﬁt for such a pipeline. In open-source
+projects, error processing workﬂows might be different, and as
+a result, such a heuristic solution might work worse. However,
+this observation suggests that sometimes a simple heuristic
+might work better than complex statistical models that are not
+interpretable and need a lot of sophisticated data to train on.
+Answer to RQ1: On our datasets, the ranking models
+perform slightly better, but the difference can be more
+signiﬁcant in other settings, future research is required.
+2) Research Question 2: Next, let us address RQ2 and
+investigate the signiﬁcance of manual and neural frame-based
+features built from the VCS annotations. We trained a ranking
+model with only manual frame-based features and another
+model with only neural frame-based features. It can be seen
+(Table III, lines 8–11 compared to lines 6–7) that frame-based
+features increase the model quality, but the impact of the
+neural features is not as signiﬁcant as in the case of manually
+extracted features in the RNN model (0.27 and 0.35 Acc@1
+on the public dataset, 0.54 and 0.58 Acc@1 on the private
+dataset, respectively). However, in the case of the CNN-based
+approaches, manual and neural features show similar results.
+CNN captures the entire stack trace, rather than processing it
+in a sequential form like the RNN does. Therefore, feature
+normalization in the case of CNN may be necessary, since a
+lot of raw values are harmful. The difference between manual
+frame-based features and neural frame-based features turned
+out to be statistically signiﬁcant for RNN and not signiﬁcant
+for CNN on both datasets.
+An important disadvantage of the neural network annotation
+processing is the slow model training (one epoch takes 3-
+4 times longer compared to the manual features): each pass
+requires hundreds of annotations to be processed, each of them
+can contain thousands of lines, and since we use RNN, it
+takes a signiﬁcant amount of time. On the other hand, the
+DL approach learns annotation embeddings automatically, and
+these embeddings could be useful in other related tasks (bug
+localization, bug report deduplication, etc.). This seems like a
+promising direction for future work.
+Answer to RQ2: Adding frame-based features from the
+VCS annotations improves the quality of models. Manual
+features worked better for the RNN models, while in
+CNN models, the difference between manual and learned
+features is insigniﬁcant. Learning features takes notice-
+ably more time, but leads to obtaining embeddings of
+annotations, which might be useful for other tasks.
+3) Research Question 3: Finally, to answer RQ3, we trained
+models with both the frame-based and stack-based features
+from the VCS annotations. Since manual frame-based features
+demonstrated better results than neural features, we only used
+manual features. First, we can notice that the RNN-based
+model outperforms the CNN-based one by 3 percentage points
+according to Acc@1 (Table III, lines 12–13), however, in the
+case of the public dataset, this difference is not statistically
+signiﬁcant. Better performance of RNNs compared to CNNs
+may be attributed to the CNN training pipeline: to reduce
+the training time, stack traces are processed in batches. At
+the same time, CNN is not designed to process sequences of
+different lengths in batches, therefore, padding is necessary.
+Moreover, the length of the sequences must not be shorter than
+the size of the convolution kernel, that is, 5. It is possible that
+padding in the training data leads to worse results.
+Secondly, we can see that adding stack-based features
+has a positive statistically signiﬁcant effect on the model
+performance (Table III, lines 8, 10, 12–13). We believe that
+frame-based features are not taken into account in the best
+
+way in CNN models, therefore, stack-based features add new
+information to the model. However, in the case of RNN mod-
+els, stack-based features do not lead to such improvements.
+Perhaps, better feature engineering could help us overcome
+this issue, future research is required.
+Answer to RQ3: Combining stack-based and frame-
+based has a positive effect on the CNN-based appoaches,
+but for the RNN-based models the effect is not signiﬁcant.
+In the end, the RNN ranking model with frame-based and
+stack-based manual features obtained from the VCS anno-
+tations turned out to be the best performing model for bug
+assignee prediction based on the stack traces data. It outper-
+forms all the other models on the private dataset (Table III,
+line 13, 0.60 Acc@1 and 0.70 MRR) and achieves a signiﬁcant
+boost in all metrics (17–18 percentage points) compared to the
+classical machine learning approaches. We release this model
+as DapStep and plan to conduct more thorough experiments
+on it in the future work.
+Thus, the results of our experiments demonstrate that re-
+formulating bug triage as a ranking problem is appropriate.
+Moreover, adding features from VCS annotations to the model
+has a positive effect on its performance, and the RNN-based
+models work slightly better in this setting than the CNN-
+based ones. From the practical standpoint, the RNN ranking
+model with all the features can be trained on the data of any
+speciﬁc project or company and be employed there. As for
+the research implications, the results show that more research
+is needed to improve the state-of-the-art solutions to the bug
+triage problem, employing more information about the stack
+traces. We hope that our results of using VCS annotations as
+the sources of features and the provided dataset can assist in
+conducting such research.
+V. THREATS TO VALIDITY
+Our study suffers from the following threats to validity.
+Subject selection bias. The performance of the model
+depends on the data. Since stack traces for the bug triage task
+are being used for the ﬁrst time, there is no dataset available for
+this task. We collected a dataset from the products of a large
+software company and evaluated the proposed approach on
+them. However, applying the model to other dataset may lead
+to different results. For instance, workﬂows in open-source
+projects could be more volatile and unstable. The results for
+such datasets can be noticeably lower.
+Limited scope of application. Our solution is applicable
+for software systems that report stack traces when a bug
+happens, which might be not be typical for some projects and
+companies. However, we believe this practice to be common
+enough for our approach to be helpful in practice. Secondly,
+deep learning models are over-parameterized. A modern neural
+network contains thousands or millions of parameters. A
+sufﬁcient amount of data is required to train a neural network.
+We use 11,139 different stack traces in our private dataset and
+regularization techniques to prevent overﬁtting. However, in
+cases when this amount of data is not available, the results may
+differ. We hope our research will encourage other researchers
+and practitioners to invest time and effort into collecting a
+larger dataset of such kind.
+Programming language bias. Our datasets consist of stack
+traces that were obtained from the JVM languages. Therefore,
+the results of our models for other languages may differ.
+Firstly, stack trace characteristics change from one language to
+another. The performance of the model depends on the average
+length of the stack trace, as well as the variety of methods and
+ﬁles used. Secondly, an essential component of our approach
+is the use of features from annotations. The characteristics
+of these ﬁles also strongly affect the model performance. The
+distribution of developers for each ﬁle can vary between teams,
+companies, and maybe even programming languages. Future
+research is needed to assess how much all of this affects the
+resulting model.
+While these threats to validity are important to note, we
+believe that they do not invalidate the overal results of our
+study and its practical usefulness.
+VI. CONCLUSION AND FUTURE WORK
+In this paper, we explore the applicability of using stack
+traces for solving the bug triage problem.
+Firstly, we suggest an approach for handling error reports
+that do not have text descriptions, but only a stack trace for
+the given error. We transform each stack trace into a set of
+text tokens, which are processed as sequences. As a result,
+existing solutions can be applied to such data as well.
+Secondly, we collected two datasets—the public one and the
+private one—from the data of JetBrains. The public dataset is
+a subset of the private dataset that only contains stack frames
+that relate to public repositories, with a total of 3,361 stack
+traces. To facilitate further research in this area, the source
+code of all the models, as well as the public dataset, are
+available online at https://github.com/Sushentsev/DapStep.
+Thirdly, we propose a ranking neural network model that
+outperforms classifying models by 15-20 percentage points of
+the Acc@1 metric on the public dataset, and 17-18 percentage
+points on the private dataset. The signiﬁcant advantage of this
+model is the independence from the ﬁxed set of classes (the list
+of developers working on a given project). Finally, we suggest
+to use an additional source of information (VSC annotations),
+which signiﬁcantly improves the performance of the models.
+We propose two ways features could be built from such
+annotations. First of all, features can be extracted manually
+from annotations — this approach shows better results, but
+requires effort and domain knowledge. On the other hand, it
+is possible to use an additional neural network to learn the
+annotation-based features. This approach requires to train an
+additional neural network, so it takes more time compared
+to the manual approach, however, this way we obtain explicit
+embeddings of annotations, which might be employed in other
+related research tasks.
+We hope that our work will be of use for researchers and
+practitioners, especially in the tasks that rely on stack traces.
+
+REFERENCES
+[1] W. E. Wong, X. Li, and P. A. Laplante, “Be more familiar with our
+enemies and pave the way forward: A review of the roles bugs played
+in software failures,” Journal of Systems and Software, vol. 133, pp.
+68–94, 2017.
+[2] J. Anvik, L. Hiew, and G. Murphy, “Who should ﬁx this bug?” Pro-
+ceedings of the 28th international conference on Software engineering,
+2006.
+[3] J. Xuan, H. Jiang, Z. Ren, and W. Zou, “Developer prioritization
+in bug repositories,” 2012 34th International Conference on Software
+Engineering (ICSE), pp. 25–35, 2012.
+[4] G. Jeong, S. Kim, and T. Zimmermann, “Improving bug triage with bug
+tossing graphs,” in ESEC/FSE ’09, 2009.
+[5] Y. Tian, D. Wijedasa, D. Lo, and C. L. Goues, “Learning to rank for
+bug report assignee recommendation,” 2016 IEEE 24th International
+Conference on Program Comprehension (ICPC), pp. 1–10, 2016.
+[6] A. Tamrawi, T. Nguyen, and J. M. Al-Kofahi, “Fuzzy set and cache-
+based approach for bug triaging,” in ESEC/FSE ’11, 2011.
+[7] R. Shokripour, J. Anvik, Z. M. Kasirun, and S. Zamani, “A time-based
+approach to automatic bug report assignment,” J. Syst. Softw., vol. 102,
+pp. 109–122, 2015.
+[8] H.-J. Hu, H. Zhang, J. Xuan, and W. Sun, “Effective bug triage
+based on historical bug-ﬁx information,” 2014 IEEE 25th International
+Symposium on Software Reliability Engineering, pp. 122–132, 2014.
+[9] H. Naguib, N. Narayan, B. Br¨ugge, and D. Helal, “Bug report assignee
+recommendation using activity proﬁles,” 2013 10th Working Conference
+on Mining Software Repositories (MSR), pp. 22–30, 2013.
+[10] X. Xia, D. Lo, Y. Ding, J. M. Al-Kofahi, T. Nguyen, and X. Wang,
+“Improving automated bug triaging with specialized topic model,” IEEE
+Transactions on Software Engineering, vol. 43, pp. 272–297, 2017.
+[11] A. Sarkar, P. C. Rigby, and B. Bartalos, “Improving bug triaging with
+high conﬁdence predictions at ericsson,” in 2019 IEEE International
+Conference on Software Maintenance and Evolution (ICSME).
+IEEE,
+2019, pp. 81–91.
+[12] S.-R. Lee, M.-J. Heo, C.-G. Lee, M. Kim, and G. Jeong, “Applying deep
+learning based automatic bug triager to industrial projects,” Proceedings
+of the 2017 11th Joint Meeting on Foundations of Software Engineering,
+2017.
+[13] S. Guo, X. Zhang, X. Yang, R. Chen, C. Guo, H. Li, and T. Li,
+“Developer activity motivated bug triaging: Via convolutional neural
+network,” Neural Processing Letters, vol. 51, pp. 2589–2606, 2020.
+[14] S. Mani, A. Sankaran, and R. Aralikatte, “DeepTriage: Exploring the
+effectiveness of deep learning for bug triaging,” Proceedings of the ACM
+India Joint International Conference on Data Science and Management
+of Data, 2019.
+[15] S. Xi, Y. Yao, X. Xiao, F. Xu, and J. Lu, “Bug triaging based on tossing
+sequence modeling,” Journal of Computer Science and Technology,
+vol. 34, pp. 942 – 956, 2019.
+[16] T. Wolf, L. Debut, V. Sanh, J. Chaumond, C. Delangue, A. Moi,
+P. Cistac, T. Rault, R. Louf, M. Funtowicz, and J. Brew, “Transformers:
+State-of-the-art natural language processing,” in EMNLP, 2020.
+[17] J. Schmidhuber, “Deep learning in neural networks: An overview,”
+Neural networks : the ofﬁcial journal of the International Neural
+Network Society, vol. 61, pp. 85–117, 2015.
+[18] C.-P. Wong, Y. Xiong, H. Zhang, D. Hao, L. Zhang, and H. Mei,
+“Boosting bug-report-oriented fault localization with segmentation and
+stack-trace analysis,” 2014 IEEE International Conference on Software
+Maintenance and Evolution, pp. 181–190, 2014.
+[19] L. Moreno, J. Treadway, A. Marcus, and W. Shen, “On the use of
+stack traces to improve text retrieval-based bug localization,” 2014 IEEE
+International Conference on Software Maintenance and Evolution, pp.
+151–160, 2014.
+[20] K. C. Youm, J. Ahn, J. Kim, and E. Lee, “Bug localization based
+on code change histories and bug reports,” 2015 Asia-Paciﬁc Software
+Engineering Conference (APSEC), pp. 190–197, 2015.
+[21] Y. Dang, R. Wu, H. Zhang, D. Zhang, and P. Nobel, “ReBucket:
+A method for clustering duplicate crash reports based on call stack
+similarity,” 2012 34th International Conference on Software Engineering
+(ICSE), pp. 1084–1093, 2012.
+[22] K. Sabor, A. Hamou-Lhadj, and A. Larsson, “DURFEX: A feature
+extraction technique for efﬁcient detection of duplicate bug reports,”
+2017 IEEE International Conference on Software Quality, Reliability
+and Security (QRS), pp. 240–250, 2017.
+[23] A. Khvorov, R. Vasiliev, G. Chernishev, I. M. Rodrigues, D. Koznov,
+and N. Povarov, “S3M: Siamese stack (trace) similarity measure,”
+2021 IEEE/ACM 18th International Conference on Mining Software
+Repositories (MSR), pp. 266–270, 2021.
+[24] H. Kagdi, M. Gethers, D. Poshyvanyk, and M. Hammad, “Assigning
+change requests to software developers,” Journal of Software: Evolution
+and Process, vol. 24, 2012.
+[25] R. Shokripour, Z. M. Kasirun, S. Zamani, and J. Anvik, “Automatic bug
+assignment using information extraction methods,” 2012 International
+Conference on Advanced Computer Science Applications and Technolo-
+gies (ACSAT), pp. 144–149, 2012.
+[26] R. Shokripour, J. Anvik, Z. M. Kasirun, and S. Zamani, “Why so
+complicated? Simple term ﬁltering and weighting for location-based bug
+report assignment recommendation,” 2013 10th Working Conference on
+Mining Software Repositories (MSR), pp. 2–11, 2013.
+[27] M. V´asquez, K. Hossen, H. Dang, H. Kagdi, M. Gethers, and D. Poshy-
+vanyk, “Triaging incoming change requests: Bug or commit history, or
+code authorship?” 2012 28th IEEE International Conference on Software
+Maintenance (ICSM), pp. 451–460, 2012.
+[28] T. Zhang and B. Lee, “A hybrid bug triage algorithm for developer
+recommendation,” in SAC ’13, 2013.
+[29] Z. Lin, F. Shu, Y. Yang, C. Hu, and Q. Wang, “An empirical study on bug
+assignment automation using chinese bug data,” 2009 3rd International
+Symposium on Empirical Software Engineering and Measurement, pp.
+451–455, 2009.
+[30] S. Banitaan and M. Alenezi, “TRAM: An approach for assigning bug
+reports using their metadata,” 2013 Third International Conference on
+Communications and Information Technology (ICCIT), pp. 215–219,
+2013.
+[31] S. Ahsan, J. Ferzund, and F. Wotawa, “Automatic software bug triage
+system (BTS) based on latent semantic indexing and support vector ma-
+chine,” 2009 Fourth International Conference on Software Engineering
+Advances, pp. 216–221, 2009.
+[32] S. F. A. Zaidi, F. M. Awan, M. soo Lee, H. Woo, and C.-G. Lee, “Ap-
+plying convolutional neural networks with different word representation
+techniques to recommend bug ﬁxers,” IEEE Access, vol. 8, pp. 213 729–
+213 747, 2020.
+[33] T. Mikolov, K. Chen, G. S. Corrado, and J. Dean, “Efﬁcient estimation
+of word representations in vector space,” in ICLR, 2013.
+[34] J. Pennington, R. Socher, and C. D. Manning, “GloVe: Global vectors
+for word representation,” in EMNLP, 2014.
+[35] M. E. Peters, M. Neumann, M. Iyyer, M. Gardner, C. Clark, K. Lee, and
+L. Zettlemoyer, “Deep contextualized word representations,” in NAACL,
+2018.
+[36] J. Chen, X. He, Q. Lin, Y. Xu, H. Zhang, D. Hao, F. Gao, Z. Xu, Y. Dang,
+and D. Zhang, “An empirical investigation of incident triage for online
+service systems,” 2019 IEEE/ACM 41st International Conference on
+Software Engineering: Software Engineering in Practice (ICSE-SEIP),
+pp. 111–120, 2019.
+[37] S. Hochreiter and Y. Bengio, “Gradient ﬂow in recurrent nets: the
+difﬁculty of learning long-term dependencies,” 2001.
+[38] S. Hochreiter and J. Schmidhuber, “Long short-term memory,” Neural
+Computation, vol. 9, pp. 1735–1780, 1997.
+[39] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez,
+Ł. Kaiser, and I. Polosukhin, “Attention is all you need,” in Advances
+in neural information processing systems, 2017, pp. 5998–6008.
+[40] A. Graves, S. Fern´andez, and J. Schmidhuber, “Bidirectional LSTM
+networks for improved phoneme classiﬁcation and recognition,” in
+ICANN, 2005.
+[41] D. Bahdanau, K. Cho, and Y. Bengio, “Neural machine translation by
+jointly learning to align and translate,” CoRR, vol. abs/1409.0473, 2015.
+[42] R. Collobert and J. Weston, “A uniﬁed architecture for natural language
+processing: deep neural networks with multitask learning,” in ICML ’08,
+2008.
+[43] A. Severyn and A. Moschitti, “Learning to rank short text pairs with con-
+volutional deep neural networks,” Proceedings of the 38th International
+ACM SIGIR Conference on Research and Development in Information
+Retrieval, 2015.
+[44] D. W. Hosmer and S. Lemeshow, “Applied logistic regression,” 1989.
+[45] L. Breiman, “Random forests,” Machine Learning, vol. 45, pp. 5–32,
+2004.
+[46] J. E. Ramos, “Using TF-IDF to determine word relevance in document
+queries,” 2003.
+
+[47] N.
+Srivastava, G.
+E.
+Hinton, A.
+Krizhevsky,
+I. Sutskever, and
+R. Salakhutdinov, “Dropout: a simple way to prevent neural networks
+from overﬁtting,” J. Mach. Learn. Res., vol. 15, pp. 1929–1958, 2014.
+[48] I. Loshchilov and F. Hutter, “Decoupled weight decay regularization,”
+in ICLR, 2019.
+[49] D. P. Kingma and J. Ba, “Adam: A method for stochastic optimization,”
+CoRR, vol. abs/1412.6980, 2015.
+[50] C. Burges, T. Shaked, E. Renshaw, A. Lazier, M. Deeds, N. Hamilton,
+and G. Hullender, “Learning to rank using gradient descent,” Proceed-
+ings of the 22nd international conference on Machine learning, 2005.
+[51] B. Efron, “Bootstrap methods: Another look at the jackknife,” Annals
+of Statistics, vol. 7, pp. 1–26, 1979.
+

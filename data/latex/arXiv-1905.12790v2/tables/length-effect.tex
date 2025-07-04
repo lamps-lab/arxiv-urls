@@ -1,0 +1,27 @@
+\centering
+\begin{tabular}{c||c|cccc}
+& & \multicolumn{4}{c}{\# of length candidates}
+\\
+& Gold & 1 & 2 & 3 & 4 
+\\
+\toprule
+En$\to$De & 22.50 & 22.22 & 22.76 & 23.01 & \textbf{23.22}
+\\
+De$\to$En & 28.05 & 26.77 & 27.32 & 27.79 & \textbf{28.15} 
+\end{tabular}
+
+% \begin{tabular}[b]{llcc}
+% \toprule
+% & & \multicolumn{1}{c}{WMT'14 En$\rightarrow$De} & \multicolumn{1}{c}{WMT'14 De$\rightarrow$En} \\
+%   \midrule
+%   \midrule
+%  \multirow{5}{*}{\rotatebox[origin=c]{90}{\scriptsize Our Model}}
+%     & Gold Length & 22.39 & 28.05 \\
+% 	& $L$\;=\;1 & 21.98 & 26.77\\
+% 	& $L$\;=\;2 & 22.58 & 27.32 \\
+% 	& $L$\;=\;3 & 22.92 & 27.79 \\
+% 	& $L$\;=\;4 & 23.13 & 28.15 \\
+%     \bottomrule
+% \end{tabular}
+% \vspace{-2mm}
+\caption{Effect of the number of length candidates considered during decoding on BLEU, measured on the validation set (newstest-2013) using the {\bf easy-first} strategy.}

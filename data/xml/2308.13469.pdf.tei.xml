@@ -1,0 +1,1381 @@
+<?xml version="1.0" encoding="UTF-8"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network</title>
+				<funder ref="#_SS7tyVE">
+					<orgName type="full">National Key R&amp;D Program of China</orgName>
+				</funder>
+				<funder ref="#_aJ9gcX6">
+					<orgName type="full">National Natural Science Foundation of China</orgName>
+				</funder>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2023-09-14">14 Sep 2023</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Xinyang</forename><surname>Huang</surname></persName>
+							<email>hsinyanghuang7@gmail.com</email>
+							<affiliation key="aff0">
+								<orgName type="department">School of Artificial Intelligence</orgName>
+								<orgName type="institution">Beijing University of Posts and Telecommunications</orgName>
+								<address>
+									<settlement>Beijing</settlement>
+									<country key="CN">China</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chuang</forename><surname>Zhu</surname></persName>
+							<email>czhu@bupt.edu.com</email>
+							<affiliation key="aff0">
+								<orgName type="department">School of Artificial Intelligence</orgName>
+								<orgName type="institution">Beijing University of Posts and Telecommunications</orgName>
+								<address>
+									<settlement>Beijing</settlement>
+									<country key="CN">China</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Wenkai</forename><surname>Chen</surname></persName>
+							<email>wkchen@bupt.edu.com</email>
+							<affiliation key="aff0">
+								<orgName type="department">School of Artificial Intelligence</orgName>
+								<orgName type="institution">Beijing University of Posts and Telecommunications</orgName>
+								<address>
+									<settlement>Beijing</settlement>
+									<country key="CN">China</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">RestNet: Boosting Cross-Domain Few-Shot Segmentation with Residual Transformation Network</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2023-09-14">14 Sep 2023</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">226F2FC55005F81970C8AB84C2A2F5C4</idno>
+					<idno type="arXiv">arXiv:2308.13469v2[cs.CV]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2025-01-29T07:35+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Cross-domain few-shot segmentation (CD-FSS) aims to achieve semantic segmentation in previously unseen domains with a limited number of annotated samples. Although existing CD-FSS models focus on cross-domain feature transformation, relying exclusively on inter-domain knowledge transfer may lead to the loss of critical intradomain information. To this end, we propose a novel residual transformation network (RestNet) that facilitates knowledge transfer while retaining the intra-domain supportquery feature information. Specifically, we propose a Semantic Enhanced Anchor Transform (SEAT) module that maps features to a stable domain-agnostic space using advanced semantics. Additionally, an Intra-domain Residual Enhancement (IRE) module is designed to maintain the intra-domain representation of the original discriminant space in the new space. We also propose a mask prediction strategy based on prototype fusion to help the model gradually learn how to segment. Our RestNet can transfer cross-domain knowledge from both inter-domain and intra-domain without requiring additional fine-tuning. Extensive experiments on ISIC, Chest X-ray, and FSS-1000 show that our RestNet achieves state-of-the-art performance.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Deep convolutional neural networks (CNNs) have demonstrated remarkable performance in diverse computer vision tasks, including semantic segmentation <ref type="bibr" target="#b23">[24,</ref><ref type="bibr" target="#b28">29,</ref><ref type="bibr" target="#b42">43]</ref> and object detection <ref type="bibr" target="#b6">[7,</ref><ref type="bibr" target="#b12">13,</ref><ref type="bibr" target="#b27">28]</ref>. Although CNNs are effective, their dependence on a large number of labeled data is still a constraint. To alleviate this dependence, the Few-shot Semantic Segmentation (FSS) <ref type="bibr" target="#b30">[31]</ref> was proposed to learn the model of segmenting new classes with only a few pixel-level annotations. In recent years, significant progress has been made in the FSS <ref type="bibr" target="#b1">[2,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b21">22,</ref><ref type="bibr" target="#b25">26,</ref><ref type="bibr" target="#b26">27,</ref><ref type="bibr" target="#b31">32,</ref><ref type="bibr" target="#b33">34,</ref><ref type="bibr" target="#b35">36,</ref><ref type="bibr" target="#b40">41,</ref><ref type="bibr" target="#b41">42]</ref>. However, it is still challenging to apply them to cross-domain scenarios. To solve this problem, the Cross-Domain Few-Shot Segmentation (a) Previous CD-FFS Method <ref type="bibr" target="#b17">[18]</ref> (b) Our Residual Transformation Network (RestNet)</p><p>Figure <ref type="figure">1</ref>: The comparison between the previous cross-domain few-shot segmentation method and our RestNet. (a) The previous CD-FSS method focused on knowledge transfer using an inter-domain transformation that may lose the intra-domain information, so additional target domain fine-tuning is required. (b) Our RestNet learns knowledge from both inter-domain and intra-domain. It performs cross-domain enhancement transformation while preserving the intra-domain matching information.</p><p>(CD-FSS) was proposed <ref type="bibr" target="#b17">[18]</ref> to generalize meta-knowledge from the source domain with sufficient labels to the target domain with limited labels.</p><p>The CD-FSS problem considers a more realistic scenario: the model cannot access the target data during training, and the data distribution and label space in the test phase are different from those in the training phase. To accomplish the CD-FSS, PATNet <ref type="bibr" target="#b17">[18]</ref> was proposed to perform a linear transformation on the support foreground features and query features, project them into domain-agnostic features, and compute the feature similarity in the new spaces before exporting the query mask. However, the cross-domain feature mapping by imprecise projection layers often makes the distribution alignment of features aligned in the original space fail in the new space. In the CD-FSS scenarios, it reflects reduced matching between intra-domain support and query samples, so additional fine-tuning is required in the target domain, as shown in Figure <ref type="figure">1</ref>(a). In addition, due to the fine-grained differences between support and query samples and the presence of support masks, the learning of knowledge may be biased towards the support samples even if they belong to the same class <ref type="bibr" target="#b39">[40]</ref>. To address these problems, we propose the Residual Transformation Network (Rest-Net). It considers not only inter-domain transfer but also the preservation of intra-domain knowledge, as illustrated in Figure <ref type="figure">1(b)</ref>.</p><p>For the inter-domain, we propose a novel Semantic Enhanced Anchor Transform (SEAT), which uses the attention to help the model learn advanced semantic features that are then mapped to domain unknown spaces for knowledge migration. Further, we propose a simple and effective Intra-domain Residual Enhancement (IRE) mechanism. It associates the information of the original discriminative space to the present domain-agnostic space via residual connection <ref type="bibr" target="#b11">[12]</ref> and helps the model to align the support and query features of the domain-agnostic feature space to enhance the intra-domain knowledge representation. The two mechanisms each help the model adapt more comprehensively to cross-domain small-sample tasks from different perspectives. Finally, we generate a coarse soft query mask and feed it to the network with the support mask through prototype fusion to obtain the final mask, which can help the model learn how to segment step by step.</p><p>In summary, our contributions are summarized as follows:</p><p>• We propose a Residual Transform network (RestNet) that uses the proposed SEAT and IRE modules to help the model preserve key information in the original domain while performing cross-domain few-shot segmentation. • We propose a new mask prediction strategy based on the prototype fusion. This strategy helps the proposed RestNet gradually learn how to segment the unseen domain. • Our method achieves state-of-the-art results on three CD-FSS benchmarks, namely ISIC, Chest X-ray, and FSS-1000. Our RestNet solves the problem of intra-domain knowledge loss under the condition of considering inter-domain knowledge transfer, which provides a new idea for future research in this field.</p><p>2 Related Work</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Domain Adaptive Segmentation</head><p>Domain adaptive segmentation has led to some achievements. The goal of the method is to transfer knowledge learned from a labeled source domain to an unlabeled or weakly labeled target domain. The method based on adversarial learning <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b7">8,</ref><ref type="bibr" target="#b14">15]</ref> aims to learn domain invariant representations in features. In addition, the design loss function <ref type="bibr" target="#b13">[14,</ref><ref type="bibr" target="#b22">23,</ref><ref type="bibr" target="#b36">37]</ref> to constrain the data distribution can also achieve feature alignment. These methods operate in settings where the target domain data can be accessed during training to drive model adaption and compensate for domain offsets. In contrast, our source and target domain have completely disjoint label spaces and no target data is required during the CD-FSS training.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Few-Shot Semantic Segmentation</head><p>Unlike domain adaptive semantic segmentation, the target domain cannot be accessed by the FSS tasks during training. The goal is to segment new semantic objects in the image, with only a few labeled available. Current methods mainly focus on the improvement of the meta-learning stage. Prototype-based approach <ref type="bibr" target="#b26">[27,</ref><ref type="bibr" target="#b31">32,</ref><ref type="bibr" target="#b35">36,</ref><ref type="bibr" target="#b41">42]</ref> is to use methods to extract representative foreground or background prototypes that support data and then use different strategies to interact between different prototypes or between prototypes and query features.</p><p>Relation-based methods <ref type="bibr" target="#b19">[20,</ref><ref type="bibr" target="#b20">21,</ref><ref type="bibr" target="#b21">22,</ref><ref type="bibr" target="#b25">26,</ref><ref type="bibr" target="#b33">34,</ref><ref type="bibr" target="#b40">41]</ref> also achieved success in the few-shot segmentation. HSNet <ref type="bibr" target="#b25">[26]</ref> uses multi-scale dense matching to construct hypercorrelation and uses 4D convolution to capture context information. RePRI <ref type="bibr" target="#b1">[2]</ref> presents a transduction inference for feature extraction on a base class without meta-learning. However, these methods focus only on segmenting new categories from the same domain. Because of the large differences in cross-domain distributions, they cannot be extended to invisible domains.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Method</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Problem Setting</head><p>In the problem setting of the CD-FSS, there exists a source domain (X s ,Y s ) and a target domain (X t ,Y t ), where X denotes the distribution of the input data and Y denotes the space of the data label. The input data distribution of the source domain is different from the target domain, and the label space of the source domain does not intersect with the target domain, i.e., X s ̸ = X t and Y s ∩ Y t = / 0. The model is trained on the source domain and does not have access to the target data. We place it in a few-shot learning scenario <ref type="bibr" target="#b9">[10]</ref> for training and inference based on the episode data (S, Q) as same as the previous work <ref type="bibr" target="#b17">[18]</ref>. For the fewshot setup, the support set S = (I i s , M i s ) K i=1 contains K image mask pairs, where I i s denotes the i-th support image and M i s denotes the corresponding binary mask. Similarly, the query set is defined as Q = (I i q , M i q ) K i=1 . In the training or meta-training phase, the model obtains the support set S and the query set I q from a specific class c as input and predicts the mask M q of the query image. In the testing or meta-testing phase, the model performance is evaluated by providing the model with the support set and using the query set of the target domain. K i=1 and the query image I q , we first derive a multi-level feature map by extracting the features of different layers of the shared backbone weights. We map support and query features to a new domain-agnostic space through the semantic enhancement anchor transformation (SEAT). Then, the intra-domain residual enhancement (IRE) module is designed to preserve the matching information of the original feature space in the new feature space. After realignment, we calculate the similarity between the support and query features and input it into the 4D convolution encoder and 2D convolution decoder <ref type="bibr" target="#b25">[26]</ref> to generate a coarse query mask. The coarse mask is fed to the network with the support mask through the prototype fusion mechanism to obtain the final mask.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Overview</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">Semantic Enhanced Anchor Transformation</head><p>To help the model transfer the cross-domain knowledge, we propose a novel semantic enhancement anchor transformation (SEAT). The goal is to learn a stable pyramid anchor layer using advanced semantic features derived from a unified attention mechanism to translate features into domain-agnostic features. The downstream partitioning module will be easier to predict in such a stable space.</p><p>Semantic Enhancement. Before the transformation, the quality of segmentation prediction is highly dependent on the quality of advanced features from the encoder. If the encoder fails to provide informative advanced features, it is impossible to obtain useful domainagnostic features. Thus, we use a unified attention mechanism <ref type="bibr" target="#b37">[38]</ref> to enhance the support and query feature semantics at intermediate layer l:</p><formula xml:id="formula_0">Fl = σ (Conv([AvgPool( Fl ); MaxPool( Fl )])) ⊗ Fl ,<label>(1)</label></formula><p>where Fl denotes the masked feature, σ denotes the sigmoid function, [•; •] represents the concatenation and ⊗ represents the element-wise multiplication. The unified spatial attention mechanism can share an attention extraction module for the feature layers of different feature channels and support-query samples. It can reduce the number of parameters to be learned and help the model learn a unified domain-invariant knowledge between different feature maps from the support and query.</p><p>Anchor Transformation. Inspired by the previous work <ref type="bibr" target="#b17">[18,</ref><ref type="bibr" target="#b29">30]</ref>, we use the linear transformation matrix as the transformation mapper. The matrix can be calculated from the anchor layer parameter matrix and the support prototype. Taking 1-way 1-shot as an example, for the intermediate feature layer {F l s } L l=1 supporting the image, the l-th foreground support prototype is as follows:</p><formula xml:id="formula_1">c l s, f = ∑ i ∑ j F l,i, j s ψ l (M i, j s ) ∑ i ∑ j ψ l (M i, j s ) ,<label>(2)</label></formula><p>where ψ l (•) denotes the bilinear interpolation, F l,i, j s and M i, j s represent the pixel values corresponding to the support feature and the mask in row i and column j respectively. Similarly, the supporting background prototype c l s,b can be obtained in the same way. Therefore, given the weight matrix of anchor layer A, the definition of transformation matrix is as follows:</p><formula xml:id="formula_2">WC s = A,<label>(3)</label></formula><p>where</p><formula xml:id="formula_3">C s = c s, f ∥c s, f ∥ , c s,b ∥c s,b ∥ , A = a f ∥a f ∥ , a b ∥a b ∥</formula><p>and a is the anchor vector that has the length matching the number of channels in the high-level feature. Therefore, we can calculate the transformation matrix W conveniently. However, since the prototype C s is usually a non-square matrix, we can calculate its generalized inverse <ref type="bibr" target="#b0">[1]</ref> </p><formula xml:id="formula_4">with C + s = {C T s C s } -1 C T s .</formula><p>Therefore, the transformation matrix of the l-th intermediate layer is calculated as W l = A l C l+ s . Similar to <ref type="bibr" target="#b17">[18]</ref>, we have three anchor layers for low, medium, and high-level features respectively. Then, we can map the support and query features to stable domain-agnostic space more effectively through this transformation matrix.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.4">Intra-domain Residual Enhancement</head><p>Considering only inter-domain knowledge transfer, the model's ability to perform few-shot tasks in unseen domains is limited. This limitation arises from the fact that the features are transformed into a unified space solely through an anchor layer, leading to the loss of crucial intra-domain information. This loss is reflected in the reduced matching between supportquery features within the same domain. To address this issue, we propose an intra-domain residual enhancement module that leverages residual connections to preserve essential information from the original space to help the model perform well in the unseen domain.</p><p>Formally, for the transformed feature Fl trans = W l Fl , the definition of intra-domain residual enhancement is as follows:</p><formula xml:id="formula_5">R l = Fl trans ⊕ Fl ,<label>(4)</label></formula><p>where ⊕ denotes the residual connection and Fl denotes the masked feature. The residual enhancement module reduces the cross-domain knowledge forgetting caused by anchor layer transformation by introducing support and query information in the original domain. It does not introduce additional parameters or require additional fine-tuning in the target domain.</p><p>For each residual enhancement support-query pair, the cosine similarity is calculated to form a 4D hypercorrelation tensor:</p><formula xml:id="formula_6">Cos l i, j = ReLU R l s (i) • R l q ( j) ∥R l s (i)∥ R l q ( j) ,<label>(5)</label></formula><p>where R l s (i) and R l q ( j) means the i-th support and j-th query residual enhancement feature. The similarity is fed to the 4D convolution encoder and the 2D convolution decoder to generate the query mask. The prediction query mask and the ground truth mask are used to calculate the cross-entropy loss, and the model parameters are updated by backpropagation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.5">Mask Prediction Strategy</head><p>Due to the fine-grained difference between the support query samples and the lack of the query mask, the learning of knowledge may also be biased towards the support samples <ref type="bibr" target="#b39">[40]</ref>. At the same time, we can not calculate the query prototype, resulting in the transformation matrix being biased toward the support. To solve the above problems, we use the idea of coarse to fine <ref type="bibr" target="#b24">[25]</ref> to generate a coarse query mask, and then feed it and the support mask to the network through the prototype fusion mechanism to get the final prediction mask.</p><p>Specifically, the model first generates a coarse soft mask Mq for query samples, and the query foreground mask is calculated as follows:</p><formula xml:id="formula_7">ĉl q, f = ∑ i ∑ j F l,i, j q ψ l ( Mi, j q ) ∑ i ∑ j ψ l ( Mi, j q ) ,<label>(6)</label></formula><p>where F l,i, j q and Mi, j q represent the pixel values corresponding to the query feature and the soft mask respectively. The background mask for the query can also be calculated in the same way. Then we use a simple prototype fusion mechanism to get the final unbiased prototype:</p><formula xml:id="formula_8">c l f = αc l s, f + (1 -α)ĉ l q, f ,<label>(7)</label></formula><p>where α is a learnable parameter. Bring the fused prototype into Equation 3 to get the exact transformation matrix and go through subsequent modules to get the final query mask. This method not only solves the potential phenomenon of supporting sample over-fitting in FSS but also helps the model learn how to segment across domains step by step. Finally, we optimize the whole model through the cross-entropy loss.</p><p>Table <ref type="table">1</ref>: The results of comparison with FSS and CD-FSS methods under 1-way 1-shot and 5-shot settings on the CD-FSS benchmark. It is noteworthy that all methods are trained in PASCAL VOC and tested on the CD-FSS benchmark.</p><p>Methods Backbone ISIC Chest X-ray FSS-1000 Average 1-shot 5-shot 1-shot 5-shot 1-shot 5-shot 1-shot 5-shot Few-shot Segmentation Methods AMP <ref type="bibr" target="#b31">[32]</ref> VGG-16 28. <ref type="bibr" target="#b41">42</ref>  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">Implementation Details</head><p>Following the previous approach, we used PASCAL VOC 2012 <ref type="bibr" target="#b8">[9]</ref> and SBD <ref type="bibr" target="#b10">[11]</ref> as training domains, and then tested our models on ISIC <ref type="bibr" target="#b5">[6,</ref><ref type="bibr" target="#b34">35]</ref>, Chest X-ray <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b15">16]</ref>, and FSS-1000 <ref type="bibr" target="#b18">[19]</ref>, respectively. Each run contains 1200 tasks that contain all datasets except FSS-1000. FSS-1000 has 2400 tasks per run <ref type="bibr" target="#b17">[18]</ref>. We chose VGG-16 <ref type="bibr" target="#b32">[33]</ref> and ResNet-50 <ref type="bibr" target="#b11">[12]</ref> for feature extraction. During the training, we kept these weights frozen and selected the feature map as the same as the previous work <ref type="bibr" target="#b17">[18]</ref>. We employed Adam <ref type="bibr" target="#b16">[17]</ref> as the optimizer with a learning rate of 1e-3.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Experimental Results</head><p>As shown in Table <ref type="table">1</ref>, our average results at 1-shot and 5-shot show that compared to existing methods, the mIOU of VGG-16 has increased by 3.91% and 0.59%, and the mIOU of ResNet-50 has increased by 2.62% and 1.55%. In the case of a large gap between the fields in the source domain dataset, our model achieves SOTA in all results for Chest X-rays. In ISIC, the mIOU of VGG-16 increased by 3.93% (1-shot), and the mIOU of ResNet-50 increased by 1.09% (1-shot). For FSS-1000, which has a relatively small gap from the source domain dataset, our model surpasses all existing methods and validates its advantages in CD-FSS. In addition, we show some qualitative results of the proposed method on different datasets in Figure <ref type="figure" target="#fig_3">3</ref>. These results prove that our method can improve the generalization ability, which benefits from that our method can learn cross-domain knowledge from different views.  in Table <ref type="table" target="#tab_1">2</ref>. It can be concluded that SEAT and IRE have brought significant improvements to the model from different perspectives, and MPS is also indispensable.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Ablation Study</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3.2">Effect of Different Attention</head><p>We mentioned a unified attention mechanism in Section 3.3. In Table <ref type="table" target="#tab_2">3</ref>, we calculated its results on the FSS-1000 with different attention mechanisms (i.e., support and query nonshared attention mechanism modules). The results show that a unified attention mechanism can not only help the model reduce learnable parameters but also help the model learn unified support query attention information to achieve better segmentation results.  In Section 3.4, we mentioned the importance of intra-domain matching similarity. To quantify this attribute, for the same domain support and query samples, we calculate the supportquery similarity in Equation 5 and count the pixel pairs in each similarity whose value is greater than zero. We call these pixel pairs intra-domain active matching. The Intra-domain active matching reflects the knowledge learning between support and query samples from the same domain, which can well represent the retention of intra-domain knowledge by the model after cross-domain feature projection in the CD-FSS. Specifically, we visualized the active matching of our method and existing methods <ref type="bibr" target="#b17">[18]</ref> during the training process, as shown in Figure <ref type="figure" target="#fig_4">4(a)</ref>, where Original denotes no feature transformation. Compared to existing methods, our method can well preserve the intra-domain  knowledge in the original space and reduce the loss caused by cross-domain transformation. Further, we visualize the support-query similarity for the 30th epoch. For ease of visualization, we reshape the similarity from R ∈H×W ×H×W to R ∈HW ×HW , as shown in Figure <ref type="figure" target="#fig_4">4</ref>(b) and Figure <ref type="figure" target="#fig_4">4</ref>(c). It can be shown that our method can activate more intra-domain matching, helping the model utilize more intra-domain support-query information.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4.2">Comparison of Model Parameter Quantities</head><p>In Table <ref type="table" target="#tab_3">4</ref>, we compare the number of parameters with those of existing FSS methods and CD-FSS methods. We calculate the number of additional parameters relative to the backbone. The results show that our method only introduces a very small number of parameters but has additional performance improvements compared with the recent CD-FSS method.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Conclusion</head><p>In this work, we propose a residual transform network (RestNet) to solve the cross-domain few-shot segmentation (CD-FSS). It is to comprehensively help the model to transfer knowledge with few samples from both inter-domain and intra-domain perspectives. To achieve this, we propose a Semantic Enhanced Anchor Transformation (SEAT) module to help the model learn domain-independent features using advanced semantic features. In addition, an intra-domain residual enhancement (IRE) module is also involved to help the model enhance intra-domain information while transferring knowledge between domains. Finally, we use the mask prediction strategy based on prototype fusion to help the model gradually learn how to segment the unseen domain. On the three CD-FSS benchmarks, several experiments have proved that our RestNet achieves state-of-the-art performance.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 :</head><label>2</label><figDesc>Figure 2: The framework of our RestNet. The model maps support and query features to a new domain-independent space using Semantic Enhanced Anchor Transform (SEAT). The Intra-Domain Residual Enhancement (IRE) module is designed to preserve the matching information of the original feature space in the new space. Next, the similarity between the support and query is calculated and input into the encoder and decoder to generate a rough mask. The final mask is obtained by a prototype fusion mechanism in the fine stage.</figDesc><graphic coords="4,22.62,28.97,354.73,115.33" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2</head><label>2</label><figDesc>Figure 2 illustrates our RestNet, which incorporates two key components to enable rapid CD-FSS adaptation across both inter-and intra-domain: Semantic Enhancement Anchor Transformation (SEAT) and Intra-domain Residual Enhancement (IRE) module. Given the support set S = (I i s , M i s )</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>4. 3 . 1</head><label>31</label><figDesc>Component AnalysisOur method mainly includes three parts, namely the Semantic Enhanced Anchor Transformation (SEAT) module and the Residual Enhancement (IRE) module, and Mask Prediction Strategy (MPS). We validated the effectiveness of each component and presented the results</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Qualitative results of our model for 1-way 1-shot in different CD-FSS datasets. The model is trained using PASCAL VOC. Best color view and zoom in.</figDesc><graphic coords="8,76.39,28.96,247.20,121.32" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Visualization of the Intra-domain support-query activate matching.</figDesc><graphic coords="9,32.69,35.10,131.74,98.81" type="bitmap"/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 2 :</head><label>2</label><figDesc>Ablation study of key modules on FSS-1000.</figDesc><table><row><cell cols="5">Baseline SEAT IRE MPS 1-shot mIOU</cell></row><row><cell>✓</cell><cell/><cell/><cell/><cell>77.53</cell></row><row><cell>✓</cell><cell>✓</cell><cell/><cell/><cell>78.21</cell></row><row><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell/><cell>81.03</cell></row><row><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell>81.53</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Table 3 :</head><label>3</label><figDesc>Ablation study of different attention on FSS-1000.</figDesc><table><row><cell>Method</cell><cell>1-shot mIOU</cell></row><row><cell>Different Attention</cell><cell>81.69</cell></row><row><cell>Unified Attention</cell><cell>82.03</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>Table 4 :</head><label>4</label><figDesc>Comparison of the number of additional parameters of different methods.</figDesc><table><row><cell>Additional Parameters (M)</cell><cell>2.5740 M</cell><cell>2.5809 M</cell><cell>2.5812 M</cell></row></table><note><p><p><p><p><p><p>Method</p>HSNet</p><ref type="bibr" target="#b25">[26]</ref> </p>PATNet</p><ref type="bibr" target="#b17">[18]</ref> </p>RestNet (Ours)</p></note></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div><head>Acknowledgement</head><p>This work was supported by the <rs type="funder">National Key R&amp;D Program of China</rs> (<rs type="grantNumber">2021ZD0109800</rs>), by the <rs type="funder">National Natural Science Foundation of China</rs> (<rs type="grantNumber">81972248</rs>).</p></div>
+			</div>
+			<listOrg type="funding">
+				<org type="funding" xml:id="_SS7tyVE">
+					<idno type="grant-number">2021ZD0109800</idno>
+				</org>
+				<org type="funding" xml:id="_aJ9gcX6">
+					<idno type="grant-number">81972248</idno>
+				</org>
+			</listOrg>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">Generalized inverses: theory and applications</title>
+		<author>
+			<persName><forename type="first">Adi</forename><surname>Ben</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">-</forename><surname>Israel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Ne Greville</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003">2003</date>
+			<publisher>Springer Science &amp; Business Media</publisher>
+			<biblScope unit="volume">15</biblScope>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Adi Ben-Israel and Thomas NE Greville. Generalized inverses: theory and applica- tions, volume 15. Springer Science &amp; Business Media, 2003.</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Few-shot segmentation without meta-learning: A good transductive inference is all you need</title>
+		<author>
+			<persName><forename type="first">Malik</forename><surname>Boudiaf</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hoel</forename><surname>Kervadec</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ziko</forename><surname>Imtiaz Masud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pablo</forename><surname>Piantanida</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ismail</forename><surname>Ben Ayed</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jose</forename><surname>Dolz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="13979" to="13988"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Malik Boudiaf, Hoel Kervadec, Ziko Imtiaz Masud, Pablo Piantanida, Ismail Ben Ayed, and Jose Dolz. Few-shot segmentation without meta-learning: A good transductive inference is all you need? In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pages 13979-13988, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Lung segmentation in chest radiographs using anatomical atlases with nonrigid registration</title>
+		<author>
+			<persName><forename type="first">Sema</forename><surname>Candemir</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Jaeger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kannappan</forename><surname>Palaniappan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><forename type="middle">P</forename><surname>Musco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Rahul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhiyun</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexandros</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sameer</forename><surname>Karargyris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">George</forename><surname>Antani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Clement</forename><forename type="middle">J</forename><surname>Thoma</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Mcdonald</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE transactions on medical imaging</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="577" to="590"/>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Sema Candemir, Stefan Jaeger, Kannappan Palaniappan, Jonathan P Musco, Rahul K Singh, Zhiyun Xue, Alexandros Karargyris, Sameer Antani, George Thoma, and Clement J McDonald. Lung segmentation in chest radiographs using anatomical at- lases with nonrigid registration. IEEE transactions on medical imaging, 33(2):577- 590, 2013.</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">No more discrimination: Cross city adaptation of road scene segmenters</title>
+		<author>
+			<persName><forename type="first">Yi-Hsin</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei-Yu</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu-Ting</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bo-Cheng</forename><surname>Tsai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu-Chiang</forename><surname>Frank</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wang</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Min</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE International Conference on Computer Vision</title>
+		<meeting>the IEEE International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="1992" to="2001"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Yi-Hsin Chen, Wei-Yu Chen, Yu-Ting Chen, Bo-Cheng Tsai, Yu-Chiang Frank Wang, and Min Sun. No more discrimination: Cross city adaptation of road scene segmenters. In Proceedings of the IEEE International Conference on Computer Vision, pages 1992- 2001, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Road: Reality oriented adaptation for semantic segmentation of urban scenes</title>
+		<author>
+			<persName><forename type="first">Yuhua</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wen</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luc</forename><surname>Van Gool</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="7892" to="7901"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Yuhua Chen, Wen Li, and Luc Van Gool. Road: Reality oriented adaptation for seman- tic segmentation of urban scenes. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 7892-7901, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Skin lesion analysis toward melanoma detection 2018: A challenge hosted by the international skin imaging collaboration</title>
+		<author>
+			<persName><forename type="first">Noel</forename><surname>Codella</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Veronica</forename><surname>Rotemberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Philipp</forename><surname>Tschandl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M Emre</forename><surname>Celebi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stephen</forename><surname>Dusza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>Gutman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brian</forename><surname>Helba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aadi</forename><surname>Kalloo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Konstantinos</forename><surname>Liopyris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Marchetti</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1902.03368</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note>isic</note>
+	<note type="raw_reference">Noel Codella, Veronica Rotemberg, Philipp Tschandl, M Emre Celebi, Stephen Dusza, David Gutman, Brian Helba, Aadi Kalloo, Konstantinos Liopyris, Michael Marchetti, et al. Skin lesion analysis toward melanoma detection 2018: A challenge hosted by the international skin imaging collaboration (isic). arXiv preprint arXiv:1902.03368, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Deformable convolutional networks</title>
+		<author>
+			<persName><forename type="first">Jifeng</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haozhi</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuwen</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guodong</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Han</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yichen</forename><surname>Wei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE international conference on computer vision</title>
+		<meeting>the IEEE international conference on computer vision</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="764" to="773"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Jifeng Dai, Haozhi Qi, Yuwen Xiong, Yi Li, Guodong Zhang, Han Hu, and Yichen Wei. Deformable convolutional networks. In Proceedings of the IEEE international conference on computer vision, pages 764-773, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Ssf-dan: Separated semantic feature based domain adaptation network for semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Liang</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingang</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hongye</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianfeng</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiangyang</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qibao</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoqing</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolin</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+		<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="982" to="991"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Liang Du, Jingang Tan, Hongye Yang, Jianfeng Feng, Xiangyang Xue, Qibao Zheng, Xiaoqing Ye, and Xiaolin Zhang. Ssf-dan: Separated semantic feature based domain adaptation network for semantic segmentation. In Proceedings of the IEEE/CVF Inter- national Conference on Computer Vision, pages 982-991, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">The pascal visual object classes (voc) challenge</title>
+		<author>
+			<persName><forename type="first">Mark</forename><surname>Everingham</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luc</forename><surname>Van Gool</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">I</forename><surname>Christopher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><surname>Williams</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Winn</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Zisserman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International journal of computer vision</title>
+		<imprint>
+			<biblScope unit="volume">88</biblScope>
+			<biblScope unit="page" from="303" to="308"/>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Mark Everingham, Luc Van Gool, Christopher KI Williams, John Winn, and Andrew Zisserman. The pascal visual object classes (voc) challenge. International journal of computer vision, 88:303-308, 2009.</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">Meta-learning and universality: Deep representations and gradient descent can approximate any learning algorithm</title>
+		<author>
+			<persName><forename type="first">Chelsea</forename><surname>Finn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1710.11622</idno>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Chelsea Finn and Sergey Levine. Meta-learning and universality: Deep representa- tions and gradient descent can approximate any learning algorithm. arXiv preprint arXiv:1710.11622, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Semantic contours from inverse detectors</title>
+		<author>
+			<persName><forename type="first">Bharath</forename><surname>Hariharan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pablo</forename><surname>Arbeláez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lubomir</forename><surname>Bourdev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Subhransu</forename><surname>Maji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jitendra</forename><surname>Malik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2011 international conference on computer vision</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2011">2011</date>
+			<biblScope unit="page" from="991" to="998"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Bharath Hariharan, Pablo Arbeláez, Lubomir Bourdev, Subhransu Maji, and Jitendra Malik. Semantic contours from inverse detectors. In 2011 international conference on computer vision, pages 991-998. IEEE, 2011.</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Deep residual learning for image recognition</title>
+		<author>
+			<persName><forename type="first">Kaiming</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiangyu</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shaoqing</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jian</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="770" to="778"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 770-778, 2016.</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Mask r-cnn</title>
+		<author>
+			<persName><forename type="first">Kaiming</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Georgia</forename><surname>Gkioxari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Piotr</forename><surname>Dollár</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ross</forename><surname>Girshick</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE international conference on computer vision</title>
+		<meeting>the IEEE international conference on computer vision</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="2961" to="2969"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick. Mask r-cnn. In Pro- ceedings of the IEEE international conference on computer vision, pages 2961-2969, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Darcnn: Domain adaptive region-based convolutional neural network for unsupervised instance segmentation in biomedical images</title>
+		<author>
+			<persName><forename type="first">Joy</forename><surname>Hsu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wah</forename><surname>Chiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Serena</forename><surname>Yeung</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="1003" to="1012"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Joy Hsu, Wah Chiu, and Serena Yeung. Darcnn: Domain adaptive region-based convo- lutional neural network for unsupervised instance segmentation in biomedical images. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recog- nition, pages 1003-1012, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Multi-level adversarial network for domain adaptive semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Jiaxing</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dayan</forename><surname>Guan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aoran</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shijian</forename><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Pattern Recognition</title>
+		<imprint>
+			<biblScope unit="volume">123</biblScope>
+			<biblScope unit="page">108384</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Jiaxing Huang, Dayan Guan, Aoran Xiao, and Shijian Lu. Multi-level adversarial net- work for domain adaptive semantic segmentation. Pattern Recognition, 123:108384, 2022.</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Automatic tuberculosis screening using chest radiographs</title>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Jaeger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexandros</forename><surname>Karargyris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sema</forename><surname>Candemir</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Les</forename><surname>Folio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jenifer</forename><surname>Siegelman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fiona</forename><surname>Callaghan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhiyun</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kannappan</forename><surname>Palaniappan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Rahul</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sameer</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Antani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE transactions on medical imaging</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="233" to="245"/>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Stefan Jaeger, Alexandros Karargyris, Sema Candemir, Les Folio, Jenifer Siegelman, Fiona Callaghan, Zhiyun Xue, Kannappan Palaniappan, Rahul K Singh, Sameer An- tani, et al. Automatic tuberculosis screening using chest radiographs. IEEE transac- tions on medical imaging, 33(2):233-245, 2013.</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Adam: A method for stochastic optimization</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Diederik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jimmy</forename><surname>Kingma</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Ba</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1412.6980</idno>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Diederik P Kingma and Jimmy Ba. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980, 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Cross-domain few-shot semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Shuo</forename><surname>Lei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xuchao</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianfeng</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fanglan</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bowen</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chang-Tien</forename><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Computer Vision-ECCV 2022: 17th European Conference</title>
+		<meeting><address><addrLine>Tel Aviv, Israel</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2022">October 23-27, 2022. 2022</date>
+			<biblScope unit="page" from="73" to="90"/>
+		</imprint>
+	</monogr>
+	<note>Proceedings, Part XXX</note>
+	<note type="raw_reference">Shuo Lei, Xuchao Zhang, Jianfeng He, Fanglan Chen, Bowen Du, and Chang-Tien Lu. Cross-domain few-shot semantic segmentation. In Computer Vision-ECCV 2022: 17th European Conference, Tel Aviv, Israel, October 23-27, 2022, Proceedings, Part XXX, pages 73-90. Springer, 2022.</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Fss-1000: A 1000-class dataset for few-shot segmentation</title>
+		<author>
+			<persName><forename type="first">Xiang</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tianhan</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu-Wing</forename><surname>Yau Pun Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chi-Keung</forename><surname>Tai</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Tang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE/CVF conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="2869" to="2878"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Xiang Li, Tianhan Wei, Yau Pun Chen, Yu-Wing Tai, and Chi-Keung Tang. Fss-1000: A 1000-class dataset for few-shot segmentation. In Proceedings of the IEEE/CVF con- ference on computer vision and pattern recognition, pages 2869-2878, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Few-shot semantic segmentation with self-supervision from pseudo-classes</title>
+		<author>
+			<persName><forename type="first">Yiwen</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gratianus</forename><surname>Wesley Putra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yunguan</forename><surname>Data</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yipeng</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adrian</forename><surname>Victor</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Prisacariu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">32nd British Machine Vision Conference 2021</title>
+		<imprint>
+			<date type="published" when="2021">November 22-25, 2021, 2021</date>
+		</imprint>
+	</monogr>
+	<note>BMVC 2021</note>
+	<note type="raw_reference">Yiwen Li, Gratianus Wesley Putra Data, Yunguan Fu, Yipeng Hu, and Victor Adrian Prisacariu. Few-shot semantic segmentation with self-supervision from pseudo-classes. In 32nd British Machine Vision Conference 2021, BMVC 2021, November 22-25, 2021, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Few-shot semantic segmentation with support-induced graph convolutional network</title>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yanqi</forename><surname>Bao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenzhe</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yang</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jan-Jakob</forename><surname>Sonke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Efstratios</forename><surname>Gavves</surname></persName>
+		</author>
+		<ptr target="https://bmvc2022.mpi-inf.mpg.de/0126.pdf"/>
+	</analytic>
+	<monogr>
+		<title level="m">33rd British Machine Vision Conference 2022</title>
+		<meeting><address><addrLine>London, UK</addrLine></address></meeting>
+		<imprint>
+			<publisher>BMVA Press</publisher>
+			<date type="published" when="2022">November 21-24, 2022. 2022</date>
+		</imprint>
+	</monogr>
+	<note>BMVC 2022</note>
+	<note type="raw_reference">Jie Liu, Yanqi Bao, Wenzhe Yin, haochen wang, Yang Gao, Jan-Jakob Sonke, and Ef- stratios Gavves. Few-shot semantic segmentation with support-induced graph convo- lutional network. In 33rd British Machine Vision Conference 2022, BMVC 2022, Lon- don, UK, November 21-24, 2022. BMVA Press, 2022. URL https://bmvc2022. mpi-inf.mpg.de/0126.pdf.</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Crnet: Cross-reference networks for few-shot segmentation</title>
+		<author>
+			<persName><forename type="first">Weide</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chi</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guosheng</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fayao</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="4165" to="4173"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Weide Liu, Chi Zhang, Guosheng Lin, and Fayao Liu. Crnet: Cross-reference networks for few-shot segmentation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pages 4165-4173, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Source-free domain adaptation for semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Yuang</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jun</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="1215" to="1224"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Yuang Liu, Wei Zhang, and Jun Wang. Source-free domain adaptation for semantic segmentation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pages 1215-1224, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Fully convolutional networks for semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Long</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Evan</forename><surname>Shelhamer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Trevor</forename><surname>Darrell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="3431" to="3440"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Jonathan Long, Evan Shelhamer, and Trevor Darrell. Fully convolutional networks for semantic segmentation. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 3431-3440, 2015.</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Vision: A computational investigation into the human representation and processing of visual information</title>
+		<author>
+			<persName><forename type="first">David</forename><surname>Marr</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2010">2010</date>
+			<publisher>MIT press</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">David Marr. Vision: A computational investigation into the human representation and processing of visual information. MIT press, 2010.</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Hypercorrelation squeeze for few-shot segmentation</title>
+		<author>
+			<persName><forename type="first">Juhong</forename><surname>Min</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dahyun</forename><surname>Kang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Minsu</forename><surname>Cho</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF international conference on computer vision</title>
+		<meeting>the IEEE/CVF international conference on computer vision</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="6941" to="6952"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Juhong Min, Dahyun Kang, and Minsu Cho. Hypercorrelation squeeze for few-shot segmentation. In Proceedings of the IEEE/CVF international conference on computer vision, pages 6941-6952, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Interclass prototype relation for few-shot segmentation</title>
+		<author>
+			<persName><forename type="first">Atsuro</forename><surname>Okazawa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Computer Vision-ECCV 2022: 17th European Conference</title>
+		<meeting><address><addrLine>Tel Aviv, Israel</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2022">October 23-27, 2022. 2022</date>
+			<biblScope unit="volume">XXIX</biblScope>
+			<biblScope unit="page" from="362" to="378"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Atsuro Okazawa. Interclass prototype relation for few-shot segmentation. In Computer Vision-ECCV 2022: 17th European Conference, Tel Aviv, Israel, October 23-27, 2022, Proceedings, Part XXIX, pages 362-378. Springer, 2022.</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">You only look once: Unified, real-time object detection</title>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Redmon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Santosh</forename><surname>Divvala</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ross</forename><surname>Girshick</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ali</forename><surname>Farhadi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="page" from="779" to="788"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Joseph Redmon, Santosh Divvala, Ross Girshick, and Ali Farhadi. You only look once: Unified, real-time object detection. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 779-788, 2016.</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">U-net: Convolutional networks for biomedical image segmentation</title>
+		<author>
+			<persName><forename type="first">Olaf</forename><surname>Ronneberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Philipp</forename><surname>Fischer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Brox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Medical Image Computing and Computer-Assisted Intervention-MICCAI 2015: 18th International Conference</title>
+		<meeting><address><addrLine>Munich, Germany</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2015">October 5-9, 2015. 2015</date>
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="page" from="234" to="241"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Olaf Ronneberger, Philipp Fischer, and Thomas Brox. U-net: Convolutional networks for biomedical image segmentation. In Medical Image Computing and Computer- Assisted Intervention-MICCAI 2015: 18th International Conference, Munich, Ger- many, October 5-9, 2015, Proceedings, Part III 18, pages 234-241. Springer, 2015.</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Task-adaptive feature transformer with semantic enrichment for few-shot segmentation</title>
+		<author>
+			<persName><forename type="first">Jun</forename><surname>Seo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Young-Hyun</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sung</forename><forename type="middle">Whan</forename><surname>Yoon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jaekyun</forename><surname>Moon</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2202.06498</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Jun Seo, Young-Hyun Park, Sung Whan Yoon, and Jaekyun Moon. Task-adaptive fea- ture transformer with semantic enrichment for few-shot segmentation. arXiv preprint arXiv:2202.06498, 2022.</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<title level="m" type="main">One-shot learning for semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Amirreza</forename><surname>Shaban</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shray</forename><surname>Bansal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhen</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Irfan</forename><surname>Essa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Byron</forename><surname>Boots</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1709.03410</idno>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Amirreza Shaban, Shray Bansal, Zhen Liu, Irfan Essa, and Byron Boots. One-shot learning for semantic segmentation. arXiv preprint arXiv:1709.03410, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Amp: Adaptive masked proxies for few-shot segmentation</title>
+		<author>
+			<persName><forename type="first">Mennatullah</forename><surname>Siam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Boris</forename><forename type="middle">N</forename><surname>Oreshkin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Martin</forename><surname>Jagersand</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+		<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="5249" to="5258"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Mennatullah Siam, Boris N Oreshkin, and Martin Jagersand. Amp: Adaptive masked proxies for few-shot segmentation. In Proceedings of the IEEE/CVF International Conference on Computer Vision, pages 5249-5258, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<title level="m" type="main">Very deep convolutional networks for largescale image recognition</title>
+		<author>
+			<persName><forename type="first">Karen</forename><surname>Simonyan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Zisserman</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1409.1556</idno>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note type="raw_reference">Karen Simonyan and Andrew Zisserman. Very deep convolutional networks for large- scale image recognition. arXiv preprint arXiv:1409.1556, 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Prior guided feature enrichment network for few-shot segmentation</title>
+		<author>
+			<persName><forename type="first">Zhuotao</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hengshuang</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michelle</forename><surname>Shu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhicheng</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruiyu</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiaya</forename><surname>Jia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE transactions on pattern analysis and machine intelligence</title>
+		<imprint>
+			<biblScope unit="volume">44</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="1050" to="1065"/>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Zhuotao Tian, Hengshuang Zhao, Michelle Shu, Zhicheng Yang, Ruiyu Li, and Jiaya Jia. Prior guided feature enrichment network for few-shot segmentation. IEEE trans- actions on pattern analysis and machine intelligence, 44(2):1050-1065, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">The ham10000 dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions</title>
+		<author>
+			<persName><forename type="first">Philipp</forename><surname>Tschandl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cliff</forename><surname>Rosendahl</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Harald</forename><surname>Kittler</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Scientific data</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="1" to="9"/>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Philipp Tschandl, Cliff Rosendahl, and Harald Kittler. The ham10000 dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions. Scientific data, 5(1):1-9, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Panet: Few-shot image semantic segmentation with prototype alignment</title>
+		<author>
+			<persName><forename type="first">Kaixin</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jun</forename><surname>Hao Liew</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yingtian</forename><surname>Zou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daquan</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiashi</forename><surname>Feng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">proceedings of the IEEE/CVF international conference on computer vision</title>
+		<meeting>the IEEE/CVF international conference on computer vision</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="9197" to="9206"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Kaixin Wang, Jun Hao Liew, Yingtian Zou, Daquan Zhou, and Jiashi Feng. Panet: Few-shot image semantic segmentation with prototype alignment. In proceedings of the IEEE/CVF international conference on computer vision, pages 9197-9206, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Exploring cross-image pixel contrast for semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Wenguan</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tianfei</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fisher</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jifeng</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ender</forename><surname>Konukoglu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luc</forename><surname>Van Gool</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+		<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="7303" to="7313"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Wenguan Wang, Tianfei Zhou, Fisher Yu, Jifeng Dai, Ender Konukoglu, and Luc Van Gool. Exploring cross-image pixel contrast for semantic segmentation. In Pro- ceedings of the IEEE/CVF International Conference on Computer Vision, pages 7303- 7313, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Cbam: Convolutional block attention module</title>
+		<author>
+			<persName><forename type="first">Sanghyun</forename><surname>Woo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jongchan</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joon-Young</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">In</forename><surname>So Kweon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the European conference on computer vision (ECCV)</title>
+		<meeting>the European conference on computer vision (ECCV)</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="3" to="19"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Sanghyun Woo, Jongchan Park, Joon-Young Lee, and In So Kweon. Cbam: Convolu- tional block attention module. In Proceedings of the European conference on computer vision (ECCV), pages 3-19, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Prototype mixture models for few-shot semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Boyu</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chang</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bohao</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianbin</forename><surname>Jiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qixiang</forename><surname>Ye</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Computer Vision-ECCV 2020: 16th European Conference</title>
+		<meeting><address><addrLine>Glasgow, UK</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2020">August 23-28, 2020. 2020</date>
+			<biblScope unit="volume">16</biblScope>
+			<biblScope unit="page" from="763" to="778"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Boyu Yang, Chang Liu, Bohao Li, Jianbin Jiao, and Qixiang Ye. Prototype mixture models for few-shot semantic segmentation. In Computer Vision-ECCV 2020: 16th European Conference, Glasgow, UK, August 23-28, 2020, Proceedings, Part VIII 16, pages 763-778. Springer, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Boosting few-shot fine-grained recognition with background suppression and foreground alignment</title>
+		<author>
+			<persName><forename type="first">Zican</forename><surname>Zha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hao</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yunlian</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jinhui</forename><surname>Tang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Circuits and Systems for Video Technology</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Zican Zha, Hao Tang, Yunlian Sun, and Jinhui Tang. Boosting few-shot fine-grained recognition with background suppression and foreground alignment. IEEE Transac- tions on Circuits and Systems for Video Technology, 2023.</note>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Pyramid graph networks with connection attentions for region-based one-shot semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Chi</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guosheng</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fayao</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiushuang</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qingyao</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rui</forename><surname>Yao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+		<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="9587" to="9595"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Chi Zhang, Guosheng Lin, Fayao Liu, Jiushuang Guo, Qingyao Wu, and Rui Yao. Pyramid graph networks with connection attentions for region-based one-shot semantic segmentation. In Proceedings of the IEEE/CVF International Conference on Computer Vision, pages 9587-9595, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Canet: Classagnostic segmentation networks with iterative refinement and attentive few-shot learning</title>
+		<author>
+			<persName><forename type="first">Chi</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guosheng</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fayao</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rui</forename><surname>Yao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chunhua</forename><surname>Shen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+		<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="5217" to="5226"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Chi Zhang, Guosheng Lin, Fayao Liu, Rui Yao, and Chunhua Shen. Canet: Class- agnostic segmentation networks with iterative refinement and attentive few-shot learn- ing. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pages 5217-5226, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Pyramid scene parsing network</title>
+		<author>
+			<persName><forename type="first">Hengshuang</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianping</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaojuan</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaogang</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiaya</forename><surname>Jia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+		<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="2881" to="2890"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Hengshuang Zhao, Jianping Shi, Xiaojuan Qi, Xiaogang Wang, and Jiaya Jia. Pyramid scene parsing network. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 2881-2890, 2017.</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,335 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{24}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{}, \showDOI{}, and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showDOI}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showDOI #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showDOI      \undefined \def \showDOI       #1{#1}\fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Abilov et~al\mbox{.}(2021)]%
+        {abilov2021voterfraud2020}
+\bibfield{author}{\bibinfo{person}{Anton Abilov}, \bibinfo{person}{Yiqing Hua},
+  \bibinfo{person}{Hana Matatov}, \bibinfo{person}{Ofra Amir}, {and}
+  \bibinfo{person}{Mor Naaman}.} \bibinfo{year}{2021}\natexlab{}.
+\newblock \showarticletitle{VoterFraud2020: a Multi-modal Dataset of Election
+  Fraud Claims on Twitter}. In \bibinfo{booktitle}{\emph{Proceedings of the
+  International AAAI Conference on Web and Social Media}},
+  Vol.~\bibinfo{volume}{15}. \bibinfo{pages}{901--912}.
+\newblock
+
+
+\bibitem[Aiyappa et~al\mbox{.}(2023)]%
+        {aiyappa2023multi}
+\bibfield{author}{\bibinfo{person}{Rachith Aiyappa}, \bibinfo{person}{Matthew~R
+  DeVerna}, \bibinfo{person}{Manita Pote}, \bibinfo{person}{Bao~Tran Truong},
+  \bibinfo{person}{Wanying Zhao}, \bibinfo{person}{David Axelrod},
+  \bibinfo{person}{Aria Pessianzadeh}, \bibinfo{person}{Zoher Kachwala},
+  \bibinfo{person}{Munjung Kim}, \bibinfo{person}{Ozgur~Can Seckin},
+  {et~al\mbox{.}}} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{A multi-platform collection of social media posts
+  about the 2022 US midterm elections}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the International AAAI Conference on
+  Web and Social Media}}, Vol.~\bibinfo{volume}{17}. \bibinfo{pages}{981--989}.
+\newblock
+
+
+\bibitem[Allcott and Gentzkow(2017)]%
+        {allcott2017social}
+\bibfield{author}{\bibinfo{person}{Hunt Allcott} {and} \bibinfo{person}{Matthew
+  Gentzkow}.} \bibinfo{year}{2017}\natexlab{}.
+\newblock \showarticletitle{Social media and fake news in the 2016 election}.
+\newblock \bibinfo{journal}{\emph{Journal of economic perspectives}}
+  \bibinfo{volume}{31}, \bibinfo{number}{2} (\bibinfo{year}{2017}),
+  \bibinfo{pages}{211--36}.
+\newblock
+
+
+\bibitem[Basile et~al\mbox{.}(2018)]%
+        {valerio2018long}
+\bibfield{author}{\bibinfo{person}{Valerio Basile}, \bibinfo{person}{Mirko
+  Lai}, {and} \bibinfo{person}{Manuela Sanguinetti}.}
+  \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Long-term social media data collection at the
+  university of turin}. In \bibinfo{booktitle}{\emph{Proceedings of the Fifth
+  Italian Conference on Computational Linguistics (CLiC-it 2018)}}. CEUR-WS,
+  \bibinfo{pages}{1--6}.
+\newblock
+
+
+\bibitem[Bovet and Makse(2019)]%
+        {bovet2019influence}
+\bibfield{author}{\bibinfo{person}{Alexandre Bovet} {and}
+  \bibinfo{person}{Hern{\'a}n~A Makse}.} \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{Influence of fake news in Twitter during the 2016
+  US presidential election}.
+\newblock \bibinfo{journal}{\emph{Nature communications}} \bibinfo{volume}{10},
+  \bibinfo{number}{1} (\bibinfo{year}{2019}), \bibinfo{pages}{1--14}.
+\newblock
+
+
+\bibitem[Calisir and Brambilla(2020)]%
+        {calisir2020long}
+\bibfield{author}{\bibinfo{person}{Emre Calisir} {and} \bibinfo{person}{Marco
+  Brambilla}.} \bibinfo{year}{2020}\natexlab{}.
+\newblock \showarticletitle{The Long-Running Debate about Brexit on Social
+  Media}. In \bibinfo{booktitle}{\emph{Proceedings of the International AAAI
+  Conference on Web and Social Media}}, Vol.~\bibinfo{volume}{14}.
+  \bibinfo{pages}{848--852}.
+\newblock
+
+
+\bibitem[Chen et~al\mbox{.}(2022)]%
+        {chen2022election2020}
+\bibfield{author}{\bibinfo{person}{Emily Chen}, \bibinfo{person}{Ashok Deb},
+  {and} \bibinfo{person}{Emilio Ferrara}.} \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{\# Election2020: The first public Twitter dataset
+  on the 2020 US Presidential election}.
+\newblock \bibinfo{journal}{\emph{Journal of Computational Social Science}}
+  \bibinfo{volume}{5}, \bibinfo{number}{1} (\bibinfo{year}{2022}),
+  \bibinfo{pages}{1--18}.
+\newblock
+
+
+\bibitem[{CrowdTangle Team}(2022)]%
+        {crowdtangle}
+\bibfield{author}{\bibinfo{person}{{CrowdTangle Team}}.}
+  \bibinfo{year}{2022}\natexlab{}.
+\newblock \bibinfo{title}{CrowdTangle}.
+\newblock
+\newblock
+\urldef\tempurl%
+\url{https://crowdtangle.com/}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Crupi et~al\mbox{.}(2022)]%
+        {crupi2022echoes}
+\bibfield{author}{\bibinfo{person}{Giuseppe Crupi}, \bibinfo{person}{Yelena
+  Mejova}, \bibinfo{person}{Michele Tizzani}, \bibinfo{person}{Daniela
+  Paolotti}, {and} \bibinfo{person}{Andr{\'e} Panisson}.}
+  \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{Echoes through Time: Evolution of the Italian
+  COVID-19 Vaccination Debate}. In \bibinfo{booktitle}{\emph{Proceedings of the
+  International AAAI Conference on Web and Social Media}},
+  Vol.~\bibinfo{volume}{16}. \bibinfo{pages}{102--113}.
+\newblock
+
+
+\bibitem[Deb et~al\mbox{.}(2019)]%
+        {deb2019perils}
+\bibfield{author}{\bibinfo{person}{Ashok Deb}, \bibinfo{person}{Luca Luceri},
+  \bibinfo{person}{Adam Badaway}, {and} \bibinfo{person}{Emilio Ferrara}.}
+  \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{Perils and challenges of social media and election
+  manipulation analysis: The 2018 us midterms}. In
+  \bibinfo{booktitle}{\emph{Companion proceedings of the 2019 world wide web
+  conference}}. \bibinfo{pages}{237--247}.
+\newblock
+
+
+\bibitem[DeVerna et~al\mbox{.}(2021)]%
+        {deverna2021covaxxy}
+\bibfield{author}{\bibinfo{person}{Matthew DeVerna}, \bibinfo{person}{Francesco
+  Pierri}, \bibinfo{person}{Bao Truong}, \bibinfo{person}{John Bollenbacher},
+  \bibinfo{person}{David Axelrod}, \bibinfo{person}{Niklas Loynes},
+  \bibinfo{person}{Cristopher Torres-Lugo}, \bibinfo{person}{Kai-Cheng Yang},
+  \bibinfo{person}{Fil Menczer}, {and} \bibinfo{person}{John Bryden}.}
+  \bibinfo{year}{2021}\natexlab{}.
+\newblock \showarticletitle{CoVaxxy: A global collection of English Twitter
+  posts about COVID-19 vaccines}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the International AAAI
+  Conference on Web and Social Media}} (\bibinfo{year}{2021}).
+\newblock
+
+
+\bibitem[Di~Giovanni and Brambilla(2021)]%
+        {di2021content}
+\bibfield{author}{\bibinfo{person}{Marco Di~Giovanni} {and}
+  \bibinfo{person}{Marco Brambilla}.} \bibinfo{year}{2021}\natexlab{}.
+\newblock \showarticletitle{Content-based Stance Classification of Tweets about
+  the 2020 Italian Constitutional Referendum}. In
+  \bibinfo{booktitle}{\emph{SocialNLP@ NAACL 2021}}. \bibinfo{pages}{14--23}.
+\newblock
+
+
+\bibitem[Di~Giovanni et~al\mbox{.}(2022)]%
+        {di2022vaccineu}
+\bibfield{author}{\bibinfo{person}{Marco Di~Giovanni},
+  \bibinfo{person}{Francesco Pierri}, \bibinfo{person}{Christopher
+  Torres-Lugo}, {and} \bibinfo{person}{Marco Brambilla}.}
+  \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{VaccinEU: COVID-19 vaccine conversations on Twitter
+  in French, German and Italian}. In \bibinfo{booktitle}{\emph{Proceedings of
+  the International AAAI Conference on Web and Social Media}},
+  Vol.~\bibinfo{volume}{16}. \bibinfo{pages}{1236--1244}.
+\newblock
+
+
+\bibitem[Freelon(2018)]%
+        {freelon2018computational}
+\bibfield{author}{\bibinfo{person}{Deen Freelon}.}
+  \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Computational research in the post-API age}.
+\newblock \bibinfo{journal}{\emph{Political Communication}}
+  \bibinfo{volume}{35}, \bibinfo{number}{4} (\bibinfo{year}{2018}),
+  \bibinfo{pages}{665--668}.
+\newblock
+
+
+\bibitem[Haman and {\v{S}}koln{\'\i}k(2021)]%
+        {haman2021politicians}
+\bibfield{author}{\bibinfo{person}{Michael Haman} {and} \bibinfo{person}{Milan
+  {\v{S}}koln{\'\i}k}.} \bibinfo{year}{2021}\natexlab{}.
+\newblock \showarticletitle{Politicians on Social Media. The online database of
+  members of national parliaments on Twitter}.
+\newblock \bibinfo{journal}{\emph{Profesional de la informaci{\'o}n}}
+  \bibinfo{volume}{30}, \bibinfo{number}{2} (\bibinfo{year}{2021}).
+\newblock
+
+
+\bibitem[Hanna et~al\mbox{.}(2011)]%
+        {hanna2011mapping}
+\bibfield{author}{\bibinfo{person}{Alexander Hanna}, \bibinfo{person}{Ben
+  Sayre}, \bibinfo{person}{Leticia Bode}, \bibinfo{person}{JungHwan Yang},
+  {and} \bibinfo{person}{Dhavan Shah}.} \bibinfo{year}{2011}\natexlab{}.
+\newblock \showarticletitle{Mapping the political Twitterverse: Candidates and
+  their followers in the midterms}. In \bibinfo{booktitle}{\emph{Proceedings of
+  the International AAAI Conference on Web and Social Media}},
+  Vol.~\bibinfo{volume}{5}. \bibinfo{pages}{510--513}.
+\newblock
+
+
+\bibitem[Kim et~al\mbox{.}(2016)]%
+        {kim2016first}
+\bibfield{author}{\bibinfo{person}{Yeojin Kim}, \bibinfo{person}{William~J
+  Gonzenbach}, \bibinfo{person}{Chris~J Vargo}, {and} \bibinfo{person}{Youngju
+  Kim}.} \bibinfo{year}{2016}\natexlab{}.
+\newblock \showarticletitle{First and second levels of intermedia agenda
+  setting: Political advertising, newspapers, and Twitter during the 2012 US
+  presidential election}.
+\newblock \bibinfo{journal}{\emph{International Journal of Communication}}
+  \bibinfo{volume}{10} (\bibinfo{year}{2016}), \bibinfo{pages}{20}.
+\newblock
+
+
+\bibitem[Le~Pochat et~al\mbox{.}(2022)]%
+        {le2022audit}
+\bibfield{author}{\bibinfo{person}{Victor Le~Pochat}, \bibinfo{person}{Laura
+  Edelson}, \bibinfo{person}{Tom Van~Goethem}, \bibinfo{person}{Wouter Joosen},
+  \bibinfo{person}{Damon McCoy}, {and} \bibinfo{person}{Tobias Lauinger}.}
+  \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{An Audit of Facebook’s Political Ad Policy
+  Enforcement}. In \bibinfo{booktitle}{\emph{Proceedings of the 31st USENIX
+  Security Symposium}}. USENIX Association.
+\newblock
+
+
+\bibitem[Pierri(2020)]%
+        {pierri2020diffusion}
+\bibfield{author}{\bibinfo{person}{Francesco Pierri}.}
+  \bibinfo{year}{2020}\natexlab{}.
+\newblock \showarticletitle{The diffusion of mainstream and disinformation news
+  on Twitter: the case of Italy and France}. In
+  \bibinfo{booktitle}{\emph{Companion proceedings of the web conference 2020}}.
+  \bibinfo{pages}{617--622}.
+\newblock
+
+
+\bibitem[Pierri et~al\mbox{.}(2020)]%
+        {PierriArtoni2020}
+\bibfield{author}{\bibinfo{person}{Francesco Pierri},
+  \bibinfo{person}{Alessandro Artoni}, {and} \bibinfo{person}{Stefano Ceri}.}
+  \bibinfo{year}{2020}\natexlab{}.
+\newblock \showarticletitle{Investigating Italian disinformation spreading on
+  Twitter in the context of 2019 European elections}.
+\newblock \bibinfo{journal}{\emph{PloS one}} \bibinfo{volume}{15},
+  \bibinfo{number}{1} (\bibinfo{year}{2020}), \bibinfo{pages}{e0227821}.
+\newblock
+
+
+\bibitem[Rossi et~al\mbox{.}(2021)]%
+        {rossi2021nearly}
+\bibfield{author}{\bibinfo{person}{Luca Rossi}, \bibinfo{person}{Nicola
+  Righetti}, {and} \bibinfo{person}{Giada Marino}.}
+  \bibinfo{year}{2021}\natexlab{}.
+\newblock \showarticletitle{(Nearly) Ten Years of Social Media and Political
+  Elections in Italy: Questions, Platforms, and Methods}.
+\newblock \bibinfo{journal}{\emph{Social Media+ Society}} \bibinfo{volume}{7},
+  \bibinfo{number}{4} (\bibinfo{year}{2021}),
+  \bibinfo{pages}{20563051211063460}.
+\newblock
+
+
+\bibitem[Sahly et~al\mbox{.}(2019)]%
+        {sahly2019social}
+\bibfield{author}{\bibinfo{person}{Abdulsamad Sahly}, \bibinfo{person}{Chun
+  Shao}, {and} \bibinfo{person}{K~Hazel Kwon}.}
+  \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{Social media for political campaigns: An
+  examination of Trump’s and Clinton’s frame building and its effect on
+  audience engagement}.
+\newblock \bibinfo{journal}{\emph{Social Media+ Society}} \bibinfo{volume}{5},
+  \bibinfo{number}{2} (\bibinfo{year}{2019}),
+  \bibinfo{pages}{2056305119855141}.
+\newblock
+
+
+\bibitem[Vitak et~al\mbox{.}(2011)]%
+        {vitak2011s}
+\bibfield{author}{\bibinfo{person}{Jessica Vitak}, \bibinfo{person}{Paul Zube},
+  \bibinfo{person}{Andrew Smock}, \bibinfo{person}{Caleb~T Carr},
+  \bibinfo{person}{Nicole Ellison}, {and} \bibinfo{person}{Cliff Lampe}.}
+  \bibinfo{year}{2011}\natexlab{}.
+\newblock \showarticletitle{It's complicated: Facebook users' political
+  participation in the 2008 election}.
+\newblock \bibinfo{journal}{\emph{CyberPsychology, behavior, and social
+  networking}} \bibinfo{volume}{14}, \bibinfo{number}{3}
+  (\bibinfo{year}{2011}), \bibinfo{pages}{107--114}.
+\newblock
+
+
+\bibitem[Yang et~al\mbox{.}(2022)]%
+        {yang2022twitter}
+\bibfield{author}{\bibinfo{person}{Kai-Cheng Yang}, \bibinfo{person}{Pik-Mai
+  Hui}, {and} \bibinfo{person}{Filippo Menczer}.}
+  \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{How Twitter data sampling biases US voter behavior
+  characterizations}.
+\newblock \bibinfo{journal}{\emph{PeerJ Computer Science}}  \bibinfo{volume}{8}
+  (\bibinfo{year}{2022}), \bibinfo{pages}{e1025}.
+\newblock
+
+
+\end{thebibliography}

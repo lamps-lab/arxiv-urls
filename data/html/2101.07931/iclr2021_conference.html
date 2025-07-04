@@ -1,0 +1,626 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes</title>
+<!--Generated on Thu Dec  5 01:11:35 2024 by LaTeXML (version 0.8.8) http://dlmf.nist.gov/LaTeXML/.-->
+
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line">
+<div id="p1" class="ltx_para">
+<span class="ltx_ERROR undefined">\iclrfinalcopy</span>
+</div>
+<h1 class="ltx_title ltx_title_document">MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes</h1>
+<div class="ltx_authors">
+<span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">
+<br class="ltx_break"><span class="ltx_text ltx_font_bold">Joseph Bae<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1, 3</span></sup></span>, <span class="ltx_text ltx_font_bold">Rohan Sukumaran<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Sheshank Shankar<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Saurish Srivastava<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Rohan Iyer<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, 
+<br class="ltx_break"><span class="ltx_text ltx_font_bold">Aryan Mahindra<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Qamil Mirza<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Maurizio Arseni<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Anshuman Sharma<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Saras Agrawal<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, 
+<br class="ltx_break"><span class="ltx_text ltx_font_bold">Orna</span> <span class="ltx_text ltx_font_bold">Mukhopadhyay<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Colin Kang<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Priyanshi Katiyar<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Apurv Shekhar<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Sifat Hasan<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>,
+<br class="ltx_break"><span class="ltx_text ltx_font_bold">Krishnendu</span> <span class="ltx_text ltx_font_bold">Dasgupta<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Darshan Gandhi<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Sethuraman TV<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Parth Patwa<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>, <span class="ltx_text ltx_font_bold">Ishaan Singh<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1</span></sup></span>,
+<br class="ltx_break"><span class="ltx_text ltx_font_bold">Abhishek Singh<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">2</span></sup></span>, <span class="ltx_text ltx_font_bold">Ramesh Raskar<sup class="ltx_sup"><span class="ltx_text ltx_font_medium">1,2</span></sup></span> 
+<br class="ltx_break">
+<br class="ltx_break"><sup class="ltx_sup">1</sup>PathCheck Foundation, 02139 Cambridge, USA.
+<br class="ltx_break"><sup class="ltx_sup">2</sup>MIT Media Lab, 02139 Cambridge, USA.
+<br class="ltx_break"><sup class="ltx_sup">3</sup>Renaissance School of Medicine, Stony Brook University, 11794 Stony Brook, USA.
+<br class="ltx_break"><span class="ltx_text ltx_font_typewriter">raskar@media.mit.edu</span>
+</span></span>
+</div>
+
+<div class="ltx_abstract">
+<h6 class="ltx_title ltx_title_abstract">Abstract</h6>
+    
+<p class="ltx_p">In this early draft, we describe a user-centric, card-based system for vaccine distribution. Our system makes use of digitally signed QR codes and their use for phased vaccine distribution, vaccine administration/record-keeping, immunization verification, and follow-up symptom reporting. Furthermore, we propose and describe a complementary scanner app system to be used by vaccination clinics, public health officials, and immunization verification parties to effectively utilize card-based framework. We believe that the proposed system provides a privacy-preserving and efficient framework for vaccine distribution in both developed and developing regions.</p>
+  
+</div>
+<section id="S1" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">1 </span>Introduction</h2>
+
+<div id="S1.p1" class="ltx_para">
+<p class="ltx_p">Without an effective curative or preventative measure, the unprecedented coronavirus disease 2019 (COVID-19) pandemic has led to a significant amount of human deaths (1,900,000 at the time of publication (<cite class="ltx_cite ltx_citemacro_cite">for Disease Control and Prevention (<a href="#bib.bib8" title="CDC covid data tracker" class="ltx_ref">2020a</a>)</cite>)). However, now with the advent of vaccines, we face the challenges of strategic, equitable and privacy preserved ways for last-mile vaccine distribution (<cite class="ltx_cite ltx_citemacro_cite">Bae<span class="ltx_text ltx_bib_etal"> et al.</span> (<a href="#bib.bib2" title="Challenges of equitable vaccine distribution in the covid-19 pandemic" class="ltx_ref">2020</a>); MPH (<a href="#bib.bib9" title="Phased allocation of covid-19 vaccines" class="ltx_ref">2020</a>)</cite>).</p>
+</div>
+<div id="S1.p2" class="ltx_para">
+<p class="ltx_p">First, the vaccine recipients must be dynamically prioritized to ensure an equitable reach, especially as multiple vaccines with different protocols are approved in various areas. In addition, once a citizen’s first dose is administered, they must follow through with their second dose as well. Also, a communication plan must also be put in place to combat inevitable rumours, misinformation, and conspiracy theories aiming to disrupt citizen engagement in the vaccination process ( <cite class="ltx_cite ltx_citemacro_cite">Morales<span class="ltx_text ltx_bib_etal"> et al.</span> (<a href="#bib.bib1" title="COVID-19 tests gone rogue: privacy, efficacy,mismanagement and misunderstandings" class="ltx_ref">2021</a>); Omer (<a href="#bib.bib10" title="Rapid development of a vaccine won’t help much if people refuse to take it" class="ltx_ref">2021</a>)</cite>). It must also address the mistrust of vaccines in society (<cite class="ltx_cite ltx_citemacro_cite">Palamenghi<span class="ltx_text ltx_bib_etal"> et al.</span> (<a href="#bib.bib7" title="Mistrust in biomedical research and vaccine hesitancy: the forefront challenge in the battle against covid-19 in italy" class="ltx_ref">2020</a>)</cite>), especially within previously marginalized minority populations (<cite class="ltx_cite ltx_citemacro_cite">Toner<span class="ltx_text ltx_bib_etal"> et al.</span> (<a href="#bib.bib11" title="Interim framework for covid-19 vaccine allocation and distribution in the united states" class="ltx_ref">2020</a>)</cite>). This is why we must take a user-centric approach that preserves trust — vaccines are meaningless if citizens aren’t willing to take them (<cite class="ltx_cite ltx_citemacro_cite">M<span class="ltx_text ltx_bib_etal"> et al.</span> (<a href="#bib.bib12" title="The public’s role in covid-19 vaccination: human-centered recommendations to enhance pandemic vaccine awareness, access, and acceptance in the united states. vaccine." class="ltx_ref">2020</a>)</cite>). Lastly, the health outcomes (effectiveness, safety, long-term effects, etc) of the vaccines must be effectively monitored in a privacy-preserving way (<cite class="ltx_cite ltx_citemacro_cite">Borenstein and Weintraub (<a href="#bib.bib13" title="Rolling out the covid vaccine is a huge it challenge" class="ltx_ref">2020</a>)</cite>).</p>
+</div>
+<div id="S1.p3" class="ltx_para">
+<p class="ltx_p">In today’s society, multiple technological systems are being utilized by the Center for Disease Control (CDC) to combat these challenges ( <cite class="ltx_cite ltx_citemacro_cite">for Disease Control and Prevention (<a href="#bib.bib14" title="Using telehealth to expand access to essential health services during the covid-19 pandemic" class="ltx_ref">2020c</a>); Smith and Mennis (<a href="#bib.bib15" title="Incorporating geographic information science and technology in response to the covid-19 pandemic" class="ltx_ref">2020</a>); for Disease Control and Prevention (<a href="#bib.bib16" title="Using digital technologies in precision public health: covid-19 and beyond" class="ltx_ref">2020b</a>)</cite>). For example, the Vaccine Administration Management System (VAMS) streamlines the vaccine distribution process for jurisdictions, employers, and healthcare providers. In addition, it’s an effective user-centric system as it allows for vaccine recipients to schedule appointments, receive records of their visit, and receive reminders for a second dose (<cite class="ltx_cite ltx_citemacro_cite">for Disease Control (CDC) (<a href="#bib.bib4" title="VAMS — covid-19 vaccination reporting systems — cdc" class="ltx_ref">2020c</a>)</cite>). The Immunization Information Systems (IIS) are a group of privacy preserving database systems that track all vaccinations within various areas (<cite class="ltx_cite ltx_citemacro_cite">for Disease Control (CDC) (<a href="#bib.bib3" title="About immunization information systems (iis)" class="ltx_ref">2020a</a>)</cite>). Lastly, the Vaccine Adverse Event Reporting System (VAERS) is the prominent system for the monitoring of health outcomes ( <cite class="ltx_cite ltx_citemacro_cite">for Disease Control (CDC) (<a href="#bib.bib5" title="VAERS — vaccine safety — cdc" class="ltx_ref">2020b</a>); ADMINISTRATION (<a href="#bib.bib17" title="VAERS overview" class="ltx_ref">2019</a>)</cite>).</p>
+</div>
+<div id="S1.p4" class="ltx_para">
+<p class="ltx_p">In our previous work, we detail the MIT SafePaths app-based protocol for vaccine distribution. In this paper, we introduce a separate user-centric card protocol that uses printed codes as a supplement to traditional paper based vaccination cards.</p>
+</div>
+</section>
+<section id="S2" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">2 </span>Card Flow</h2>
+
+<section id="S2.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.1 </span>Overview</h3>
+
+<div id="S2.SS1.p1" class="ltx_para">
+<p class="ltx_p">Here we present a vaccine distribution system utilizing physical SafePaths cards and four digitally signed QR code stickers (henceforth termed <span class="ltx_text ltx_font_italic">Coupon</span>, <span class="ltx_text ltx_font_italic">Badge</span>, <span class="ltx_text ltx_font_italic">Passkey</span>, and <span class="ltx_text ltx_font_italic">Status</span>). The digital signing of a QR code is simply a secure process of verifying the authenticity of the information contained in the QR code (<cite class="ltx_cite ltx_citemacro_cite">Singh<span class="ltx_text ltx_bib_etal"> et al.</span> (<a href="#bib.bib6" title="Safepaths: vaccine diary protocol and decentralized vaccine coordination system using a privacy preserving user centric experience" class="ltx_ref">2020</a>)</cite>). These QR code stickers are simply QR codes printed onto adhesive stickers that can then be attached to a user’s physical card.</p>
+</div>
+<figure id="S2.F1" class="ltx_figure"><img src="x1.png" id="S2.F1.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="654" height="315" alt="Refer to caption">
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure">Figure 1: </span>The 4 digitally signed QR code stickers (<span class="ltx_text ltx_font_italic">Coupon</span>, <span class="ltx_text ltx_font_italic">Badge</span>, <span class="ltx_text ltx_font_italic">Status</span>, and <span class="ltx_text ltx_font_italic">Passkey</span>) present on the SafePaths cards.</figcaption>
+</figure>
+<figure id="S2.F2" class="ltx_figure"><img src="x2.png" id="S2.F2.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="530" height="298" alt="Refer to caption">
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure">Figure 2: </span>MIT SafePaths Card Mockup</figcaption>
+</figure>
+<div id="S2.SS1.p2" class="ltx_para">
+<p class="ltx_p">The digital signature of the QR codes take place as below
+<span class="ltx_text ltx_font_bold">Certificate = (message, signature(messages))</span></p>
+</div>
+<div id="S2.SS1.p3" class="ltx_para">
+<p class="ltx_p">For each sticker below the message is as follows -</p>
+<ul id="S2.I1" class="ltx_itemize">
+<li id="S2.I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S2.I1.i1.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Coupon</span> = (number, total, city, phase, (age, job, comorbidities/sick))</p>
+</div>
+</li>
+<li id="S2.I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S2.I1.i2.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Badge</span> = (coupon, dose_info, Hash(passkey())</p>
+</div>
+</li>
+<li id="S2.I1.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S2.I1.i3.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Status</span> = ((vaccinated = 0,1,2), Hash(passkey())</p>
+</div>
+</li>
+<li id="S2.I1.i4" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="S2.I1.i4.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Passkey</span> = (name, DOB, salt) 
+<br class="ltx_break">= hash:sj2d8k8hy7j</p>
+</div>
+</li>
+</ul>
+</div>
+<figure id="S2.T1" class="ltx_table">
+<table class="ltx_tabular ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_th_row ltx_border_l ltx_border_r ltx_border_t"><span class="ltx_text ltx_font_bold">Name</span></th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_r ltx_border_t"><span class="ltx_text ltx_font_bold">Equation</span></th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_r ltx_border_t"><span class="ltx_text ltx_font_bold">Description</span></th>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_r ltx_border_t"><span class="ltx_text ltx_font_bold">Example</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l ltx_border_r ltx_border_t">Coupon</th>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">{m, sign(m)}</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">where m = (i, zip code,</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">job type)</td>
+</tr>
+</table>
+</td>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">Coupon code is signed</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">by CDC and indicates the</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">zip code and job type of the</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">receiver</td>
+</tr>
+</table>
+</td>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">{37, 5000, Springfield, 1B,</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">Teacher}</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l ltx_border_r ltx_border_t">Badge</th>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">{m, sign(m)}</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">where m = (dose_info,</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">coupon, hash(passkey))</td>
+</tr>
+</table>
+</td>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">Badge is available after 2</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">doses and it gives the</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">information pertinent to</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">the vaccine shot.</td>
+</tr>
+</table>
+</td>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">{[Pfizer, “1st Dose”,</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">1/1/2021], fe4c2,</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">3be33c20cc4c85a0c32f7bf5b4}</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l ltx_border_r ltx_border_t">Status</th>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">{m, sign(m)}</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">where m = (status,</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">hash(passkey))</td>
+</tr>
+</table>
+</td>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">Contains bare minimum</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">information to prove the</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">user is vaccinated</td>
+</tr>
+</table>
+</td>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">{vaccinated,</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">3be33c20cc4c85a0c32f7bf5b4}</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_b ltx_border_l ltx_border_r ltx_border_t">Passkey</th>
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">ID = User_PII</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">Key = salt</td>
+</tr>
+</table>
+</td>
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">Key is the random salt</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">used for increasing the</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">entropy of hashed data</td>
+</tr>
+</table>
+</td>
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_r ltx_border_t">
+<table class="ltx_tabular ltx_align_middle">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">{John Doe,</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_nopad_r ltx_align_left">6363fe744f74ee8f280958}</td>
+</tr>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_table">Table 1: </span>This outlines the four QR codes and what information is digitally signed in it.</figcaption>
+</figure>
+<div id="S2.SS1.p4" class="ltx_para">
+<p class="ltx_p">Our solution is intended to decouple the health information and personally identifiable information (PII) in this process. Thereby, we are essentially proposing to separate the eligibility of the vaccination from the distribution of it. This way we can have the health information centralised, whilst the PII information decentralised.</p>
+</div>
+</section>
+<section id="S2.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.2 </span>Vaccine eligibility confirmation</h3>
+
+<div id="S2.SS2.p1" class="ltx_para">
+<p class="ltx_p">To accommodate the several-stage vaccination policies that countries have begun to employ, SafePaths cards will be distributed containing one digitally-signed <span class="ltx_text ltx_font_italic">Coupon</span> QR code. This would be provided by a central government agency such as the CDC and made available to users either by an employer or local government location. A pseudo random identifier generated for this <span class="ltx_text ltx_font_italic">Coupon</span> serves as the identifying information for the user throughout the remaining workflow. This <span class="ltx_text ltx_font_italic">Coupon</span> would initially come with SafePaths cards while the remaining three adhesive stickers must be obtained and placed onto the card following vaccination events.</p>
+</div>
+</section>
+<section id="S2.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.3 </span>Vaccine administration</h3>
+
+<div id="S2.SS3.p1" class="ltx_para">
+<p class="ltx_p">Check-in at a vaccination clinic would require the verification of a user’s <span class="ltx_text ltx_font_italic">Coupon</span>.</p>
+</div>
+<div id="S2.SS3.p2" class="ltx_para">
+<p class="ltx_p">Upon vaccination, the vaccination clinic would create a digitally-signed record of immunization and print it as a QR code on an adhesive sticker. This adhesive sticker (henceforth referred to as the <span class="ltx_text ltx_font_italic">Badge</span>) would contain information regarding vaccine lot, manufacturer, and first/second dose information. The <span class="ltx_text ltx_font_italic">Badge</span> would also contain information regarding the time, date, and location of vaccination.</p>
+</div>
+<div id="S2.SS3.p3" class="ltx_para">
+<p class="ltx_p">The vaccination clinic would also create a unique encryption key to encrypt the <span class="ltx_text ltx_font_italic">Badge</span>. This key, as well as encrypted PII such as name, age, sex, etc. would be stored on a <span class="ltx_text ltx_font_italic">Passkey</span> QR code, printed onto a <span class="ltx_text ltx_font_italic">Passkey</span> QR sticker. This <span class="ltx_text ltx_font_italic">Passkey</span> is required for decryption of PII and in-depth vaccination information (time, date, location of vaccination).</p>
+</div>
+<div id="S2.SS3.p4" class="ltx_para">
+<p class="ltx_p">At this stage, a vaccine recipient would then have <span class="ltx_text ltx_font_italic">Coupon</span>, <span class="ltx_text ltx_font_italic">Badge</span>, and <span class="ltx_text ltx_font_italic">Passkey</span> QR stickers.</p>
+</div>
+</section>
+<section id="S2.SS4" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.4 </span>Second Dose</h3>
+
+<div id="S2.SS4.p1" class="ltx_para">
+<p class="ltx_p">When a user attempts to receive a second dose of a vaccine, the vaccination clinic would utilize a user’s <span class="ltx_text ltx_font_italic">Badge</span> to determine the appropriate vaccine type and dose and the <span class="ltx_text ltx_font_italic">Passkey</span> to confirm a user’s identity. Again, the user <span class="ltx_text ltx_font_italic">Passkey</span> contains information that solely exists on the physical card carried by a user. Use of this sticker is required to decrypt in depth vaccination information for a patient contained in the <span class="ltx_text ltx_font_italic">Badge</span> (location of vaccination, date, etc.). Once final vaccination has been performed, the vaccine clinic would create a fourth and final <span class="ltx_text ltx_font_italic">Status</span> QR code sticker for a recipient’s SafePaths card, which would simply indicate whether or not a user has been vaccinated. <span class="ltx_text ltx_font_italic">Status</span> would not contain any further information and therefore would be unencrypted.</p>
+</div>
+</section>
+<section id="S2.SS5" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.5 </span>Record-keeping</h3>
+
+<div id="S2.SS5.p1" class="ltx_para">
+<p class="ltx_p">User vaccination records could be linked by anonymized upload to a centralized system using a user’s pseudorandom identifier. The user’s <span class="ltx_text ltx_font_italic">Passkey</span>, containing their encryption key that decrypts their PII, would not be uploaded to the CDC without consent. Alternatively, we propose an anonymous record keeping function in our Scanner App section.</p>
+</div>
+</section>
+<section id="S2.SS6" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.6 </span>Vaccination verification</h3>
+
+<div id="S2.SS6.p1" class="ltx_para">
+<p class="ltx_p">Verification of immunization status might be required in various scenarios such as airline travel, return to school/work, etc. Vaccine verification at these venues would follow the receipt of a second COVID-19 dose.</p>
+</div>
+<div id="S2.SS6.p2" class="ltx_para">
+<p class="ltx_p">Information regarding an individual’s vaccination status would be digitally signed by the vaccine clinic onto the <span class="ltx_text ltx_font_italic">Status</span> sticker. When scanned, this sticker would provide the verifier with information regarding whether or not an individual has been vaccinated. If further verification of identity is required, the verifier could make use of a consenting individual’s <span class="ltx_text ltx_font_italic">Passkey</span> sticker to decrypt the holder’s name. With this method, a user would have multiple levels of information they can share, beginning with vaccination status in the unencrypted <span class="ltx_text ltx_font_italic">Status</span> sticker, basic personal information (i.e. name) that must be decrypted using the <span class="ltx_text ltx_font_italic">Passkey</span> sticker, and finally full personal vaccination information encrypted in the <span class="ltx_text ltx_font_italic">Badge</span>.</p>
+</div>
+</section>
+<section id="S2.SS7" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.7 </span>Safety and efficacy monitoring</h3>
+
+<div id="S2.SS7.p1" class="ltx_para">
+<p class="ltx_p">Short and long-term monitoring of health outcomes would rely on self-reporting. These cards could still facilitate the anonymous information upload by interacting with existing centralized systems such as VAERS or V-Safe while bypassing PII input. All health and symptom information could instead be tied to a user’s pseudorandom ID. We also propose a scanner app solution in the Scanner Flow section that could aggregate symptom reporting and vaccine record data anonymously.</p>
+</div>
+<figure id="S2.F3" class="ltx_figure"><img src="x3.png" id="S2.F3.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="736" height="523" alt="Refer to caption">
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure">Figure 3: </span>Card protocol workflow diagram.</figcaption>
+</figure>
+</section>
+</section>
+<section id="S3" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">3 </span>Scanner Flow</h2>
+
+<section id="S3.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.1 </span>Overview</h3>
+
+<div id="S3.SS1.p1" class="ltx_para">
+<p class="ltx_p">Here we discuss the systems that must be built for vaccine clinics and distributors in order to enable the use of the SafePaths card framework presented above. We present several relevant protocols as well as the functionality of a proposed vaccine distributor/verifier scanner app. This scanner app would be necessary to function with the encrypted QR codes described above.</p>
+</div>
+</section>
+<section id="S3.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.2 </span>Vaccine eligibility confirmation</h3>
+
+<div id="S3.SS2.p1" class="ltx_para">
+<p class="ltx_p">Phased vaccination using the SafePaths card system requires the distribution of SafePaths cards containing digitally signed <span class="ltx_text ltx_font_italic">Coupons</span> to appropriate subsets of the population during each stage of vaccination. There are several ways that this might be achieved. We propose potential solutions below, though we recognize that these strategies must be determined by individual jurisdictions to meet the circumstances in different locations.</p>
+</div>
+<div id="S3.SS2.p2" class="ltx_para">
+<ol id="S3.I1" class="ltx_enumerate">
+<li id="S3.I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">1.</span> 
+<div id="S3.I1.i1.p1" class="ltx_para">
+<p class="ltx_p">Disseminate to businesses to provide to employees (eg: hospitals, restaurants, etc. as appropriate)</p>
+</div>
+</li>
+<li id="S3.I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">2.</span> 
+<div id="S3.I1.i2.p1" class="ltx_para">
+<p class="ltx_p">Make available at local government building (similar to DMV process of obtaining a driver’s license)</p>
+</div>
+</li>
+<li id="S3.I1.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">3.</span> 
+<div id="S3.I1.i3.p1" class="ltx_para">
+<p class="ltx_p">Mail out to individuals based on employment/other factors (via background check systems, centralized databases such as IRS)</p>
+</div>
+</li>
+</ol>
+</div>
+<figure id="S3.F4" class="ltx_figure"><img src="x4.png" id="S3.F4.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="736" height="523" alt="Refer to caption">
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure">Figure 4: </span>Scanner app protocol workflow diagram.</figcaption>
+</figure>
+</section>
+<section id="S3.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.3 </span>Vaccine administration</h3>
+
+<div id="S3.SS3.p1" class="ltx_para">
+<p class="ltx_p">To confirm an individual for vaccination scheduling/check-in, a clinic must verify the authenticity of a vaccine recipient’s QR <span class="ltx_text ltx_font_italic">Coupons</span>. The first function of our proposed scanner app would be to scan a vaccine recipient’s <span class="ltx_text ltx_font_italic">Coupon</span> to determine authenticity and prevent the use of a single <span class="ltx_text ltx_font_italic">Coupon</span> by multiple individuals. This would be achieved by scanning the digital signature present on a SafePaths <span class="ltx_text ltx_font_italic">Coupon</span> and verifying its digital signature.</p>
+</div>
+<div id="S3.SS3.p2" class="ltx_para">
+<p class="ltx_p">The second function of our proposed scanner app would be to create digitally signed <span class="ltx_text ltx_font_italic">Badge</span> and <span class="ltx_text ltx_font_italic">Passkey</span> stickers for post vaccination. This would make use of our previously described algorithm (<cite class="ltx_cite ltx_citemacro_cite">Singh<span class="ltx_text ltx_bib_etal"> et al.</span> (<a href="#bib.bib6" title="Safepaths: vaccine diary protocol and decentralized vaccine coordination system using a privacy preserving user centric experience" class="ltx_ref">2020</a>)</cite>) for secure recording of vaccine information into a <span class="ltx_text ltx_font_italic">Badge</span> sticker, encrypted using the encryption key present in the <span class="ltx_text ltx_font_italic">Passkey</span>. After creating these stickers, the proposed scanner app would not store any information regarding a recipient’s encryption key; that information would only exist within the <span class="ltx_text ltx_font_italic">Passkey</span> sticker.</p>
+</div>
+</section>
+<section id="S3.SS4" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.4 </span>Second dose</h3>
+
+<div id="S3.SS4.p1" class="ltx_para">
+<p class="ltx_p">Second dose administration functionality would be implemented into the scanner app in the same manner as described in the previous section for ‘Vaccine Administration’. A <span class="ltx_text ltx_font_italic">Status</span> sticker would be created by the scanner app in a similar manner to the <span class="ltx_text ltx_font_italic">Badge</span> sticker, also drawing on the methods described in our cryptographic protocol (<cite class="ltx_cite ltx_citemacro_cite">Singh<span class="ltx_text ltx_bib_etal"> et al.</span> (<a href="#bib.bib6" title="Safepaths: vaccine diary protocol and decentralized vaccine coordination system using a privacy preserving user centric experience" class="ltx_ref">2020</a>)</cite>).</p>
+</div>
+</section>
+<section id="S3.SS5" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.5 </span>Record-keeping</h3>
+
+<div id="S3.SS5.p1" class="ltx_para">
+<p class="ltx_p">Another critical function of our scanner app would be the ability to integrate with existing systems, such as VAMS in the United States. Ideally, our app would be able to automatically provide vaccination record information to VAMS while replacing PII with pseudo identifiers.</p>
+</div>
+<div id="S3.SS5.p2" class="ltx_para">
+<p class="ltx_p">Alternatively, our scanner system would also have the capability to directly aggregate vaccination record data in an anonymized fashion, retaining population-level statistics such as vaccination prevalence in a given jurisdiction that might be important for public health policy development. Details concerning clinic location, vaccine dose, and vaccine manufacturer could be stored by the scanner app and aggregated for public health official viewing.</p>
+</div>
+</section>
+<section id="S3.SS6" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.6 </span>Vaccination verification</h3>
+
+<div id="S3.SS6.p1" class="ltx_para">
+<p class="ltx_p">Our proposed scanner app would enable vaccination verification simply by reading immunization status contained in a user’s <span class="ltx_text ltx_font_italic">Status</span> sticker. For further identity verification, a form of ID (such as driver’s license) can be compared with the decrypted PII from the scanner app using an individual’s <span class="ltx_text ltx_font_italic">Passkey</span> sticker. The scanner app would not store this information following completion of the immunization confirmation.</p>
+</div>
+</section>
+</section>
+<section id="S4" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">4 </span>Conclusion</h2>
+
+<div id="S4.p1" class="ltx_para">
+<p class="ltx_p">In this early draft, we present a complete protocol for a physical card-based system for phased vaccine distribution, individual vaccination, second-dose adherence, and symptom follow-up. Due to their physical nature and simplicity, digitally-signed QR codes may be a convenient and non-intrusive modality for some users seeking vaccination. Digitally-signed QR stickers enable verification of authentically created immunization records, and the encryption schema presented using a unique passkey sticker ensures that user PII can only be decrypted with the user’s consent. This information is stored physically on the user’s SafePaths card in a decentralized manner wherein a user must provide their physical passkey sticker for decryption of PII. These cards also extend privacy-focused protocols to low-resource areas and populations, equalizing disparities in access to individual-centric solutions and frameworks for COVID-19 vaccination. The centralised health data collected (which is rid of all PIIs) can be used by the concerned authorities to have population aggregated view of the vaccine adherence in a region. Furthermore, such privacy preserving dashboards which show aggregated data can help the authorities take informed decisions.</p>
+</div>
+<section id="S4.SS0.SSSx1" class="ltx_subsubsection">
+<h4 class="ltx_title ltx_title_subsubsection">Acknowledgments</h4>
+
+<div id="S4.SS0.SSSx1.p1" class="ltx_para">
+<p class="ltx_p">We are grateful to Riyanka Roy Choudhury, CodeX Fellow, Stanford University, Adam Berrey, CEO of PathCheck Foundation, Dr. Brooke Struck, Research Director at The Decision Lab, Canada, Vinay Gidwaney, Entrepreneur and Advisor, PathCheck Foundation, and Paola Heudebert, co-founder of Blockchain for Human Rights, Alison Tinker, Saswati Soumya, Sunny Manduva, Bhavya Pandey, and Aarathi Prasad for their assistance in discussions, support and guidance in writing of this paper.</p>
+</div>
+</section>
+</section>
+<section id="bib" class="ltx_bibliography">
+<h2 class="ltx_title ltx_title_bibliography">References</h2>
+
+<ul id="bib.L1" class="ltx_biblist">
+<li id="bib.bib17" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">U.S. F. &amp;. D. ADMINISTRATION (2019)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">VAERS overview</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.fda.gov/vaccines-blood-biologics/vaccine-adverse-events/vaers-overview" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p3" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib2" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">J. Bae, D. Gandhi, J. Kothari, S. Shankar, J. Bae, P. Patwa, R. Sukumaran, S. T. V., K. Mishra, S. Murali, A. Saxena, K. Jakimowicz, V. Sharma, R. Iyer, A. Mehra, A. Radunsky, P. Katiyar, S. Anand, S. Advani, J. Dhaliwal, and R. Raskar (2020)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Challenges of equitable vaccine distribution in the covid-19 pandemic</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><span class="ltx_text ltx_bib_external">2012.12263</span></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p1" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib13" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">J. Borenstein and R. Weintraub (2020)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Rolling out the covid vaccine is a huge it challenge</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://hbr.org/2020/12/rolling-out-the-covid-vaccine-is-a-huge-it-challenge" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p2" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib3" class="ltx_bibitem ltx_bib_manual">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">C. for Disease Control (CDC) (2020a)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">About immunization information systems (iis)</span>.
+</span>
+<span class="ltx_bibblock">Note: <span class="ltx_text ltx_bib_note"><span class="ltx_ref ltx_nolink ltx_url ltx_font_typewriter ltx_ref_self">https://www.cdc.gov/vaccines/programs/iis/about.html</span></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p3" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib5" class="ltx_bibitem ltx_bib_manual">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">C. for Disease Control (CDC) (2020b)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">VAERS — vaccine safety — cdc</span>.
+</span>
+<span class="ltx_bibblock">Note: <span class="ltx_text ltx_bib_note"><span class="ltx_ref ltx_nolink ltx_url ltx_font_typewriter ltx_ref_self">https://www.cdc.gov/vaccinesafety/ensuringsafety/monitoring/vaers/index.html</span></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p3" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib4" class="ltx_bibitem ltx_bib_manual">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">C. for Disease Control (CDC) (2020c)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">VAMS — covid-19 vaccination reporting systems — cdc</span>.
+</span>
+<span class="ltx_bibblock">Note: <span class="ltx_text ltx_bib_note"><span class="ltx_ref ltx_nolink ltx_url ltx_font_typewriter ltx_ref_self">https://www.cdc.gov/vaccines/covid-19/reporting/vams/index.html</span></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p3" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib8" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">C. for Disease Control and Prevention (2020a)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">CDC covid data tracker</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p1" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib16" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">C. for Disease Control and Prevention (2020b)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Using digital technologies in precision public health: covid-19 and beyond</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://blogs.cdc.gov/genomics/2020/04/06/using-digital/" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p3" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib14" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">C. for Disease Control and Prevention (2020c)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Using telehealth to expand access to essential health services during the covid-19 pandemic</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.cdc.gov/coronavirus/2019-ncov/hcp/telehealth.html" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p3" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib12" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">S. M, B. EK, L. R, R. A, R. SJ, T. M, B. L, B. J, B. J, C. N, H. LL, K. N, K. A, K. L, L. H, L. BF, O. SB, O. WA, P. GA, P. L, Q. SC, S. D, and W. A (2020)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">The public’s role in covid-19 vaccination: human-centered recommendations to enhance pandemic vaccine awareness, access, and acceptance in the united states. vaccine.</span>.
+</span>
+<span class="ltx_bibblock">(<span class="ltx_text ltx_bib_language">eng</span>).
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://dx.doi.org/10.1016/j.vaccine.2020.10.059" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
+<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7598529/#b0160" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p2" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib1" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">M. Morales, R. Barbar, D. Gandhi, S. Landuge, J. Bae, A. Vats, J. Kothari, S. Shankar, R. Sukumaran, H. Mathur, K. Misra, A. Saxena, P. Patwa, S. T. V., M. Arseni, S. Advani, K. Jakimowicz, S. Anand, P. Katiyar, A. Mehra, R. Iyer, S. Murali, A. Mahindra, M. Dmitrienko, S. Srivastava, A. Gangavarapu, S. Penrod, V. Sharma, A. Singh, and R. Raskar (2021)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">COVID-19 tests gone rogue: privacy, efficacy,mismanagement and misunderstandings</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><span class="ltx_text ltx_bib_external">2101.01693</span></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p2" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib9" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">K. D. M. MPH (2020)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Phased allocation of covid-19 vaccines</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p1" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib10" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">S. B. Omer (2021)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Rapid development of a vaccine won’t help much if people refuse to take it</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p2" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib7" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">L. Palamenghi, S. Barello, S. Boccia, and G. Graffigna (2020)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Mistrust in biomedical research and vaccine hesitancy: the forefront challenge in the battle against covid-19 in italy</span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">European journal of epidemiology</span> <span class="ltx_text ltx_bib_volume">35</span> (<span class="ltx_text ltx_bib_number">8</span>), <span class="ltx_text ltx_bib_pages"> pp. 785–788</span> (<span class="ltx_text ltx_bib_language">eng</span>).
+</span>
+<span class="ltx_bibblock">Note: <span class="ltx_text ltx_bib_note">32808095[pmid]</span>
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><span class="ltx_text issn ltx_bib_external">ISSN 1573-7284</span>,
+<a href="https://dx.doi.org/10.1007/s10654-020-00675-8" title="" class="ltx_ref doi ltx_bib_external">Document</a>,
+<a href="https://pubmed.ncbi.nlm.nih.gov/32808095" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p2" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib6" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">A. Singh, R. Raskar, and A. Lysyanskaya (2020)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Safepaths: vaccine diary protocol and decentralized vaccine coordination system using a privacy preserving user centric experience</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S2.SS1.p1" title="2.1 Overview ‣ 2 Card Flow ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§2.1</span></a>,
+<a href="#S3.SS3.p2" title="3.3 Vaccine administration ‣ 3 Scanner Flow ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§3.3</span></a>,
+<a href="#S3.SS4.p1" title="3.4 Second dose ‣ 3 Scanner Flow ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§3.4</span></a>.
+</span>
+</li>
+<li id="bib.bib15" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">C. D. Smith and J. Mennis (2020)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Incorporating geographic information science and technology in response to the covid-19 pandemic</span>.
+</span>
+<span class="ltx_bibblock"> <span class="ltx_text ltx_bib_publisher">Center for Disease Control and Prevention</span> (<span class="ltx_text ltx_bib_language">eng</span>).
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.cdc.gov/PCD/issues/2020/20_0246.htm" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p3" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+<li id="bib.bib11" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_author-year ltx_role_refnum ltx_tag_bibitem">E. Toner, A. Barnill, C. Krubiner, J. Bernstein, L. Privor-Dumm, M. Watson, E. Martin, C. Potter, D. Hosangadi, N. Connell, C. Watson, M. Schoch-Spana, T. G. Veenema, D. Meyer, E. L. D. Biddison, A. Regenberg, T. Inglesby, and A. Cicero (2020)</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Interim framework for covid-19 vaccine allocation and distribution in the united states</span>.
+</span>
+<span class="ltx_bibblock"> <span class="ltx_text ltx_bib_publisher">John Hopkins University</span> (<span class="ltx_text ltx_bib_language">eng</span>).
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.centerforhealthsecurity.org/our-work/publications/interim-framework-for-covid-19-vaccine-allocation-and-distribut\\ion-in-the-us" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p2" title="1 Introduction ‣ MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>.
+</span>
+</li>
+</ul>
+</section>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Thu Dec  5 01:11:35 2024 by <a href="http://dlmf.nist.gov/LaTeXML/" class="ltx_LaTeXML_logo"><span style="letter-spacing:-0.2em; margin-right:0.1em;">L<span class="ltx_font_smallcaps" style="position:relative; bottom:2.2pt;">a</span>T<span class="ltx_font_smallcaps" style="font-size:120%;position:relative; bottom:-0.2ex;">e</span></span><span style="font-size:90%; position:relative; bottom:-0.2ex;">XML</span><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="Mascot Sammy"></a>
+</div></footer>
+</div>
+</body>
+</html>

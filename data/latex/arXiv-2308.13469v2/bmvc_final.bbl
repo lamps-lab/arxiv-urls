@@ -1,0 +1,311 @@
+\begin{thebibliography}{43}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Ben-Israel and Greville(2003)]{ben2003generalized}
+Adi Ben-Israel and Thomas~NE Greville.
+\newblock \emph{Generalized inverses: theory and applications}, volume~15.
+\newblock Springer Science \& Business Media, 2003.
+
+\bibitem[Boudiaf et~al.(2021)Boudiaf, Kervadec, Masud, Piantanida, Ben~Ayed,
+  and Dolz]{boudiaf2021few}
+Malik Boudiaf, Hoel Kervadec, Ziko~Imtiaz Masud, Pablo Piantanida, Ismail
+  Ben~Ayed, and Jose Dolz.
+\newblock Few-shot segmentation without meta-learning: A good transductive
+  inference is all you need?
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition}, pages 13979--13988, 2021.
+
+\bibitem[Candemir et~al.(2013)Candemir, Jaeger, Palaniappan, Musco, Singh, Xue,
+  Karargyris, Antani, Thoma, and McDonald]{candemir2013lung}
+Sema Candemir, Stefan Jaeger, Kannappan Palaniappan, Jonathan~P Musco, Rahul~K
+  Singh, Zhiyun Xue, Alexandros Karargyris, Sameer Antani, George Thoma, and
+  Clement~J McDonald.
+\newblock Lung segmentation in chest radiographs using anatomical atlases with
+  nonrigid registration.
+\newblock \emph{IEEE transactions on medical imaging}, 33\penalty0
+  (2):\penalty0 577--590, 2013.
+
+\bibitem[Chen et~al.(2017)Chen, Chen, Chen, Tsai, Frank~Wang, and
+  Sun]{chen2017no}
+Yi-Hsin Chen, Wei-Yu Chen, Yu-Ting Chen, Bo-Cheng Tsai, Yu-Chiang Frank~Wang,
+  and Min Sun.
+\newblock No more discrimination: Cross city adaptation of road scene
+  segmenters.
+\newblock In \emph{Proceedings of the IEEE International Conference on Computer
+  Vision}, pages 1992--2001, 2017.
+
+\bibitem[Chen et~al.(2018)Chen, Li, and Van~Gool]{chen2018road}
+Yuhua Chen, Wen Li, and Luc Van~Gool.
+\newblock Road: Reality oriented adaptation for semantic segmentation of urban
+  scenes.
+\newblock In \emph{Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 7892--7901, 2018.
+
+\bibitem[Codella et~al.(2019)Codella, Rotemberg, Tschandl, Celebi, Dusza,
+  Gutman, Helba, Kalloo, Liopyris, Marchetti, et~al.]{codella2019skin}
+Noel Codella, Veronica Rotemberg, Philipp Tschandl, M~Emre Celebi, Stephen
+  Dusza, David Gutman, Brian Helba, Aadi Kalloo, Konstantinos Liopyris, Michael
+  Marchetti, et~al.
+\newblock Skin lesion analysis toward melanoma detection 2018: A challenge
+  hosted by the international skin imaging collaboration (isic).
+\newblock \emph{arXiv preprint arXiv:1902.03368}, 2019.
+
+\bibitem[Dai et~al.(2017)Dai, Qi, Xiong, Li, Zhang, Hu, and
+  Wei]{dai2017deformable}
+Jifeng Dai, Haozhi Qi, Yuwen Xiong, Yi~Li, Guodong Zhang, Han Hu, and Yichen
+  Wei.
+\newblock Deformable convolutional networks.
+\newblock In \emph{Proceedings of the IEEE international conference on computer
+  vision}, pages 764--773, 2017.
+
+\bibitem[Du et~al.(2019)Du, Tan, Yang, Feng, Xue, Zheng, Ye, and
+  Zhang]{du2019ssf}
+Liang Du, Jingang Tan, Hongye Yang, Jianfeng Feng, Xiangyang Xue, Qibao Zheng,
+  Xiaoqing Ye, and Xiaolin Zhang.
+\newblock Ssf-dan: Separated semantic feature based domain adaptation network
+  for semantic segmentation.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision}, pages 982--991, 2019.
+
+\bibitem[Everingham et~al.(2009)Everingham, Van~Gool, Williams, Winn, and
+  Zisserman]{everingham2009pascal}
+Mark Everingham, Luc Van~Gool, Christopher~KI Williams, John Winn, and Andrew
+  Zisserman.
+\newblock The pascal visual object classes (voc) challenge.
+\newblock \emph{International journal of computer vision}, 88:\penalty0
+  303--308, 2009.
+
+\bibitem[Finn and Levine(2017)]{finn2017meta}
+Chelsea Finn and Sergey Levine.
+\newblock Meta-learning and universality: Deep representations and gradient
+  descent can approximate any learning algorithm.
+\newblock \emph{arXiv preprint arXiv:1710.11622}, 2017.
+
+\bibitem[Hariharan et~al.(2011)Hariharan, Arbel{\'a}ez, Bourdev, Maji, and
+  Malik]{hariharan2011semantic}
+Bharath Hariharan, Pablo Arbel{\'a}ez, Lubomir Bourdev, Subhransu Maji, and
+  Jitendra Malik.
+\newblock Semantic contours from inverse detectors.
+\newblock In \emph{2011 international conference on computer vision}, pages
+  991--998. IEEE, 2011.
+
+\bibitem[He et~al.(2016)He, Zhang, Ren, and Sun]{he2016deep}
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+\newblock Deep residual learning for image recognition.
+\newblock In \emph{Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 770--778, 2016.
+
+\bibitem[He et~al.(2017)He, Gkioxari, Doll{\'a}r, and Girshick]{he2017mask}
+Kaiming He, Georgia Gkioxari, Piotr Doll{\'a}r, and Ross Girshick.
+\newblock Mask r-cnn.
+\newblock In \emph{Proceedings of the IEEE international conference on computer
+  vision}, pages 2961--2969, 2017.
+
+\bibitem[Hsu et~al.(2021)Hsu, Chiu, and Yeung]{hsu2021darcnn}
+Joy Hsu, Wah Chiu, and Serena Yeung.
+\newblock Darcnn: Domain adaptive region-based convolutional neural network for
+  unsupervised instance segmentation in biomedical images.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition}, pages 1003--1012, 2021.
+
+\bibitem[Huang et~al.(2022)Huang, Guan, Xiao, and Lu]{huang2022multi}
+Jiaxing Huang, Dayan Guan, Aoran Xiao, and Shijian Lu.
+\newblock Multi-level adversarial network for domain adaptive semantic
+  segmentation.
+\newblock \emph{Pattern Recognition}, 123:\penalty0 108384, 2022.
+
+\bibitem[Jaeger et~al.(2013)Jaeger, Karargyris, Candemir, Folio, Siegelman,
+  Callaghan, Xue, Palaniappan, Singh, Antani, et~al.]{jaeger2013automatic}
+Stefan Jaeger, Alexandros Karargyris, Sema Candemir, Les Folio, Jenifer
+  Siegelman, Fiona Callaghan, Zhiyun Xue, Kannappan Palaniappan, Rahul~K Singh,
+  Sameer Antani, et~al.
+\newblock Automatic tuberculosis screening using chest radiographs.
+\newblock \emph{IEEE transactions on medical imaging}, 33\penalty0
+  (2):\penalty0 233--245, 2013.
+
+\bibitem[Kingma and Ba(2014)]{kingma2014adam}
+Diederik~P Kingma and Jimmy Ba.
+\newblock Adam: A method for stochastic optimization.
+\newblock \emph{arXiv preprint arXiv:1412.6980}, 2014.
+
+\bibitem[Lei et~al.(2022)Lei, Zhang, He, Chen, Du, and Lu]{lei2022cross}
+Shuo Lei, Xuchao Zhang, Jianfeng He, Fanglan Chen, Bowen Du, and Chang-Tien Lu.
+\newblock Cross-domain few-shot semantic segmentation.
+\newblock In \emph{Computer Vision--ECCV 2022: 17th European Conference, Tel
+  Aviv, Israel, October 23--27, 2022, Proceedings, Part XXX}, pages 73--90.
+  Springer, 2022.
+
+\bibitem[Li et~al.(2020)Li, Wei, Chen, Tai, and Tang]{li2020fss}
+Xiang Li, Tianhan Wei, Yau~Pun Chen, Yu-Wing Tai, and Chi-Keung Tang.
+\newblock Fss-1000: A 1000-class dataset for few-shot segmentation.
+\newblock In \emph{Proceedings of the IEEE/CVF conference on computer vision
+  and pattern recognition}, pages 2869--2878, 2020.
+
+\bibitem[Li et~al.(2021)Li, Data, Fu, Hu, and Prisacariu]{li2021few}
+Yiwen Li, Gratianus Wesley~Putra Data, Yunguan Fu, Yipeng Hu, and Victor~Adrian
+  Prisacariu.
+\newblock Few-shot semantic segmentation with self-supervision from
+  pseudo-classes.
+\newblock In \emph{32nd British Machine Vision Conference 2021, {BMVC} 2021,
+  November 22-25, 2021}, 2021.
+
+\bibitem[Liu et~al.(2022)Liu, Bao, Yin, haochen wang, Gao, Sonke, and
+  Gavves]{Liu_2022_BMVC}
+Jie Liu, Yanqi Bao, Wenzhe Yin, haochen wang, Yang Gao, Jan-Jakob Sonke, and
+  Efstratios Gavves.
+\newblock Few-shot semantic segmentation with support-induced graph
+  convolutional network.
+\newblock In \emph{33rd British Machine Vision Conference 2022, {BMVC} 2022,
+  London, UK, November 21-24, 2022}. {BMVA} Press, 2022.
+\newblock URL \url{https://bmvc2022.mpi-inf.mpg.de/0126.pdf}.
+
+\bibitem[Liu et~al.(2020)Liu, Zhang, Lin, and Liu]{liu2020crnet}
+Weide Liu, Chi Zhang, Guosheng Lin, and Fayao Liu.
+\newblock Crnet: Cross-reference networks for few-shot segmentation.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition}, pages 4165--4173, 2020.
+
+\bibitem[Liu et~al.(2021)Liu, Zhang, and Wang]{liu2021source}
+Yuang Liu, Wei Zhang, and Jun Wang.
+\newblock Source-free domain adaptation for semantic segmentation.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition}, pages 1215--1224, 2021.
+
+\bibitem[Long et~al.(2015)Long, Shelhamer, and Darrell]{long2015fully}
+Jonathan Long, Evan Shelhamer, and Trevor Darrell.
+\newblock Fully convolutional networks for semantic segmentation.
+\newblock In \emph{Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 3431--3440, 2015.
+
+\bibitem[Marr(2010)]{marr2010vision}
+David Marr.
+\newblock \emph{Vision: A computational investigation into the human
+  representation and processing of visual information}.
+\newblock MIT press, 2010.
+
+\bibitem[Min et~al.(2021)Min, Kang, and Cho]{min2021hypercorrelation}
+Juhong Min, Dahyun Kang, and Minsu Cho.
+\newblock Hypercorrelation squeeze for few-shot segmentation.
+\newblock In \emph{Proceedings of the IEEE/CVF international conference on
+  computer vision}, pages 6941--6952, 2021.
+
+\bibitem[Okazawa(2022)]{okazawa2022interclass}
+Atsuro Okazawa.
+\newblock Interclass prototype relation for few-shot segmentation.
+\newblock In \emph{Computer Vision--ECCV 2022: 17th European Conference, Tel
+  Aviv, Israel, October 23--27, 2022, Proceedings, Part XXIX}, pages 362--378.
+  Springer, 2022.
+
+\bibitem[Redmon et~al.(2016)Redmon, Divvala, Girshick, and
+  Farhadi]{redmon2016you}
+Joseph Redmon, Santosh Divvala, Ross Girshick, and Ali Farhadi.
+\newblock You only look once: Unified, real-time object detection.
+\newblock In \emph{Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 779--788, 2016.
+
+\bibitem[Ronneberger et~al.(2015)Ronneberger, Fischer, and
+  Brox]{ronneberger2015u}
+Olaf Ronneberger, Philipp Fischer, and Thomas Brox.
+\newblock U-net: Convolutional networks for biomedical image segmentation.
+\newblock In \emph{Medical Image Computing and Computer-Assisted
+  Intervention--MICCAI 2015: 18th International Conference, Munich, Germany,
+  October 5-9, 2015, Proceedings, Part III 18}, pages 234--241. Springer, 2015.
+
+\bibitem[Seo et~al.(2022)Seo, Park, Yoon, and Moon]{seo2022task}
+Jun Seo, Young-Hyun Park, Sung~Whan Yoon, and Jaekyun Moon.
+\newblock Task-adaptive feature transformer with semantic enrichment for
+  few-shot segmentation.
+\newblock \emph{arXiv preprint arXiv:2202.06498}, 2022.
+
+\bibitem[Shaban et~al.(2017)Shaban, Bansal, Liu, Essa, and
+  Boots]{shaban2017one}
+Amirreza Shaban, Shray Bansal, Zhen Liu, Irfan Essa, and Byron Boots.
+\newblock One-shot learning for semantic segmentation.
+\newblock \emph{arXiv preprint arXiv:1709.03410}, 2017.
+
+\bibitem[Siam et~al.(2019)Siam, Oreshkin, and Jagersand]{siam2019amp}
+Mennatullah Siam, Boris~N Oreshkin, and Martin Jagersand.
+\newblock Amp: Adaptive masked proxies for few-shot segmentation.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision}, pages 5249--5258, 2019.
+
+\bibitem[Simonyan and Zisserman(2014)]{simonyan2014very}
+Karen Simonyan and Andrew Zisserman.
+\newblock Very deep convolutional networks for large-scale image recognition.
+\newblock \emph{arXiv preprint arXiv:1409.1556}, 2014.
+
+\bibitem[Tian et~al.(2020)Tian, Zhao, Shu, Yang, Li, and Jia]{tian2020prior}
+Zhuotao Tian, Hengshuang Zhao, Michelle Shu, Zhicheng Yang, Ruiyu Li, and Jiaya
+  Jia.
+\newblock Prior guided feature enrichment network for few-shot segmentation.
+\newblock \emph{IEEE transactions on pattern analysis and machine
+  intelligence}, 44\penalty0 (2):\penalty0 1050--1065, 2020.
+
+\bibitem[Tschandl et~al.(2018)Tschandl, Rosendahl, and
+  Kittler]{tschandl2018ham10000}
+Philipp Tschandl, Cliff Rosendahl, and Harald Kittler.
+\newblock The ham10000 dataset, a large collection of multi-source
+  dermatoscopic images of common pigmented skin lesions.
+\newblock \emph{Scientific data}, 5\penalty0 (1):\penalty0 1--9, 2018.
+
+\bibitem[Wang et~al.(2019)Wang, Liew, Zou, Zhou, and Feng]{wang2019panet}
+Kaixin Wang, Jun~Hao Liew, Yingtian Zou, Daquan Zhou, and Jiashi Feng.
+\newblock Panet: Few-shot image semantic segmentation with prototype alignment.
+\newblock In \emph{proceedings of the IEEE/CVF international conference on
+  computer vision}, pages 9197--9206, 2019.
+
+\bibitem[Wang et~al.(2021)Wang, Zhou, Yu, Dai, Konukoglu, and
+  Van~Gool]{wang2021exploring}
+Wenguan Wang, Tianfei Zhou, Fisher Yu, Jifeng Dai, Ender Konukoglu, and Luc
+  Van~Gool.
+\newblock Exploring cross-image pixel contrast for semantic segmentation.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision}, pages 7303--7313, 2021.
+
+\bibitem[Woo et~al.(2018)Woo, Park, Lee, and Kweon]{woo2018cbam}
+Sanghyun Woo, Jongchan Park, Joon-Young Lee, and In~So Kweon.
+\newblock Cbam: Convolutional block attention module.
+\newblock In \emph{Proceedings of the European conference on computer vision
+  (ECCV)}, pages 3--19, 2018.
+
+\bibitem[Yang et~al.(2020)Yang, Liu, Li, Jiao, and Ye]{yang2020prototype}
+Boyu Yang, Chang Liu, Bohao Li, Jianbin Jiao, and Qixiang Ye.
+\newblock Prototype mixture models for few-shot semantic segmentation.
+\newblock In \emph{Computer Vision--ECCV 2020: 16th European Conference,
+  Glasgow, UK, August 23--28, 2020, Proceedings, Part VIII 16}, pages 763--778.
+  Springer, 2020.
+
+\bibitem[Zha et~al.(2023)Zha, Tang, Sun, and Tang]{zha2023boosting}
+Zican Zha, Hao Tang, Yunlian Sun, and Jinhui Tang.
+\newblock Boosting few-shot fine-grained recognition with background
+  suppression and foreground alignment.
+\newblock \emph{IEEE Transactions on Circuits and Systems for Video
+  Technology}, 2023.
+
+\bibitem[Zhang et~al.(2019{\natexlab{a}})Zhang, Lin, Liu, Guo, Wu, and
+  Yao]{zhang2019pyramid}
+Chi Zhang, Guosheng Lin, Fayao Liu, Jiushuang Guo, Qingyao Wu, and Rui Yao.
+\newblock Pyramid graph networks with connection attentions for region-based
+  one-shot semantic segmentation.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision}, pages 9587--9595, 2019{\natexlab{a}}.
+
+\bibitem[Zhang et~al.(2019{\natexlab{b}})Zhang, Lin, Liu, Yao, and
+  Shen]{zhang2019canet}
+Chi Zhang, Guosheng Lin, Fayao Liu, Rui Yao, and Chunhua Shen.
+\newblock Canet: Class-agnostic segmentation networks with iterative refinement
+  and attentive few-shot learning.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition}, pages 5217--5226, 2019{\natexlab{b}}.
+
+\bibitem[Zhao et~al.(2017)Zhao, Shi, Qi, Wang, and Jia]{zhao2017pyramid}
+Hengshuang Zhao, Jianping Shi, Xiaojuan Qi, Xiaogang Wang, and Jiaya Jia.
+\newblock Pyramid scene parsing network.
+\newblock In \emph{Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 2881--2890, 2017.
+
+\end{thebibliography}

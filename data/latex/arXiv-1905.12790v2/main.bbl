@@ -1,0 +1,193 @@
+\begin{thebibliography}{29}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Berglund et~al.(2015)Berglund, Raiko, Honkala, K{\"a}rkk{\"a}inen,
+  Vetek, and Karhunen]{berglund2015bidirectional}
+Berglund, M., Raiko, T., Honkala, M., K{\"a}rkk{\"a}inen, L., Vetek, A., and
+  Karhunen, J.~T.
+\newblock Bidirectional recurrent neural networks as generative models.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pp.\
+  856--864, 2015.
+
+\bibitem[Besag(1977)]{besag1977pll}
+Besag, J.
+\newblock Efficiency of pseudolikelihood estimation for simple gaussian fields.
+\newblock 1977.
+
+\bibitem[Devlin et~al.(2019)Devlin, Chang, and Kenton~Lee]{devlin2019bert}
+Devlin, J., Chang, M.-W., and Kenton~Lee, K.~T.
+\newblock Bert: Pre-training of deep bidirectional transformers for language
+  understanding.
+\newblock In \emph{NAACL}, 2019.
+
+\bibitem[Edunov et~al.(2019)Edunov, Baevski, and Auli]{edunov2019pretrained}
+Edunov, S., Baevski, A., and Auli, M.
+\newblock Pre-trained language model representations for language generation,
+  2019.
+
+\bibitem[Ghazvininejad et~al.(2019)Ghazvininejad, Levy, Liu, and
+  Zettlemoyer]{ghazvininejad2019constant}
+Ghazvininejad, M., Levy, O., Liu, Y., and Zettlemoyer, L.
+\newblock Mask-predict: Parallel decoding of conditional masked language
+  models.
+\newblock \emph{arXiv preprint arXiv:1904.09324}, 2019.
+
+\bibitem[Gu et~al.(2018)Gu, Bradbury, Xiong, Li, and Socher]{gu2018nonauto}
+Gu, J., Bradbury, J., Xiong, C., Li, V. O.~K., and Socher, R.
+\newblock Non-autoregressive neural machine translation.
+\newblock \emph{CoRR}, abs/1711.02281, 2018.
+
+\bibitem[Gu et~al.(2019)Gu, Liu, and Cho]{gu2019insertiondecoding}
+Gu, J., Liu, Q., and Cho, K.
+\newblock Insertion-based decoding with automatically inferred generation
+  order.
+\newblock \emph{CoRR}, abs/1902.01370, 2019.
+
+\bibitem[Hendrycks \& Gimpel(2016)Hendrycks and Gimpel]{hendrycks2016gelu}
+Hendrycks, D. and Gimpel, K.
+\newblock Bridging nonlinearities and stochastic regularizers with gaussian
+  error linear units.
+\newblock \emph{arXiv preprint arXiv:1606.08415,}, 2016.
+
+\bibitem[Kingma \& Ba(2014)Kingma and Ba]{kingma2014adam}
+Kingma, D.~P. and Ba, J.
+\newblock Adam: A method for stochastic optimization.
+\newblock \emph{arXiv preprint 1412.6980}, 2014.
+
+\bibitem[Koehn et~al.(2007)Koehn, Hoang, Birch, Callison-Burch, Federico,
+  Bertoldi, Cowan, Shen, Moran, Zens, et~al.]{koehn2007moses}
+Koehn, P., Hoang, H., Birch, A., Callison-Burch, C., Federico, M., Bertoldi,
+  N., Cowan, B., Shen, W., Moran, C., Zens, R., et~al.
+\newblock Moses: Open source toolkit for statistical machine translation.
+\newblock In \emph{ACL}, 2007.
+
+\bibitem[Lample \& Conneau(2019)Lample and Conneau]{lample2019cross}
+Lample, G. and Conneau, A.
+\newblock Cross-lingual language model pretraining.
+\newblock \emph{arXiv preprint arXiv:1901.07291}, 2019.
+
+\bibitem[Lee et~al.(2018)Lee, Mansimov, and Cho]{lee2018deterministic}
+Lee, J., Mansimov, E., and Cho, K.
+\newblock Deterministic non-autoregressive neural sequence modeling by
+  iterative refinement.
+\newblock \emph{arXiv preprint arXiv:1802.06901}, 2018.
+
+\bibitem[Levine \& Casella(2006)Levine and Casella]{levine2006optimizing}
+Levine, R.~A. and Casella, G.
+\newblock Optimizing random scan gibbs samplers.
+\newblock \emph{Journal of Multivariate Analysis}, 97\penalty0 (10):\penalty0
+  2071--2100, 2006.
+
+\bibitem[Ma et~al.(2019)Ma, Zhou, Li, Neubig, and Hovy]{ma2019flowseq}
+Ma, X., Zhou, C., Li, X., Neubig, G., and Hovy, E.
+\newblock Flowseq: Non-autoregressive conditional sequence generation with
+  generative flow.
+\newblock \emph{arXiv preprint 1909.02480}, 2019.
+
+\bibitem[Papineni et~al.(2002)Papineni, Roukos, Ward, and
+  Zhu]{papineni2002bleu}
+Papineni, K., Roukos, S., Ward, T., and Zhu, W.-J.
+\newblock Bleu: a method for automatic evaluation of machine translation.
+\newblock In \emph{Proceedings of the 40th annual meeting on association for
+  computational linguistics}, pp.\  311--318. Association for Computational
+  Linguistics, 2002.
+
+\bibitem[Ramachandran et~al.(2017)Ramachandran, Liu, and Le]{Ramachandran_2017}
+Ramachandran, P., Liu, P., and Le, Q.
+\newblock Unsupervised pretraining for sequence to sequence learning.
+\newblock \emph{Proceedings of the 2017 Conference on Empirical Methods in
+  Natural Language Processing}, 2017.
+\newblock \doi{10.18653/v1/d17-1039}.
+\newblock URL \url{http://dx.doi.org/10.18653/v1/d17-1039}.
+
+\bibitem[Schulman et~al.(2017)Schulman, Wolski, Dhariwal, Radford, and
+  Klimov]{schulman2017proximal}
+Schulman, J., Wolski, F., Dhariwal, P., Radford, A., and Klimov, O.
+\newblock {Proximal Policy Optimization Algorithms}.
+\newblock 2017.
+\newblock URL \url{http://arxiv.org/abs/1707.06347}.
+
+\bibitem[Sennrich et~al.(2016)Sennrich, Haddow, and Birch]{sennrich2016bpe}
+Sennrich, R., Haddow, B., and Birch, A.
+\newblock Neural machine translation of rare words with subword units.
+\newblock In \emph{ACL}, 2016.
+
+\bibitem[Shu et~al.(2019)Shu, Lee, Nakayama, and Cho]{shu2019lvnar}
+Shu, R., Lee, J., Nakayama, H., and Cho, K.
+\newblock Latent-variable non-autoregressive neural machine translation with
+  deterministic inference using a delta posterior.
+\newblock \emph{arXiv preprint 1908.07181}, 2019.
+
+\bibitem[Song et~al.(2019)Song, Tan, Qin, Lu, and Liu]{song2019mass}
+Song, K., Tan, X., Qin, T., Lu, J., and Liu, T.-Y.
+\newblock Mass: Masked sequence to sequence pre-training for language
+  generation, 2019.
+
+\bibitem[Srivastava et~al.(2014)Srivastava, Hinton, Krizhevsky, Sutskever, and
+  Salakhutdinov]{srivastava2014dropout}
+Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., and Salakhutdinov,
+  R.
+\newblock Dropout: A simple way to prevent neural networks from overfitting.
+\newblock 2014.
+
+\bibitem[Stern et~al.(2019)Stern, Chan, Kiros, and
+  Uszkoreit]{stern2019inserttransformer}
+Stern, M., Chan, W., Kiros, J., and Uszkoreit, J.
+\newblock Insertion transformer: Flexible sequence generation via insertion
+  operations.
+\newblock \emph{CoRR}, abs/1902.03249, 2019.
+
+\bibitem[Sun et~al.(2017)Sun, Lee, and Batra]{sun2017bibs}
+Sun, Q., Lee, S., and Batra, D.
+\newblock Bidirectional beam search: Forward-backward inference in neural
+  sequence models for fill-in-the-blank image captioning.
+\newblock 2017.
+
+\bibitem[Vaswani et~al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez,
+  Kaiser, and Polosukhin]{vaswani2017attention}
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.~N.,
+  Kaiser, {\L}., and Polosukhin, I.
+\newblock Attention is all you need.
+\newblock In \emph{NIPS}, 2017.
+
+\bibitem[Wang \& Cho(2019)Wang and Cho]{wang2019bert}
+Wang, A. and Cho, K.
+\newblock Bert has a mouth, and it must speak: Bert as a markov random field
+  language model.
+\newblock \emph{arXiv preprint arXiv:1902.04094}, 2019.
+
+\bibitem[Wang et~al.(2018)Wang, Zhang, and Chen]{wang2018semi}
+Wang, C., Zhang, J., and Chen, H.
+\newblock Semi-autoregressive neural machine translation.
+\newblock \emph{arXiv preprint arXiv:1808.08583}, 2018.
+
+\bibitem[Wang et~al.(2019)Wang, Tian, He, Qin, Zhai, and
+  Liu]{wang2019nonautoaux}
+Wang, Y., Tian, F., He, D., Qin, T., Zhai, C., and Liu, T.-Y.
+\newblock Non-autoregressive machine translation with auxiliary regularization.
+\newblock \emph{arXiv preprint 1902.10245}, 2019.
+
+\bibitem[Welleck et~al.(2019)Welleck, Brantley, III, and
+  Cho]{welleck2019nonmonotonic}
+Welleck, S., Brantley, K., III, H.~D., and Cho, K.
+\newblock Non-monotonic sequential text generation.
+\newblock In Chaudhuri, K. and Salakhutdinov, R. (eds.), \emph{Proceedings of
+  the 36th International Conference on Machine Learning}, volume~97 of
+  \emph{Proceedings of Machine Learning Research}, pp.\  6716--6726, Long
+  Beach, California, USA, 09--15 Jun 2019. PMLR.
+\newblock URL \url{http://proceedings.mlr.press/v97/welleck19a.html}.
+
+\bibitem[Williams(1992)]{williams1992simple}
+Williams, R.~J.
+\newblock Simple statistical gradient-following algorithms for connectionist
+  reinforcement learning.
+\newblock \emph{Machine Learning}, 8\penalty0 (3):\penalty0 229--256, May 1992.
+\newblock ISSN 1573-0565.
+\newblock \doi{10.1007/BF00992696}.
+\newblock URL \url{https://doi.org/10.1007/BF00992696}.
+
+\end{thebibliography}

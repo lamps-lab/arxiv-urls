@@ -1,0 +1,24 @@
+\centering
+\footnotesize
+\begin{tabular}{cc}
+%\begin{tabular}{cccccccccccccccccccc}
+\toprule
+Iteration & {\color{red} Outside-In} \\
+\midrule
+(source) & Terminal 3 wird vor allem von kleineren US-Fluggesellschaften bedient .\\
+1 & \_ \_ \_ \_ \_ \_ \_ \_ \_ \textbf{.} \\
+2 & \textbf{Terminal} \_ \_ \_ \_ \_ \_ \_ \_ . \\
+3 & Terminal \textbf{3} \_ \_ \_ \_ \_ \_ \_ . \\
+4 & Terminal 3 \_ \_ \_ \_ \_ \_ \textbf{airlines} . \\
+5 & Terminal 3 \_ \_ \_ \_ \_ \textbf{US} airlines . \\
+6 & Terminal 3 \_ \_ \_ \_ \textbf{smaller} US airlines . \\
+7 & Terminal 3 \_ \_ \_ \textbf{by} smaller US airlines . \\
+8 & Terminal 3 \textbf{is} \_ \_ by smaller US airlines . \\
+9 & Terminal 3 is \textbf{mainly} \_ by smaller US airlines . \\
+10 & Terminal 3 is mainly \textbf{served} by smaller US airlines . \\
+(target) & Terminal 3 serves mainly small US airlines . \\
+
+\bottomrule
+\end{tabular}
+
+\caption{Example sentences generated following an {\color{red} Outside-In} generation order, using the \textbf{learned} decoding algorithm on De$\rightarrow$En.}

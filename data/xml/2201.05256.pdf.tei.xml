@@ -1,0 +1,1458 @@
+<?xml version="1.0" encoding="UTF-8"?><TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">DAPSTEP: Deep Assignee Prediction for Stack Trace Error rePresentation</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown">
+					<licence/>
+				</availability>
+				<date type="published" when="2022-01-14">14 Jan 2022</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Denis</forename><surname>Sushentsev</surname></persName>
+							<email>denis.sushentsev@jetbrains.com</email>
+							<affiliation key="aff0">
+								<orgName type="institution">HSE University JetBrains Saint Petersburg</orgName>
+								<address>
+									<country key="RU">Russia</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Aleksandr</forename><surname>Khvorov</surname></persName>
+							<email>aleksandr.khvorov@jetbrains.com</email>
+							<affiliation key="aff1">
+								<orgName type="institution">HSE University JetBrains Saint Petersburg</orgName>
+								<address>
+									<country key="RU">Russia</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Roman</forename><surname>Vasiliev</surname></persName>
+							<email>roman.vasiliev@jetbrains.com</email>
+							<affiliation key="aff2">
+								<orgName type="institution">JetBrains Saint Petersburg</orgName>
+								<address>
+									<country key="RU">Russia</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yaroslav</forename><surname>Golubev</surname></persName>
+							<email>yaroslav.golubev@jetbrains.com</email>
+							<affiliation key="aff3">
+								<orgName type="institution">JetBrains Research Saint Petersburg</orgName>
+								<address>
+									<country key="RU">Russia</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Timofey</forename><surname>Bryksin</surname></persName>
+							<email>timofey.bryksin@jetbrains.com</email>
+							<affiliation key="aff4">
+								<orgName type="institution">JetBrains Research HSE University Saint Petersburg</orgName>
+								<address>
+									<country key="RU">Russia</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">DAPSTEP: Deep Assignee Prediction for Stack Trace Error rePresentation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2022-01-14">14 Jan 2022</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">533BD783A8CA259CAC35EF5742885087</idno>
+					<idno type="arXiv">arXiv:2201.05256v1[cs.SE]</idno>
+					<note type="submission">John October 2 Mike October 3 John January 4 Bob March 5 Mike January 6 Mike February Mike October 5 Mike January 6 Mike February</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.8.1" ident="GROBID" when="2025-01-29T07:33+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>MockitoCore.mockStatic" "file_name":</term>
+					<term>"MockitoCore.java" "line_number":</term>
+					<term>89 "commit_hash":</term>
+					<term>"cca73123976b3f38663dc5a4da834452d188a8cc" "subsystem": "org.mockito.internal" }</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>The task of finding the best developer to fix a bug is called bug triage. Most of the existing approaches consider the bug triage task as a classification problem, however, classification is not appropriate when the sets of classes change over time (as developers often do in a project). Furthermore, to the best of our knowledge, all the existing models use textual sources of information, i.e., bug descriptions, which are not always available.</p><p>In this work, we explore the applicability of existing solutions for the bug triage problem when stack traces are used as the main data source of bug reports. Additionally, we reformulate this task as a ranking problem and propose new deep learning models to solve it. The models are based on a bidirectional recurrent neural network with attention and on a convolutional neural network, with the weights of the models optimized using a ranking loss function. To improve the quality of ranking, we propose using additional information from version control system annotations. Two approaches are proposed for extracting features from annotations: manual and using an additional neural network. To evaluate our models, we collected two datasets of real-world stack traces. Our experiments show that the proposed models outperform existing models adapted to handle stack traces. To facilitate further research in this area, we publish the source code of our models and one of the collected datasets.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>Software bugs are an inevitable part of the development process. Bugs can lead to security problems, loss of company profit, and in the worst case, even fatal accidents <ref type="bibr" target="#b0">[1]</ref>. For these reasons, bugs need to be swiftly fixed, which requires choosing the most appropriate developer. The problem of finding such a developer for a particular bug is called bug triage <ref type="bibr" target="#b1">[2]</ref>.</p><p>The developer who should fix the bug can be assigned manually, however, such an approach has several significant disadvantages. Firstly, it is tedious and time-consuming work, and the situation gets more and more complicated as the number of developers grows. In large companies, hundreds of bug reports are received every day, which makes manual developer assignment very difficult if not impossible. For example, 333,371 bugs were reported for the Eclipse IDE from October 2001 to December 2010, averaging at about 100 bugs every day <ref type="bibr" target="#b2">[3]</ref>. Secondly, it is important to assign the most suitable developer right from the start to reduce the time of bug fixing <ref type="bibr" target="#b1">[2]</ref>. Otherwise, the error gets reassigned from one developer to another <ref type="bibr" target="#b3">[4]</ref>, and as a result, the time of each developer in such a chain is wasted, while the error remains in the system longer, which can be critical.</p><p>A large number of approaches have been proposed to solve the bug triage problem automatically. Existing models can be roughly divided into three groups: based on heuristics <ref type="bibr" target="#b4">[5]</ref>- <ref type="bibr" target="#b7">[8]</ref>, based on classic machine learning <ref type="bibr" target="#b8">[9]</ref>- <ref type="bibr" target="#b10">[11]</ref>, and based on deep learning (DL) <ref type="bibr" target="#b11">[12]</ref>- <ref type="bibr" target="#b14">[15]</ref>. The works of Guo et al. <ref type="bibr" target="#b12">[13]</ref> and Mani et al. <ref type="bibr" target="#b13">[14]</ref> demonstrated that deep learning helps with the task of assigning a developer better than other approaches. This is to be expected, since the bug triage task is based on natural language processing, where deep learning shows promising results <ref type="bibr" target="#b15">[16]</ref>. An additional advantage of deep learning algorithms is that they do not require sophisticated feature extraction methods <ref type="bibr" target="#b16">[17]</ref>.</p><p>However, it should be noted that bugs can be reported in different forms. For example, in a bug tracking system, errors are usually present in the form of a bug report: a name, a small description in some natural language, and some additional meta information (the date the error was introduced, priority, severity, etc.). To the best of our knowledge, all the existing solutions are based on working with this kind of error representation. At the same time, errors can also come in the form of stack traces: sequences of function calls (called frames) that lead to an error in the system. Developers commonly use stack traces during debugging, and users can usually see a stack trace displayed as part of an error message. Stack traces help to solve the bug localization problem <ref type="bibr" target="#b17">[18]</ref>- <ref type="bibr" target="#b19">[20]</ref> and the bug report deduplication problem <ref type="bibr" target="#b20">[21]</ref>- <ref type="bibr" target="#b22">[23]</ref>. The example of a single stack frame is presented in Figure <ref type="figure">1</ref>.</p><p>Stack traces are a data source that is often easy to obtain: most modern software systems are able to automatically send back stack traces of the error that has occurred. In such a setting, predicting the assignee by the textual description of the error would require labeling all the error reports, which Fig. <ref type="figure">1</ref>. An example of a stack frame. The frame consists of the name of the function that led to the error, as well as various information about it.</p><p>is almost impossible since the number of such reports per day could be enormous. Another important reason to process stack traces automatically is that they are more complicated to analyze manually by people who did not participate in the development of a particular system component, since the information is presented in a rather raw form. Thus, a new approach is needed that solves the bug triage problem for the case where only the stack trace information is available.</p><p>Another important limitation of the existing approaches is that they consider the bug triage task as a classification problem. The classification setting might not be the best choice in practice, since the set of classes (developers) can change over time: developers can leave and join the team responsible for the product of even the company itself.</p><p>To the best of our knowledge, no one has previously suggested using bug stack traces as the main source of information for the bug triage problem. In this work, we strive to fill this gap in research to support working with the systems where stack traces are the primary type of data. To that end, we collected two datasets of real-world bug stack traces from JetBrains, 1 the developer of a wide array of software products including IntelliJ-based IDEs. The larger dataset contains 11,139 stack traces, however, it contains proprietary company code, so we also curate the second dataset -a smaller public subset of the first one that contains 3,361 stack traces that we release for researchers and practitioners. The datasets consist of a labeled set of bug reports and annotations from the version control system (developer IDs and timestamps) that we apply to improve the quality of our model.</p><p>We propose a new approach to solve the bug assignee prediction problem based on stack traces -a DL-based ranking model called DapStep (an RNN ranking model with manual frame-based &amp; stack-based features). We compared the proposed model with existing approaches adapted for stack trace processing. The proposed model shows Acc@1 of 0.34 and MRR of 0.43 on the public dataset and Acc@1 of 0.60 and MRR of 0.70 on the private dataset.</p><p>The main contributions of this paper are as follows:</p><p>• We propose bug stack traces as a self-sufficient source of information for the assignee prediction task and carry out the first study in comparing various approaches in this setting. The remaining sections of this paper are organized as follows. Section II provides a brief overview of existing solutions, and in Section III, we propose a new deep learning solution. We evaluate our approach in Section IV, followed by a discussion of the threats to validity in Section V. Finally, Section VI summarizes the results of the paper.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. RELATED WORK</head><p>The bug triage task is a well-established area of research, with a large number of proposed approaches. Previous works can be broadly divided into three large groups: based on heuristics, on classic machine learning, and on deep learning.</p><p>Heuristic-based approaches tend to consider the relevance scores of developers and errors based on domain knowledge. Kagdi et al. <ref type="bibr" target="#b23">[24]</ref>, Shokripour et al. <ref type="bibr" target="#b24">[25]</ref>, <ref type="bibr" target="#b25">[26]</ref>, and Vásquez et al. <ref type="bibr" target="#b26">[27]</ref> use the information about code authorship, commit messages, comments in the source code, etc. Also, various indexing and NLP techniques are used to search for files related to the query bug report. The most appropriate developers are then selected based on their activities in the relevant files.</p><p>Since the software development process is impossible without team work, developers often interact with each other. The result is a collaboration network that can be used as another source of information. Hu et al. <ref type="bibr" target="#b7">[8]</ref> and Zhang et al. <ref type="bibr" target="#b27">[28]</ref> use collaboration networks and information retrieval techniques on graphs to choose the most appropriate developer.</p><p>As the influence of machine learning spread, it became actively applied in the assignee recommendation as well. Often, such approaches vectorize the text of the bug summary and description using TF-IDF or Bag-of-words (BOW), and classify them using a machine learning algorithm: Naive Bayes, Random Forest, or SVM <ref type="bibr" target="#b1">[2]</ref>, <ref type="bibr" target="#b28">[29]</ref>- <ref type="bibr" target="#b30">[31]</ref>.</p><p>Recently, deep learning solutions also became popular. Lee et al. <ref type="bibr" target="#b11">[12]</ref> present one of the first DL models based on the CNN and Word2Vec embeddings used for assigning a developer to fix the bug. Their approach achieved higher accuracy in industrial projects at LG compared to an open source project.</p><p>The application of CNN for the bug triage problem has been reported to be useful in more recent approaches. Guo et al. <ref type="bibr" target="#b12">[13]</ref> compare the CNN-based model to the models based on Naive Bayes, SVM, kNN, and Random Forest. The experimental results show that the CNN-based approach outperforms other solutions. Since some of the developers can change jobs or leave the company indefinitely, the authors also propose to reorder developers based on their activity.</p><p>Zaidi et al. <ref type="bibr" target="#b31">[32]</ref> explore different word embeddings for the CNN model: Word2Vec <ref type="bibr" target="#b32">[33]</ref>, GloVe <ref type="bibr" target="#b33">[34]</ref>, and ELMo <ref type="bibr" target="#b34">[35]</ref>. The experimental results suggest that the ELMo embeddings are the best for the bug triage problem.</p><p>Chen et al. <ref type="bibr" target="#b35">[36]</ref> extend the work on incident triaging (unplanned interruptions or outages of the service) and perform an empirical study on the datasets provided by Microsoft. They explore different bug triage techniques: based on machine learning, deep learning, topic modeling, tossing graphs, and fuzzy sets. On average, the DL technique performs best.</p><p>An alternative to CNNs are RNNs, which are one of the most popular and effective approaches for processing sequences of variable length. Mani et al. <ref type="bibr" target="#b13">[14]</ref> use RNNs for assigning the developer to fix a bug. To address the common issue of RNNs "forgetting" long sequences <ref type="bibr" target="#b36">[37]</ref>, they propose to apply a bidirectional network with an attention mechanism. Moreover, the neural network learns syntactic and semantic features in an unsupervised manner, which means that it has the ability to use unfixed bug reports. Their work shows that the proposed approach provides a higher average accuracy rank than BOW features with softmax classifier, SVM, Naive Bayes, and cosine distance.</p><p>Finally, Xi et al. <ref type="bibr" target="#b14">[15]</ref> propose to use a bug tossing sequence to improve the DL model that helps to reassign the bug if the assignment was incorrect. The proposed approach was evaluated on three different open-source projects and outperforms baseline RNN and CNN models.</p><p>In our work, we strive to overcome the limitations of the existing approaches: namely, their reliance on textual descriptions and their use of classification models.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. APPROACH</head><p>In this section, we describe our algorithm for assignee prediction. We consider bug triage as a ranking problem, which we believe to be more appropriate here, because it does not depend on the current set of developers. The classifying setting requires an immutable set of predicted classes. If a developer leaves the project, they should be filtered out of the resulting prediction afterwards, and when a new developer joins, the classifying model will have to be retrained to take them into account. Since developers in the project may come and go, a more suitable option is the ranking problem setting, in which it is necessary to evaluate the relevance function f (q, d) for a bug q and a developer d.</p><p>More formally, given a query q (bug) and a collection D of documents (developers) that match the query, the task is to find a function f such that (q, d) ≺ (q, d ) ⇔ f (q, d) &lt; f (q, d ), where (q, d) ≺ (q, d ) means that d has a rank lower than d . Function f maps query-documents pairs to a relevance score.</p><p>The proposed model uses bug stack traces as the primary source of information for predicting assignees. In order to obtain better results, we also build features from the version control system (VCS) annotations, which provide information on which developer modified each line of the file and when. For example, Git annotations can be obtained via the git blame or git annotate commands.</p><p>The overall pipeline of the proposed algorithm is presented in Figure <ref type="figure" target="#fig_0">2</ref>. Using deep learning methods, the bug and the developer are mapped to a vector of a fixed size (embedding). We transform each bug stack trace into a sequence of text tokens (Section III-A) and apply the ideas from text sequences processing to obtain embeddings of bugs (Section III-B). Then, to create an embedding of a developer, we process all the files in the given stack trace to find files that the developer edited, and use this information to map this developer into the stack trace embedding space (section III-C). After all the embeddings are extracted, they are compared using the comparison module (Section III-F), and the score is obtained, which shows the relevance of the bug and the developer. To get the most appropriate developers for a given bug, we simply have to rank all the developers by their score.</p><p>To improve our model, we use additional features based on the VCS annotations and propose to process the annotations in two different ways: manually (Section III-D) and using an additional neural network (Section III-E) that allows us to avoid complex feature engineering. Let us now describe these steps in greater detail.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Preprocessing</head><p>The stack trace is represented as a sequence of frames ST = {f 1 , f 2 , . . . , f n }, where f i is the i-th stack frame. Every frame has a method name, a file name, a subsystem name, a commit hash, and an error line. An example of a stack frame is presented in Figure <ref type="figure">1</ref>.</p><p>Our preliminary experiments showed that stack trace preprocessing is an essential step that can significantly improve the model quality. In our work, we used the following data processing steps.</p><p>Firstly, we noticed that the length of the stack trace can sometimes be quite large. For instance, the maximum stack trace length in our dataset reached as many as 15,000 frames. It is difficult to make a neural network remember all the information as the frames are processed one by one. On the other hand, long stack traces tend to relate to a StackOverflowException error. Oftentimes, such a stack trace contains a loop: a set of frames that repeat at a specific frequency. Replacing the loop with the first occurrence of the loop element allows us to significantly reduce the length of the trace stack without degrading the model's quality. We did this for every stack trace in the dataset where it is applicable.</p><p>Secondly, because of the way the dataset was collected, not all information is available for every frame, the frame fields can be null. If the text token received from the frame is null, then we skip this frame.</p><p>In order to apply existing approaches, we propose to represent a stack trace as a sequence of text tokens using the following technique. Firstly, we extract the method name, the file name, or the subsystem name from each frame of the stack trace. For example, the stack frame in Figure <ref type="figure">1</ref> can be mapped to org.mockito.internal.MockitoCore.mockStatic, MockitoCore.java, or org.mockito.internal, respectively. Thus, the stack trace will be presented as a sequence of text tokens, which can be processed with various deep learning approaches. We conducted experiments with all three options (method name, file name, or subsystem), and since the difference was insignificant, we decided to extract the stack trace file name.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Representing Stack Traces as Vectors</head><p>To represent a stack trace with a vector of a fixed length (i.e., embedding), we were inspired by the architectures applied in the previous works, namely, RNNs with attention and CNNs <ref type="bibr" target="#b11">[12]</ref>- <ref type="bibr" target="#b13">[14]</ref>, <ref type="bibr" target="#b31">[32]</ref>. These two types of neural networks are among the most popular in the natural language processing field. In our study, we experimented with both of them.</p><p>1) Recurrent Neural Network: An RNN architecture called LSTM <ref type="bibr" target="#b37">[38]</ref> is frequently used to handle sequential data. It takes a sequence of text tokens as input and produces the resulting vectors. However, LSTMs may have problems remembering long sequences <ref type="bibr" target="#b38">[39]</ref>, which can be fixed with a bidirectional network <ref type="bibr" target="#b39">[40]</ref> with attention. The attention technique allows to focus on important parts of the input data <ref type="bibr" target="#b40">[41]</ref>. For instance, frames that are at the top of the stack trace are usually more informative and useful.</p><p>We use the neural network architecture from the work of Maini et al. <ref type="bibr" target="#b13">[14]</ref>. The input of the model is a sequence of vector representations of words, x = {x 1 , x 2 , . . . , x n }. In our approach, we use trainable embeddings for every text token. The network is bidirectional, therefore, the sequence is processed in both directions. The RNN produces a sequence of outputs y = {y 1 , y 2 , . . . , y n } from each direction. After that, the attention mechanism is applied, which is the weighted sum of the RNN outputs:</p><formula xml:id="formula_0">a n = n i=1 α i y i ,<label>(1)</label></formula><p>where α i represents an attention weight for the i-th output vector.</p><p>The final representation r is obtained as follows:</p><formula xml:id="formula_1">r = y n ⊕ a n forward LSTM ⊕ y n ⊕ a n backward LSTM ,<label>(2)</label></formula><p>where ⊕ represents the concatenation of vectors. It is easy to see that if the output vector has dimension d, then the embedding r will be of size 4 × d.</p><p>2) Convolutional Neural Network: Another possible approach to represent a stack trace with a vector is to use CNN. CNNs are most commonly applied to analyze visual information, however, they can also solve natural language processing tasks <ref type="bibr" target="#b41">[42]</ref>.</p><p>In a CNN-based network, for each sequence of text tokens, we build a matrix S ∈ R s×d , where s is the sequence length and d is the embedding dimension. We were inspired by the work of Lee et al. <ref type="bibr" target="#b11">[12]</ref> when building the model architecture.</p><p>Similarly to them, we use trainable embeddings for text tokens. After that, a convolution layer with 1D convolutions is used to extract different patterns from the sequence of tokens. After applying each convolution filter, a feature vector is obtained. In the extracted feature vector, the subsampling process called max-pooling is applied, which is the operation of extracting the maximum element from a vector. The final representation r is obtained by concatenating max-pooling values and has a dimension equal to the total number of convolutions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Representing Developers as Vectors</head><p>Obtaining an embedding of a given bug is pretty straightforward, since each bug has a stack trace that can be transformed into a sequence of text tokens. However, the process of extracting the embedding of a developer is not that obvious.</p><p>One possible solution is to represent the developer as all the code they wrote in the system. This approach has a significant drawback: the need to regularly re-index a large amount of data. If the developer has written new code in the system, then this must be taken into account. Continuous and efficient updates of the developer's embedding is a challenging task.</p><p>To address this problem, we propose to map every developer to a specific synthetic stack trace, more specifically, a sequence of stack frames that they edited. In order not to deal with large-scale re-indexing, we do not use all the available stack traces, but only the stack trace of the current (query) bug. This way, the developer embedding will be bug-dependent: different vector representations are built for different errors, there is no single developer representation. This approach allows us to build the embedding of a developer much faster. The average length of a stack trace in our datasets is 50 frames, therefore, it is enough to look at about 50 files in order to map the developer to their stack trace. Furthermore, the resulting "developer stack trace" can be handled in the exact same way as the bug stack trace, and it is possible to use the same network architecture for the bug and for the developer, because each of them is represented in the same form.</p><p>Algorithm 1 shows the pseudo-code for the building of this developer stack trace. In this algorithm, we look at all frames from the stack trace of the current bug from first to last. If the developer has edited at least one line from the file of the given frame, then this frame is included in the developer stack trace. Each stack trace is an ordered sequence of frames, they are numbered starting from the top of the stack. While building the developer stack trace, the order of the frames is preserved. The order of the frames is significant, because generally frames at the top of the stack are more revealing. It is important to note that the inner frames in the stack trace can include files from various libraries, in which case they will not have been edited by any of the developers in the project. We leave dealing with this case specifically for future work, for example, it might be possible to use the history of the developer's work to see whether they fixed bugs that relate to this particular library.</p><p>Overall, for each bug and each developer, we obtain a special stack trace that contains only the frames that concern files that this developer has edited. This allows us to compare the resulting embeddings.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Additional Features</head><p>To improve the performance of the model, we enrich the embedding with the features built from the VCS annotations. The annotations provide information about who was the last person to have changed each line in the file, and when this change took place. The rationale behind using annotations is the following: if a developer has recently edited some file, it is more likely that their changes resulted in a bug. Therefore, such a developer should probably fix the current bug.</p><p>An example of the first five lines of an annotation is shown in Figure <ref type="figure" target="#fig_1">3</ref>. Each developer is encoded with a unique identifier, and the time is represented in the Unix epoch format. Additional features can be constructed both on the level of individual stack frame (e.g., how many lines in the file of a specific frame the developer edited) and on the level of the entire stack trace (e.g., how many stack frames have files that the developer edited), and are applied in different ways.</p><p>Features that relate to individual frames can be concatenated to the trainable embeddings before applying the RNN (Section III-B). Figure <ref type="figure" target="#fig_2">4</ref> shows the proposed approach: a text token is extracted from the frame, each text token is associated with a trainable embedding, and the additional feature vector is concatenated to the embedding. The resulting vector becomes the input of the RNN. The features that relate to the entire stack trace can be concatenated to the bug embedding and the developer embedding as presented in Figure <ref type="figure" target="#fig_3">5</ref>. The resulting vector is the input of the comparison module. We performed feature engineering on the private dataset, trying different combinations of metrics and their normalization methods. We ended up with 15 frame features and 24 stack trace features that worked best in our setting. They are presented in Table <ref type="table" target="#tab_2">I</ref>. For example, from the first line of the table, we get three different features: a raw value of the minimum distance and two normalizations (by annotation length and by the minimum value).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Developer embedding Features Bug embedding</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Neural Annotation Processing</head><p>Manual feature engineering is a complex process that requires domain knowledge and expertise. As an alternative, we also propose using another neural network to extract features from annotations automatically.</p><p>The idea behind the annotation processing is as follows: each line of an annotation is labelled with a timestamp of its last change. We suggest to represent annotation lines as elements of a time series -a sequence of values indexed in the chronological order. We propose to use the distance from the current line to the error line (simply subtracting the line numbers) as the values of the time series, and timestamps of the last modification as the corresponding time. The considered time series is irregular: code lines could be changed at any time. Since this is the first work using DL-based annotation processing, we decided to start with simple things first and use the most popular and straightforward solution for irregular time series processing: concatenate the time information to the time series value to form a vector of size 2. Figure <ref type="figure" target="#fig_4">6</ref> shows an example of the annotation processing for developer Mike, this will be done for each developer and for each stack frame:</p><p>• Select lines from the annotation that were edited by Mike.</p><p>• Sort the lines by time. Each annotation line is mapped to a vector of length 2. The first component of the vector is the distance to the error line |error linecurrent line| (in out example, the error line is line 3, highlighted in red). The second component of the  vector is the coded line timestamp. In our data, time is measured in milliseconds, therefore we use log (report timestamp -line timestamp) to account for the order of magnitude. • The sequence of such vectors is processed using the RNN with attention as described in Section III-B. The obtained annotation embedding can be used as an alternative to manual features extracted from annotations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>F. Similarity of Vector Representations</head><p>After obtaining the embeddings of the bug and the developer, we feed them into a comparison module. Here, we have applied the approach from the work of Severyn et al. <ref type="bibr" target="#b42">[43]</ref>, proposing to form the following vector:</p><formula xml:id="formula_2">x join = [x T q ; x sim ; x T d ; x T f eat ],<label>(3)</label></formula><p>where x q , x d , x f eat stand for the bug embedding, the developer embedding, and additional stack trace features described in Sections III-D and III-E. A scalar value x sim is obtained from x T q Mx d with a trainable matrix M, which captures syntactic and semantic aspects between the queries and documents.</p><p>After that, a feed-forward neural network with one hidden layer and ReLU activation function is applied, and the score is obtained which is used to rank developers.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. EVALUATION</head><p>We evaluated our approach on stack traces collected from the internal system of JetBrains, a large software company.</p><p>We aim to answer the following research questions:</p><p>RQ1: How do ranking models work in comparison with classifying models? RQ2: Do frame-based features built from VCS annotations improve the model quality? Which of them affect the performance more, the manual ones or the features learned by the neural model automatically?</p><p>RQ3: How does adding stack-based features to frame-based features affect the model?</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Dataset Collection</head><p>To collect data for the evaluation, we used the crash report processing system that handles reports from various JetBrains products. When a crash occurs in the user's product (i.e., an IDE), an anonymous crash report is formed. If the user agreed to send such reports to the company, then it gets sent and is stored in the processing system. Since we are not able to publish internal company data, we have collected two datasets: from the company's private and public code repositories. Our datasets were created from stack traces that are automatically created after every crash of a product. The public dataset is a subset of the private dataset that contains stack traces that relate to public repositories. The public dataset is published for further research and can be found in the DapStep repository: <ref type="url" target="https://github.com/Sushentsev/DapStep">https://github.com/Sushentsev/DapStep</ref>.</p><p>The larger, private dataset contains a total of 11,139 bug reports from the crash system from October 2018 to April 2021. These bug stack traces include files from three JVM languages: Java, Kotlin, and Scala. The proposed solution is language-agnostic, files in different languages are processed in the same way. The developer who fixed the bug in the system will be referred to as the target developer. For each error from the dataset, the target developer is known. As mentioned earlier, we use annotations to improve the quality of our model. Annotations can be obtained from the Git version control system using the file name and the file commit hash.</p><p>The private dataset contains annotations for all files that are present in the stack trace, with the total number of annotations being 99,591. However, not all annotations are present in public repositories, only 32,908 of them. The public dataset contains stack traces, in which at least 75% of the annotations are present publicly. This results in 3,361 different stack traces. Thus, a public dataset consists of a subset of reports from a private dataset, for which a sufficient number of annotations are available. We believe that this dataset can be useful for further research in the field and can facilitate the development of models, which work with the systems that process the reports in the form of stack traces.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Baseline Implementations</head><p>To compare our stack-trace-based approach with approaches that use reports description, we implement several baseline models. It is important to note that we are comparing models from the point of view of stack trace processing, because we have no textual descriptions of bugs. We apply preprocessing (Section III-A) that converts a stack trace into a set of text tokens that can be processed as text data. As baseline models, we chose Logistic Regression and Random Forest. In addition, we have implemented a heuristic solution, which is based on counting the number of edited files by each developer. Let us describe these baselines in more detail.</p><p>Logistic regression <ref type="bibr" target="#b43">[44]</ref> is one of the simplest and most popular machine learning models that demonstrated its capabilities in the bug triage problem <ref type="bibr" target="#b10">[11]</ref>. Logistic regression performs a linear transformation on a vector of features; to obtain the distribution of probabilities by class, the sigmoid function is used. In addition to logistic regression, we used Random Forest <ref type="bibr" target="#b44">[45]</ref> as a baseline model. Unlike Logistic Regression, Random Forests are capable of constructing a non-linear decision boundary. Thus, Random Forest is able to capture more complex data dependencies. We used SGDClassifier and RandomForestClassifier from the scikit-learn package as the implementations of the models. To apply classification algorithms, each stack trace must be represented with a feature vector. One of the most popular approaches that works well in practice is the TF-IDF approach <ref type="bibr" target="#b45">[46]</ref>.</p><p>We also propose a baseline model based on a simple heuristic. For each frame of the stack trace, we know exactly which line in the file caused the bug. From the VCS annotation, we can find out which developer edited the given line last. Thus, for each developer, we count the number of edited lines that led to an error. The developer who edited the most error lines should be assigned to fix the bug. Additionally, we use the following ideas to improve the quality of this solution. Firstly, the frames at the top of the stack are usually more explanatory, therefore we can consider not all frames in the trace stack, but only Top-20 frames. Secondly, we consider each line edit with a weight that depends on the edit time: the later the line edit happened, the higher the weight is. As a weight function, we used f (x) = e -x , where x stands for the time elapsed from editing a line until a bug occurred in the system. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Model Parameters</head><p>Since we collected two different datasets from public and private repositories, for each dataset, the parameters of the models were selected independently. The model parameters are selected according to the results on the validation datasets.</p><p>The detailed information about the parameters can be found in Table <ref type="table" target="#tab_3">II</ref>. In the proposed neural network models, the dropout <ref type="bibr" target="#b46">[47]</ref> and weight decay <ref type="bibr" target="#b47">[48]</ref> are applied to prevent overfitting. We used the Adam optimizer <ref type="bibr" target="#b48">[49]</ref> with a learning rate of 1e-3 and a weight decay of 1e-3, dropout rate was 0.2. The classifying models were trained for 25 epochs, and the ranking models were trained for 10 epochs because our experiments have shown that a larger number of epochs leads to the model overfitting.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Loss Function</head><p>Since we considered bug triage as a ranking problem, it is necessary to prepare labels for the ranking problem: the target developer must be the first in the list of the ranked developers. For our problem statement, a pairwise approach to RankNet <ref type="bibr" target="#b49">[50]</ref> loss is often used.</p><p>The RankNet algorithm assumes that the training data consists of pairs of documents (d 1 , d 2 ) together with a target probability P of d 1 being ranked higher than d 2 . For each query, there is only one relevant document (target developer), all other documents (developers) are considered irrelevant.</p><p>As a result, the final loss function with simplification for several pairs (d i , d j ) and query q has the following form:</p><formula xml:id="formula_3">L = di≺dj log 1 + e -(f (q,di)-f (q,dj ))<label>(4)</label></formula><p>To evaluate our approach, we take a random query (bug stack trace) q and a set of documents (developer vector representations) {d 1 , . . . , d n }, and make a gradient descent step according to <ref type="bibr" target="#b3">(4)</ref>. Furthermore, we use the following heuristic observation: if the developer stack trace is empty, then they did not edit any file from the bug stack trace. It is unlikely that this developer will fix the current bug, therefore, we exclude such a developer from the list of possible assignees. It is also essential that the calculation of the loss function requires the score of the target developer. However, the target developer representation in the stack trace form may be empty, therefore, in such cases we remove such reports from the training data.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Performance Metrics</head><p>To answer the research questions, we compared the proposed ranking model with the classification models adapted for stack traces. The most common quality metric for classification problems is Accuracy at K. Accuracy at K corresponds to the number of relevant results among the first K positions. However, this metric does not take into account the position of the relevant document, therefore, we used different values of k from the {1, 5, 10} set. More formally, the Accuracy at K metric is defined as follows:</p><formula xml:id="formula_4">acc@k = 1 |D| (d,q)∈D I d ∈ {d qi } k i=1 ,<label>(5)</label></formula><p>where I stands for the indicator function and {d qi } is the ranked list of documents for query q.</p><p>In the ranking problem, we use mean reciprocal rank (MRR) for evaluation, which corresponds to the harmonic mean of the relevant documents' ranks. It should be noted that only the rank of the first relevant document is considered in MRR. However, it is suitable for our task, since there is always one relevant document for each query. MRR can be calculated using the following formula:</p><formula xml:id="formula_5">M RR = 1 |D| (d,q)∈D 1 rank q d ,<label>(6)</label></formula><p>where rank q d refers to the rank position of the target document d for the query q.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>F. Experiment Methodology</head><p>To evaluate our models, we divided both datasets into three sets: train, validation, and test. For the private dataset, the sizes of the train, validation, and test sets were 8139, 1500, and 1500 bug stack traces, respectively. For the public dataset, the split was 2461, 450, and 450, respectively. This corresponds to the validation and test sets being about 15% of the sizes of the entire datasets, which is a common practice. This partitioning helps to prevent overfitting of the model. Since the data has a time component, the dataset is divided by time in order to avoid data leakage.</p><p>Our methodology for the experiment with the classification models is as follows: we select hyperparameters using the validation datasets, then fit the model on the training and validation datasets, and, finally, evaluate the quality of the models on the test datasets. If the developer is found only in the test dataset, then we cannot correctly classify the bug, since the model was not trained for this class. In this case, we consider that the bug was assigned incorrectly.</p><p>For the ranking problem, the model was evaluated as follows. During the training, a random stack trace is taken from the training dataset. Then, for each developer, their stack trace representation is built. If the target developer has an empty stack trace representation, then this means that the developer did not fix frames from this stack trace. In this case, we exclude this stack trace from the training dataset. When evaluating, the model considers only those developers whose stack trace representation is not empty. If the developer's stack trace representation is empty, then his score is equal to the minimum score predicted by the model.</p><p>To test the statistical significance of our results, we use bootstrap <ref type="bibr" target="#b50">[51]</ref> to construct the confidence intervals. When comparing two models, we form 100 bootstrapping resamplings with the same size as the test dataset. Next, a 95% confidence interval for the difference of the metric scores is calculated. If zero falls into the constructed interval, then there are no statistically significant differences between the models, otherwise, we say that there is statistical significance.</p><p>All the experiments were run on a server with the following technical characteristics: 8-core Intel Xeon CPU @2.3 GHz, NVidia K80 GPU, and 60 GB of RAM.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>G. Results</head><p>The experimental results of running various models on both datasets are presented in Table <ref type="table" target="#tab_4">III</ref>. Resulting confidence intervals for all the experiments can be found in the online appendix: <ref type="url" target="https://doi.org/10.5281/zenodo.5596294">https://doi.org/10.5281/zenodo.5596294</ref>.</p><p>First of all, it can be seen that the results are different for the public and the private datasets. We assume that this happened for three reasons. Firstly, the public dataset is several times smaller than the private dataset, which can affect the approaches that rely on a lot of data. Secondly, not all annotations are available for the public dataset, with the missing annotations likely containing some important information. Thirdly, we found that the test set from the public dataset contains more target developers who have not edited files from stack traces than the private dataset. Thus, their stack trace representation will be empty, and the result of the model will be incorrect on these reports.</p><p>1) Research Question 1: To answer RQ1, let us evaluate and compare the quality of the classifying and ranking models. Our results show that classifying models based on classical machine learning algorithms perform as well as classifying algorithms based on RNNs or CNNs (Table <ref type="table" target="#tab_4">III</ref>, lines 2-5). We believe that this can be explained by the fact that neural networks are most likely to extract features similar to TF-IDF features, so the results are similar.</p><p>The RNN ranking model performs better than the others (Table <ref type="table" target="#tab_4">III</ref>, line 7, 0.21 Acc@1 on the Public dataset, 0.46 Acc@1 on the Private dataset), but the differences would be more significant if there were many developers in the test dataset that were not in the training dataset. We found that for the public and private datasets, there were 27 bug reports in the test data with developers that were not presented in train data. Thus, this represents only 6% and 1.8% of the total size of the test data, and the advantage of the ranking approach is not very noticeable. On the other hand, for projects that </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>№</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Model Public dataset Private dataset</head><p>Acc@1 Acc@5 Acc@10 MRR Acc@1 Acc@5 Acc@10 MRR have a larger variety of developers (for example, some large open-source projects) the ranking approach can be expected to significantly improve the quality of the models. Another interesting observation is that the heuristic-based baseline shows the quality comparable to the ML-based approaches. Such high performance of the heuristic solution can be explained by the fact that the data was collected from industrial projects of a large software company with wellfunctioning bug fixing pipelines, and the proposed heuristic might be a good fit for such a pipeline. In open-source projects, error processing workflows might be different, and as a result, such a heuristic solution might work worse. However, this observation suggests that sometimes a simple heuristic might work better than complex statistical models that are not interpretable and need a lot of sophisticated data to train on.</p><p>Answer to RQ1: On our datasets, the ranking models perform slightly better, but the difference can be more significant in other settings, future research is required.</p><p>2) Research Question 2: Next, let us address RQ2 and investigate the significance of manual and neural frame-based features built from the VCS annotations. We trained a ranking model with only manual frame-based features and another model with only neural frame-based features. It can be seen (Table <ref type="table" target="#tab_4">III</ref>, lines 8-11 compared to lines 6-7) that frame-based features increase the model quality, but the impact of the neural features is not as significant as in the case of manually extracted features in the RNN model (0.27 and 0.35 Acc@1 on the public dataset, 0.54 and 0.58 Acc@1 on the private dataset, respectively). However, in the case of the CNN-based approaches, manual and neural features show similar results. CNN captures the entire stack trace, rather than processing it in a sequential form like the RNN does. Therefore, feature normalization in the case of CNN may be necessary, since a lot of raw values are harmful. The difference between manual frame-based features and neural frame-based features turned out to be statistically significant for RNN and not significant for CNN on both datasets.</p><p>An important disadvantage of the neural network annotation processing is the slow model training (one epoch takes 3-4 times longer compared to the manual features): each pass requires hundreds of annotations to be processed, each of them can contain thousands of lines, and since we use RNN, it takes a significant amount of time. On the other hand, the DL approach learns annotation embeddings automatically, and these embeddings could be useful in other related tasks (bug localization, bug report deduplication, etc.). This seems like a promising direction for future work.</p><p>Answer to RQ2: Adding frame-based features from the VCS annotations improves the quality of models. Manual features worked better for the RNN models, while in CNN models, the difference between manual and learned features is insignificant. Learning features takes noticeably more time, but leads to obtaining embeddings of annotations, which might be useful for other tasks.</p><p>3) Research Question 3: Finally, to answer RQ3, we trained models with both the frame-based and stack-based features from the VCS annotations. Since manual frame-based features demonstrated better results than neural features, we only used manual features. First, we can notice that the RNN-based model outperforms the CNN-based one by 3 percentage points according to Acc@1 (Table <ref type="table" target="#tab_4">III</ref>, lines 12-13), however, in the case of the public dataset, this difference is not statistically significant. Better performance of RNNs compared to CNNs may be attributed to the CNN training pipeline: to reduce the training time, stack traces are processed in batches. At the same time, CNN is not designed to process sequences of different lengths in batches, therefore, padding is necessary. Moreover, the length of the sequences must not be shorter than the size of the convolution kernel, that is, 5. It is possible that padding in the training data leads to worse results.</p><p>Secondly, we can see that adding stack-based features has a positive statistically significant effect on the model performance (Table <ref type="table" target="#tab_4">III</ref>, lines 8, 10, 12-13). We believe that frame-based features are not taken into account in the best way in CNN models, therefore, stack-based features add new information to the model. However, in the case of RNN models, stack-based features do not lead to such improvements. Perhaps, better feature engineering could help us overcome this issue, future research is required.</p><p>Answer to RQ3: Combining stack-based and framebased has a positive effect on the CNN-based appoaches, but for the RNN-based models the effect is not significant.</p><p>In the end, the RNN ranking model with frame-based and stack-based manual features obtained from the VCS annotations turned out to be the best performing model for bug assignee prediction based on the stack traces data. It outperforms all the other models on the private dataset (Table <ref type="table" target="#tab_4">III</ref>, line 13, 0.60 Acc@1 and 0.70 MRR) and achieves a significant boost in all metrics (17-18 percentage points) compared to the classical machine learning approaches. We release this model as DapStep and plan to conduct more thorough experiments on it in the future work.</p><p>Thus, the results of our experiments demonstrate that reformulating bug triage as a ranking problem is appropriate. Moreover, adding features from VCS annotations to the model has a positive effect on its performance, and the RNN-based models work slightly better in this setting than the CNNbased ones. From the practical standpoint, the RNN ranking model with all the features can be trained on the data of any specific project or company and be employed there. As for the research implications, the results show that more research is needed to improve the state-of-the-art solutions to the bug triage problem, employing more information about the stack traces. We hope that our results of using VCS annotations as the sources of features and the provided dataset can assist in conducting such research.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. THREATS TO VALIDITY</head><p>Our study suffers from the following threats to validity. Subject selection bias. The performance of the model depends on the data. Since stack traces for the bug triage task are being used for the first time, there is no dataset available for this task. We collected a dataset from the products of a large software company and evaluated the proposed approach on them. However, applying the model to other dataset may lead to different results. For instance, workflows in open-source projects could be more volatile and unstable. The results for such datasets can be noticeably lower.</p><p>Limited scope of application. Our solution is applicable for software systems that report stack traces when a bug happens, which might be not be typical for some projects and companies. However, we believe this practice to be common enough for our approach to be helpful in practice. Secondly, deep learning models are over-parameterized. A modern neural network contains thousands or millions of parameters. A sufficient amount of data is required to train a neural network. We use 11,139 different stack traces in our private dataset and regularization techniques to prevent overfitting. However, in cases when this amount of data is not available, the results may differ. We hope our research will encourage other researchers and practitioners to invest time and effort into collecting a larger dataset of such kind.</p><p>Programming language bias. Our datasets consist of stack traces that were obtained from the JVM languages. Therefore, the results of our models for other languages may differ. Firstly, stack trace characteristics change from one language to another. The performance of the model depends on the average length of the stack trace, as well as the variety of methods and files used. Secondly, an essential component of our approach is the use of features from annotations. The characteristics of these files also strongly affect the model performance. The distribution of developers for each file can vary between teams, companies, and maybe even programming languages. Future research is needed to assess how much all of this affects the resulting model.</p><p>While these threats to validity are important to note, we believe that they do not invalidate the overal results of our study and its practical usefulness.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. CONCLUSION AND FUTURE WORK</head><p>In this paper, we explore the applicability of using stack traces for solving the bug triage problem.</p><p>Firstly, we suggest an approach for handling error reports that do not have text descriptions, but only a stack trace for the given error. We transform each stack trace into a set of text tokens, which are processed as sequences. As a result, existing solutions can be applied to such data as well.</p><p>Secondly, we collected two datasets-the public one and the private one-from the data of JetBrains. The public dataset is a subset of the private dataset that only contains stack frames that relate to public repositories, with a total of 3,361 stack traces. To facilitate further research in this area, the source code of all the models, as well as the public dataset, are available online at <ref type="url" target="https://github.com/Sushentsev/DapStep">https://github.com/Sushentsev/DapStep</ref>.</p><p>Thirdly, we propose a ranking neural network model that outperforms classifying models by 15-20 percentage points of the Acc@1 metric on the public dataset, and 17-18 percentage points on the private dataset. The significant advantage of this model is the independence from the fixed set of classes (the list of developers working on a given project). Finally, we suggest to use an additional source of information (VSC annotations), which significantly improves the performance of the models. We propose two ways features could be built from such annotations. First of all, features can be extracted manually from annotations -this approach shows better results, but requires effort and domain knowledge. On the other hand, it is possible to use an additional neural network to learn the annotation-based features. This approach requires to train an additional neural network, so it takes more time compared to the manual approach, however, this way we obtain explicit embeddings of annotations, which might be employed in other related research tasks.</p><p>We hope that our work will be of use for researchers and practitioners, especially in the tasks that rely on stack traces.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 2 .</head><label>2</label><figDesc>Fig.2. The overall pipeline of the approach.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Fig. 3 .</head><label>3</label><figDesc>Fig. 3. An example of the first lines of an annotation.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Fig. 4 .</head><label>4</label><figDesc>Fig. 4. The application of the frame-based features.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Fig. 5 .</head><label>5</label><figDesc>Fig. 5. The application of the stack-based features.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Fig. 6 .</head><label>6</label><figDesc>Fig.6. The example processing of an annotation.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head/><label/><figDesc>We publish the source code of all the studied models, as well as the public dataset, for future researchers and practitioners: https://github.com/Sushentsev/DapStep.</figDesc><table/><note><p><p>• We introduce two bug triage ranking models based on recurrent neural networks (RNN) with the attention mechanism and convolutional neural networks (CNN). The 1 JetBrains: https://www.jetbrains.com/ models outperform the existing classification approaches by 15-20 percentage points on the public dataset, and 17-18 percentage points on the private dataset.</p>•</p></note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head/><label/><figDesc>Algorithm 1 The building of the developer stack trace. Input: Developer dev, stack trace stack Output: Developer stack trace dev stack dev stack ← emptyList for frame in stack do file ← getFrameFile(frame) authors ← getFileAuthors(file) if dev ∈ authors then dev stack.append(frame) return dev stack</figDesc><table/></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>TABLE I ADDITIONAL</head><label>I</label><figDesc>FEATURES OBTAINED FROM THE VCS ANNOTATIONS AND THEIR NORMALIZATIONS.</figDesc><table><row><cell>Category</cell><cell>Description</cell><cell>Normalizations</cell></row><row><cell/><cell>Minimum distance from the edited line to the error line</cell><cell>Raw; annotation length; min</cell></row><row><cell/><cell>Did the developer edit the error line?</cell><cell>Raw</cell></row><row><cell/><cell>Normalized number of edited lines in the file</cell><cell>Annotation length; max</cell></row><row><cell>Frame</cell><cell>Normalized number of edited lines weighted by time Normalized number of edited lines in the window of size 10</cell><cell>Annotation length; max Window size; max</cell></row><row><cell/><cell>Number of different developer's timestamps</cell><cell>Raw; max</cell></row><row><cell/><cell>Time passed since the last edit</cell><cell>Exp(-x); Log(x)</cell></row><row><cell/><cell>Time passed since the first edit</cell><cell>Log(x)</cell></row><row><cell/><cell>The order of the first edited frame</cell><cell>Raw; stack length; number of annotated frames; min</cell></row><row><cell/><cell>Normalized number of edited error lines</cell><cell>Stack length; max</cell></row><row><cell>Stack</cell><cell>Normalized number of edited lines</cell><cell>Total number of lines; max</cell></row><row><cell/><cell cols="2">Normalized number of edited lines in the frame with maximum IDF Annotation length</cell></row><row><cell/><cell>Normalized number of edited frames</cell><cell>Stack length; number of annotated frames; max</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>TABLE II PARAMETERS</head><label>II</label><figDesc>USED FOR DIFFERENT MODELS.</figDesc><table><row><cell>Parameter</cell><cell cols="2">Public dataset Private dataset</cell></row><row><cell cols="2">Logistic Regression</cell><cell/></row><row><cell>Loss</cell><cell>log</cell><cell>log</cell></row><row><cell>Regularization coefficient</cell><cell>1e-5</cell><cell>1e-5</cell></row><row><cell cols="2">Random Forest</cell><cell/></row><row><cell>Number of estimators</cell><cell>100</cell><cell>100</cell></row><row><cell>Maximum depth</cell><cell>∞</cell><cell>∞</cell></row><row><cell>Minimum samples in a leaf</cell><cell>1</cell><cell>1</cell></row><row><cell cols="2">CNN</cell><cell/></row><row><cell>Number of convolutional filters</cell><cell>32</cell><cell>64</cell></row><row><cell>Size of trainable embeddings</cell><cell>50</cell><cell>70</cell></row><row><cell cols="2">RNN</cell><cell/></row><row><cell>Hidden size</cell><cell>70</cell><cell>100</cell></row><row><cell>Size of trainable embeddings</cell><cell>50</cell><cell>70</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>TABLE III COMPARISON</head><label>III</label><figDesc>OF THE MODELS ON THE PUBLIC AND PRIVATE DATASETS.</figDesc><table/></figure>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Be more familiar with our enemies and pave the way forward: A review of the roles bugs played in software failures</title>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">E</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">A</forename><surname>Laplante</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Systems and Software</title>
+		<imprint>
+			<biblScope unit="volume">133</biblScope>
+			<biblScope unit="page" from="68" to="94"/>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">W. E. Wong, X. Li, and P. A. Laplante, "Be more familiar with our enemies and pave the way forward: A review of the roles bugs played in software failures," Journal of Systems and Software, vol. 133, pp. 68-94, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Who should fix this bug?</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Anvik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Hiew</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Murphy</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 28th international conference on Software engineering</title>
+		<meeting>the 28th international conference on Software engineering</meeting>
+		<imprint>
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. Anvik, L. Hiew, and G. Murphy, "Who should fix this bug?" Pro- ceedings of the 28th international conference on Software engineering, 2006.</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Developer prioritization in bug repositories</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Zou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2012 34th International Conference on Software Engineering (ICSE)</title>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="page" from="25" to="35"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. Xuan, H. Jiang, Z. Ren, and W. Zou, "Developer prioritization in bug repositories," 2012 34th International Conference on Software Engineering (ICSE), pp. 25-35, 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Improving bug triage with bug tossing graphs</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Jeong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zimmermann</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ESEC/FSE '09</title>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">G. Jeong, S. Kim, and T. Zimmermann, "Improving bug triage with bug tossing graphs," in ESEC/FSE '09, 2009.</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Learning to rank for bug report assignee recommendation</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Wijedasa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Lo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">L</forename><surname>Goues</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE 24th International Conference on Program Comprehension (ICPC)</title>
+		<imprint>
+			<date type="published" when="2016">2016. 2016</date>
+			<biblScope unit="page" from="1" to="10"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Y. Tian, D. Wijedasa, D. Lo, and C. L. Goues, "Learning to rank for bug report assignee recommendation," 2016 IEEE 24th International Conference on Program Comprehension (ICPC), pp. 1-10, 2016.</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Fuzzy set and cachebased approach for bug triaging</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Tamrawi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Nguyen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Al-Kofahi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ESEC/FSE '11</title>
+		<imprint>
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Tamrawi, T. Nguyen, and J. M. Al-Kofahi, "Fuzzy set and cache- based approach for bug triaging," in ESEC/FSE '11, 2011.</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">A time-based approach to automatic bug report assignment</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Shokripour</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Anvik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><forename type="middle">M</forename><surname>Kasirun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Zamani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">J. Syst. Softw</title>
+		<imprint>
+			<biblScope unit="volume">102</biblScope>
+			<biblScope unit="page" from="109" to="122"/>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">R. Shokripour, J. Anvik, Z. M. Kasirun, and S. Zamani, "A time-based approach to automatic bug report assignment," J. Syst. Softw., vol. 102, pp. 109-122, 2015.</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Effective bug triage based on historical bug-fix information</title>
+		<author>
+			<persName><forename type="first">H.-J</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE 25th International Symposium on Software Reliability Engineering</title>
+		<imprint>
+			<date type="published" when="2014">2014. 2014</date>
+			<biblScope unit="page" from="122" to="132"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">H.-J. Hu, H. Zhang, J. Xuan, and W. Sun, "Effective bug triage based on historical bug-fix information," 2014 IEEE 25th International Symposium on Software Reliability Engineering, pp. 122-132, 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Bug report assignee recommendation using activity profiles</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Naguib</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Narayan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Brügge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Helal</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2013 10th Working Conference on Mining Software Repositories (MSR)</title>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<biblScope unit="page" from="22" to="30"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">H. Naguib, N. Narayan, B. Brügge, and D. Helal, "Bug report assignee recommendation using activity profiles," 2013 10th Working Conference on Mining Software Repositories (MSR), pp. 22-30, 2013.</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Improving automated bug triaging with specialized topic model</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Lo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Al-Kofahi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Nguyen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Software Engineering</title>
+		<imprint>
+			<biblScope unit="volume">43</biblScope>
+			<biblScope unit="page" from="272" to="297"/>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">X. Xia, D. Lo, Y. Ding, J. M. Al-Kofahi, T. Nguyen, and X. Wang, "Improving automated bug triaging with specialized topic model," IEEE Transactions on Software Engineering, vol. 43, pp. 272-297, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Improving bug triaging with high confidence predictions at ericsson</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sarkar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">C</forename><surname>Rigby</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Bartalos</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2019 IEEE International Conference on Software Maintenance and Evolution (ICSME)</title>
+		<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="page" from="81" to="91"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Sarkar, P. C. Rigby, and B. Bartalos, "Improving bug triaging with high confidence predictions at ericsson," in 2019 IEEE International Conference on Software Maintenance and Evolution (ICSME). IEEE, 2019, pp. 81-91.</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Applying deep learning based automatic bug triager to industrial projects</title>
+		<author>
+			<persName><forename type="first">S.-R</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M.-J</forename><surname>Heo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C.-G</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Jeong</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2017 11th Joint Meeting on Foundations of Software Engineering</title>
+		<meeting>the 2017 11th Joint Meeting on Foundations of Software Engineering</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S.-R. Lee, M.-J. Heo, C.-G. Lee, M. Kim, and G. Jeong, "Applying deep learning based automatic bug triager to industrial projects," Proceedings of the 2017 11th Joint Meeting on Foundations of Software Engineering, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Developer activity motivated bug triaging: Via convolutional neural network</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Neural Processing Letters</title>
+		<imprint>
+			<biblScope unit="volume">51</biblScope>
+			<biblScope unit="page" from="2589" to="2606"/>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Guo, X. Zhang, X. Yang, R. Chen, C. Guo, H. Li, and T. Li, "Developer activity motivated bug triaging: Via convolutional neural network," Neural Processing Letters, vol. 51, pp. 2589-2606, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">DeepTriage: Exploring the effectiveness of deep learning for bug triaging</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sankaran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Aralikatte</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the ACM India Joint International Conference on Data Science and Management of Data</title>
+		<meeting>the ACM India Joint International Conference on Data Science and Management of Data</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Mani, A. Sankaran, and R. Aralikatte, "DeepTriage: Exploring the effectiveness of deep learning for bug triaging," Proceedings of the ACM India Joint International Conference on Data Science and Management of Data, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Bug triaging based on tossing sequence modeling</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Xi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Lu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Computer Science and Technology</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="page" from="942" to="956"/>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Xi, Y. Yao, X. Xiao, F. Xu, and J. Lu, "Bug triaging based on tossing sequence modeling," Journal of Computer Science and Technology, vol. 34, pp. 942 -956, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Transformers: State-of-the-art natural language processing</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Wolf</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Debut</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Sanh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chaumond</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Delangue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Moi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Cistac</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Rault</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Louf</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Funtowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Brew</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">EMNLP</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">T. Wolf, L. Debut, V. Sanh, J. Chaumond, C. Delangue, A. Moi, P. Cistac, T. Rault, R. Louf, M. Funtowicz, and J. Brew, "Transformers: State-of-the-art natural language processing," in EMNLP, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Deep learning in neural networks: An overview</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schmidhuber</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Neural networks : the official journal of the International Neural Network Society</title>
+		<imprint>
+			<biblScope unit="volume">61</biblScope>
+			<biblScope unit="page" from="85" to="117"/>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. Schmidhuber, "Deep learning in neural networks: An overview," Neural networks : the official journal of the International Neural Network Society, vol. 61, pp. 85-117, 2015.</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Boosting bug-report-oriented fault localization with segmentation and stack-trace analysis</title>
+		<author>
+			<persName><forename type="first">C.-P</forename><surname>Wong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Hao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Mei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Software Maintenance and Evolution</title>
+		<imprint>
+			<date type="published" when="2014">2014. 2014</date>
+			<biblScope unit="page" from="181" to="190"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">C.-P. Wong, Y. Xiong, H. Zhang, D. Hao, L. Zhang, and H. Mei, "Boosting bug-report-oriented fault localization with segmentation and stack-trace analysis," 2014 IEEE International Conference on Software Maintenance and Evolution, pp. 181-190, 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">On the use of stack traces to improve text retrieval-based bug localization</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Moreno</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Treadway</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Marcus</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Shen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Software Maintenance and Evolution</title>
+		<imprint>
+			<date type="published" when="2014">2014. 2014</date>
+			<biblScope unit="page" from="151" to="160"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">L. Moreno, J. Treadway, A. Marcus, and W. Shen, "On the use of stack traces to improve text retrieval-based bug localization," 2014 IEEE International Conference on Software Maintenance and Evolution, pp. 151-160, 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Bug localization based on code change histories and bug reports</title>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">C</forename><surname>Youm</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ahn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2015 Asia-Pacific Software Engineering Conference (APSEC)</title>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="190" to="197"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">K. C. Youm, J. Ahn, J. Kim, and E. Lee, "Bug localization based on code change histories and bug reports," 2015 Asia-Pacific Software Engineering Conference (APSEC), pp. 190-197, 2015.</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">ReBucket: A method for clustering duplicate crash reports based on call stack similarity</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Dang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Nobel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2012 34th International Conference on Software Engineering (ICSE)</title>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="page" from="1084" to="1093"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Y. Dang, R. Wu, H. Zhang, D. Zhang, and P. Nobel, "ReBucket: A method for clustering duplicate crash reports based on call stack similarity," 2012 34th International Conference on Software Engineering (ICSE), pp. 1084-1093, 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">DURFEX: A feature extraction technique for efficient detection of duplicate bug reports</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Sabor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Hamou-Lhadj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Larsson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Software Quality, Reliability and Security (QRS)</title>
+		<imprint>
+			<date type="published" when="2017">2017. 2017</date>
+			<biblScope unit="page" from="240" to="250"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">K. Sabor, A. Hamou-Lhadj, and A. Larsson, "DURFEX: A feature extraction technique for efficient detection of duplicate bug reports," 2017 IEEE International Conference on Software Quality, Reliability and Security (QRS), pp. 240-250, 2017.</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">S3M: Siamese stack (trace) similarity measure</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Khvorov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Vasiliev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Chernishev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><forename type="middle">M</forename><surname>Rodrigues</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Koznov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Povarov</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/ACM 18th International Conference on Mining Software Repositories (MSR)</title>
+		<imprint>
+			<date type="published" when="2021">2021. 2021</date>
+			<biblScope unit="page" from="266" to="270"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Khvorov, R. Vasiliev, G. Chernishev, I. M. Rodrigues, D. Koznov, and N. Povarov, "S3M: Siamese stack (trace) similarity measure," 2021 IEEE/ACM 18th International Conference on Mining Software Repositories (MSR), pp. 266-270, 2021.</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Assigning change requests to software developers</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Kagdi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gethers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Poshyvanyk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hammad</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Software: Evolution and Process</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">H. Kagdi, M. Gethers, D. Poshyvanyk, and M. Hammad, "Assigning change requests to software developers," Journal of Software: Evolution and Process, vol. 24, 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Automatic bug assignment using information extraction methods</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Shokripour</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><forename type="middle">M</forename><surname>Kasirun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Zamani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Anvik</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Advanced Computer Science Applications and Technologies (ACSAT)</title>
+		<imprint>
+			<date type="published" when="2012">2012. 2012</date>
+			<biblScope unit="page" from="144" to="149"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">R. Shokripour, Z. M. Kasirun, S. Zamani, and J. Anvik, "Automatic bug assignment using information extraction methods," 2012 International Conference on Advanced Computer Science Applications and Technolo- gies (ACSAT), pp. 144-149, 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Why so complicated? Simple term filtering and weighting for location-based bug report assignment recommendation</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Shokripour</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Anvik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><forename type="middle">M</forename><surname>Kasirun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Zamani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2013 10th Working Conference on Mining Software Repositories (MSR)</title>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<biblScope unit="page" from="2" to="11"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">R. Shokripour, J. Anvik, Z. M. Kasirun, and S. Zamani, "Why so complicated? Simple term filtering and weighting for location-based bug report assignment recommendation," 2013 10th Working Conference on Mining Software Repositories (MSR), pp. 2-11, 2013.</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Triaging incoming change requests: Bug or commit history, or code authorship?</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Vásquez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hossen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Dang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Kagdi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gethers</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Poshyvanyk</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2012 28th IEEE International Conference on Software Maintenance (ICSM)</title>
+		<imprint>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="page" from="451" to="460"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">M. Vásquez, K. Hossen, H. Dang, H. Kagdi, M. Gethers, and D. Poshy- vanyk, "Triaging incoming change requests: Bug or commit history, or code authorship?" 2012 28th IEEE International Conference on Software Maintenance (ICSM), pp. 451-460, 2012.</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">A hybrid bug triage algorithm for developer recommendation</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">SAC '13</title>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">T. Zhang and B. Lee, "A hybrid bug triage algorithm for developer recommendation," in SAC '13, 2013.</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">An empirical study on bug assignment automation using chinese bug data</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Shu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Wang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">2009 3rd International Symposium on Empirical Software Engineering and Measurement</title>
+		<imprint>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="451" to="455"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Z. Lin, F. Shu, Y. Yang, C. Hu, and Q. Wang, "An empirical study on bug assignment automation using chinese bug data," 2009 3rd International Symposium on Empirical Software Engineering and Measurement, pp. 451-455, 2009.</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">TRAM: An approach for assigning bug reports using their metadata</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Banitaan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Alenezi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Third International Conference on Communications and Information Technology (ICCIT)</title>
+		<imprint>
+			<date type="published" when="2013">2013. 2013</date>
+			<biblScope unit="page" from="215" to="219"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Banitaan and M. Alenezi, "TRAM: An approach for assigning bug reports using their metadata," 2013 Third International Conference on Communications and Information Technology (ICCIT), pp. 215-219, 2013.</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Automatic software bug triage system (BTS) based on latent semantic indexing and support vector machine</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Ahsan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ferzund</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Wotawa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Fourth International Conference on Software Engineering Advances</title>
+		<imprint>
+			<date type="published" when="2009">2009. 2009</date>
+			<biblScope unit="page" from="216" to="221"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Ahsan, J. Ferzund, and F. Wotawa, "Automatic software bug triage system (BTS) based on latent semantic indexing and support vector ma- chine," 2009 Fourth International Conference on Software Engineering Advances, pp. 216-221, 2009.</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Applying convolutional neural networks with different word representation techniques to recommend bug fixers</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">F A</forename><surname>Zaidi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><forename type="middle">M</forename><surname>Awan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Soo Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Woo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C.-G</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Access</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="page" from="213" to="729"/>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. F. A. Zaidi, F. M. Awan, M. soo Lee, H. Woo, and C.-G. Lee, "Ap- plying convolutional neural networks with different word representation techniques to recommend bug fixers," IEEE Access, vol. 8, pp. 213 729- 213 747, 2020.</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Efficient estimation of word representations in vector space</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Mikolov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">S</forename><surname>Corrado</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Dean</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICLR</title>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">T. Mikolov, K. Chen, G. S. Corrado, and J. Dean, "Efficient estimation of word representations in vector space," in ICLR, 2013.</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">GloVe: Global vectors for word representation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pennington</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Socher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">D</forename><surname>Manning</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">EMNLP</title>
+		<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. Pennington, R. Socher, and C. D. Manning, "GloVe: Global vectors for word representation," in EMNLP, 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Deep contextualized word representations</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">E</forename><surname>Peters</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Neumann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Iyyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Gardner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Clark</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Zettlemoyer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">NAACL</title>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">M. E. Peters, M. Neumann, M. Iyyer, M. Gardner, C. Clark, K. Lee, and L. Zettlemoyer, "Deep contextualized word representations," in NAACL, 2018.</note>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">An empirical investigation of incident triage for online service systems</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Hao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Dang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE/ACM 41st International Conference on Software Engineering: Software Engineering in Practice (ICSE-SEIP)</title>
+		<imprint>
+			<date type="published" when="2019">2019. 2019</date>
+			<biblScope unit="page" from="111" to="120"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. Chen, X. He, Q. Lin, Y. Xu, H. Zhang, D. Hao, F. Gao, Z. Xu, Y. Dang, and D. Zhang, "An empirical investigation of incident triage for online service systems," 2019 IEEE/ACM 41st International Conference on Software Engineering: Software Engineering in Practice (ICSE-SEIP), pp. 111-120, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">Gradient flow in recurrent nets: the difficulty of learning long-term dependencies</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hochreiter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bengio</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2001">2001</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Hochreiter and Y. Bengio, "Gradient flow in recurrent nets: the difficulty of learning long-term dependencies," 2001.</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Long short-term memory</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hochreiter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schmidhuber</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Neural Computation</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="page" from="1735" to="1780"/>
+			<date type="published" when="1997">1997</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">S. Hochreiter and J. Schmidhuber, "Long short-term memory," Neural Computation, vol. 9, pp. 1735-1780, 1997.</note>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Attention is all you need</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Vaswani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Shazeer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Parmar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Uszkoreit</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Jones</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">N</forename><surname>Gomez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ł</forename><surname>Kaiser</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Polosukhin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in neural information processing systems</title>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="5998" to="6008"/>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin, "Attention is all you need," in Advances in neural information processing systems, 2017, pp. 5998-6008.</note>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Bidirectional LSTM networks for improved phoneme classification and recognition</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Graves</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Fernández</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Schmidhuber</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICANN</title>
+		<imprint>
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Graves, S. Fernández, and J. Schmidhuber, "Bidirectional LSTM networks for improved phoneme classification and recognition," in ICANN, 2005.</note>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Neural machine translation by jointly learning to align and translate</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Bahdanau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Cho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bengio</surname></persName>
+		</author>
+		<idno>abs/1409.0473</idno>
+	</analytic>
+	<monogr>
+		<title level="j">CoRR</title>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">D. Bahdanau, K. Cho, and Y. Bengio, "Neural machine translation by jointly learning to align and translate," CoRR, vol. abs/1409.0473, 2015.</note>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">A unified architecture for natural language processing: deep neural networks with multitask learning</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Collobert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Weston</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICML '08</title>
+		<imprint>
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">R. Collobert and J. Weston, "A unified architecture for natural language processing: deep neural networks with multitask learning," in ICML '08, 2008.</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Learning to rank short text pairs with convolutional deep neural networks</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Severyn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Moschitti</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 38th International ACM SIGIR Conference on Research and Development in Information Retrieval</title>
+		<meeting>the 38th International ACM SIGIR Conference on Research and Development in Information Retrieval</meeting>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">A. Severyn and A. Moschitti, "Learning to rank short text pairs with con- volutional deep neural networks," Proceedings of the 38th International ACM SIGIR Conference on Research and Development in Information Retrieval, 2015.</note>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<monogr>
+		<title level="m" type="main">Applied logistic regression</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">W</forename><surname>Hosmer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lemeshow</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1989">1989</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">D. W. Hosmer and S. Lemeshow, "Applied logistic regression," 1989.</note>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">Random forests</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Breiman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Machine Learning</title>
+		<imprint>
+			<biblScope unit="volume">45</biblScope>
+			<biblScope unit="page" from="5" to="32"/>
+			<date type="published" when="2004">2004</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">L. Breiman, "Random forests," Machine Learning, vol. 45, pp. 5-32, 2004.</note>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<monogr>
+		<title level="m" type="main">Using TF-IDF to determine word relevance in document queries</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">E</forename><surname>Ramos</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003">2003</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">J. E. Ramos, "Using TF-IDF to determine word relevance in document queries," 2003.</note>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Dropout: a simple way to prevent neural networks from overfitting</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Srivastava</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">E</forename><surname>Hinton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Krizhevsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Sutskever</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Salakhutdinov</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">J. Mach. Learn. Res</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="page" from="1929" to="1958"/>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">N. Srivastava, G. E. Hinton, A. Krizhevsky, I. Sutskever, and R. Salakhutdinov, "Dropout: a simple way to prevent neural networks from overfitting," J. Mach. Learn. Res., vol. 15, pp. 1929-1958, 2014.</note>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">Decoupled weight decay regularization</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Loshchilov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Hutter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ICLR</title>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">I. Loshchilov and F. Hutter, "Decoupled weight decay regularization," in ICLR, 2019.</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Adam: A method for stochastic optimization</title>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">P</forename><surname>Kingma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ba</surname></persName>
+		</author>
+		<idno>abs/1412.6980</idno>
+	</analytic>
+	<monogr>
+		<title level="j">CoRR</title>
+		<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">D. P. Kingma and J. Ba, "Adam: A method for stochastic optimization," CoRR, vol. abs/1412.6980, 2015.</note>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">Learning to rank using gradient descent</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Burges</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Shaked</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Renshaw</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lazier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Deeds</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Hamilton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Hullender</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 22nd international conference on Machine learning</title>
+		<meeting>the 22nd international conference on Machine learning</meeting>
+		<imprint>
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">C. Burges, T. Shaked, E. Renshaw, A. Lazier, M. Deeds, N. Hamilton, and G. Hullender, "Learning to rank using gradient descent," Proceed- ings of the 22nd international conference on Machine learning, 2005.</note>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Bootstrap methods: Another look at the jackknife</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Efron</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Annals of Statistics</title>
+		<imprint>
+			<biblScope unit="volume">7</biblScope>
+			<biblScope unit="page" from="1" to="26"/>
+			<date type="published" when="1979">1979</date>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">B. Efron, "Bootstrap methods: Another look at the jackknife," Annals of Statistics, vol. 7, pp. 1-26, 1979.</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

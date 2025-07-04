@@ -1,0 +1,204 @@
+\begin{thebibliography}{28}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Astle and Balding(2009)]{astle2009population}
+William Astle and David~J Balding.
+\newblock Population structure and cryptic relatedness in genetic association
+  studies.
+\newblock \emph{Statistical Science}, 24\penalty0 (4):\penalty0 451--471, 2009.
+
+\bibitem[Boulesteix et~al.(2012)Boulesteix, Janitza, Kruppa, and
+  K{\"o}nig]{boulesteix2012overview}
+Anne-Laure Boulesteix, Silke Janitza, Jochen Kruppa, and Inke~R K{\"o}nig.
+\newblock Overview of random forest methodology and practical guidance with
+  emphasis on computational biology and bioinformatics.
+\newblock \emph{Wiley Interdisciplinary Reviews: Data Mining and Knowledge
+  Discovery}, 2\penalty0 (6):\penalty0 493--507, 2012.
+
+\bibitem[Breiman(2001)]{breiman2001random}
+Leo Breiman.
+\newblock Random forests.
+\newblock \emph{Machine learning}, 45\penalty0 (1):\penalty0 5--32, 2001.
+
+\bibitem[Chiolero et~al.(2008)Chiolero, Faeh, Paccaud, and
+  Cornuz]{chiolero2008consequences}
+Arnaud Chiolero, David Faeh, Fred Paccaud, and Jacques Cornuz.
+\newblock Consequences of smoking for body weight, body fat distribution, and
+  insulin resistance.
+\newblock \emph{The American journal of clinical nutrition}, 87\penalty0
+  (4):\penalty0 801--809, 2008.
+
+\bibitem[Christopoulou and Lillard(2011)]{christopoulou2011role}
+Rebekka Christopoulou and Dean~R Lillard.
+\newblock The role of culture in smoking behavior: evidence from british
+  immigrants in australia, south africa, and the us.
+\newblock Technical report, Cornell University, 2011.
+
+\bibitem[Dai et~al.(2012)Dai, Logsdon, Huang, Hsu, Reiner, Prentice, and
+  Kooperberg]{dai2012simultaneously}
+James~Y Dai, Benjamin~A Logsdon, Ying Huang, Li~Hsu, Alexander~P Reiner, Ross~L
+  Prentice, and Charles Kooperberg.
+\newblock Simultaneously testing for marginal genetic association and
+  gene-environment interaction.
+\newblock \emph{American journal of epidemiology}, 176\penalty0 (2):\penalty0
+  164--173, 2012.
+
+\bibitem[Deng and Runger(2012)]{deng2012rrf}
+Houtao Deng and George Runger.
+\newblock Feature selection via regularized trees.
+\newblock \emph{The 2012 International Joint Conference on Neural Networks
+  (IJCNN)}, 2012.
+
+\bibitem[Garcia-Closas et~al.(2010)Garcia-Closas, Jacobs, Kraft, and
+  Chatterjee]{garcia2010analysis}
+M~Garcia-Closas, K~Jacobs, P~Kraft, and N~Chatterjee.
+\newblock Analysis of epidemiologic studies of genetic effects and
+  gene-environment interactions.
+\newblock \emph{IARC scientific publications}, 163\penalty0 (163):\penalty0
+  281--301, 2010.
+
+\bibitem[Gibbs et~al.(2003)Gibbs, Belmont, Hardenbol, Willis, Yu, Yang, Ch'ang,
+  Huang, Liu, Shen, et~al.]{gibbs2003international}
+Richard~A Gibbs, John~W Belmont, Paul Hardenbol, Thomas~D Willis, Fuli Yu,
+  Huanming Yang, Lan-Yang Ch'ang, Wei Huang, Bin Liu, Yan Shen, et~al.
+\newblock The international hapmap project.
+\newblock \emph{Nature}, 426\penalty0 (6968):\penalty0 789--796, 2003.
+
+\bibitem[Goldstein et~al.(2010)Goldstein, Hubbard, Cutler, and
+  Barcellos]{goldstein2010application}
+Benjamin~A Goldstein, Alan~E Hubbard, Adele Cutler, and Lisa~F Barcellos.
+\newblock {A}n application of {R}andom {F}orests to a genome-wide association
+  dataset: {M}ethodological considerations \& new findings.
+\newblock \emph{BMC genetics}, 11\penalty0 (1):\penalty0 49, 2010.
+
+\bibitem[Hamza et~al.(2011)Hamza, Chen, Hill-Burns, Rhodes, Montimurro, Kay,
+  Tenesa, Kusel, Sheehan, Eaaswarkhanth, et~al.]{hamza2011genome}
+Taye~H Hamza, Honglei Chen, Erin~M Hill-Burns, Shannon~L Rhodes, Jennifer
+  Montimurro, Denise~M Kay, Albert Tenesa, Victoria~I Kusel, Patricia Sheehan,
+  Muthukrishnan Eaaswarkhanth, et~al.
+\newblock Genome-wide gene-environment study identifies glutamate receptor gene
+  grin2a as a parkinson's disease modifier gene via interaction with coffee.
+\newblock \emph{PLoS genetics}, 7\penalty0 (8):\penalty0 e1002237, 2011.
+
+\bibitem[Hoffman(2013)]{10.1371/journal.pone.0075707}
+Gabriel~E. Hoffman.
+\newblock Correcting for population structure and kinship using the linear
+  mixed model: Theory and extensions.
+\newblock \emph{PLoS ONE}, 8\penalty0 (10):\penalty0 e75707, 10 2013.
+\newblock \doi{10.1371/journal.pone.0075707}.
+\newblock URL \url{http://dx.doi.org/10.1371%2Fjournal.pone.0075707}.
+
+\bibitem[Kraft et~al.(2007)Kraft, Yen, Stram, Morrison, and
+  Gauderman]{kraft2007exploiting}
+Peter Kraft, Y-C Yen, Daniel~O Stram, John Morrison, and W~James Gauderman.
+\newblock Exploiting gene-environment interaction to detect genetic
+  associations.
+\newblock \emph{Human heredity}, 63\penalty0 (2):\penalty0 111--119, 2007.
+
+\bibitem[Liaw and Wiener(2002)]{liaw2002rf}
+Andy Liaw and Matthew Wiener.
+\newblock Classification and regression by randomforest.
+\newblock \emph{R News}, 2\penalty0 (3):\penalty0 18--22, 2002.
+\newblock URL \url{http://CRAN.R-project.org/doc/Rnews/}.
+
+\bibitem[Lippert et~al.(2011)Lippert, Listgarten, Liu, Kadie, Davidson, and
+  Heckerman]{lippert2011fast}
+Christoph Lippert, Jennifer Listgarten, Ying Liu, Carl~M Kadie, Robert~I
+  Davidson, and David Heckerman.
+\newblock Fast linear mixed models for genome-wide association studies.
+\newblock \emph{Nature Methods}, 8\penalty0 (10):\penalty0 833--835, 2011.
+
+\bibitem[Metz(1978)]{metz1978basic}
+Charles~E Metz.
+\newblock Basic principles of roc analysis.
+\newblock In \emph{Seminars in nuclear medicine}, volume~8, pages 283--298.
+  Elsevier, 1978.
+
+\bibitem[Murcray et~al.(2009)Murcray, Lewinger, and Gauderman]{murcray2009gene}
+Cassandra~E Murcray, Juan~Pablo Lewinger, and W~James Gauderman.
+\newblock {G}ene-environment interaction in genome-wide association studies.
+\newblock \emph{American journal of epidemiology}, 169\penalty0 (2):\penalty0
+  219--226, 2009.
+
+\bibitem[Perduca et~al.(2012)Perduca, Sinoquet, Mourad, and
+  Nuel]{perduca2012alternative}
+Vittorio Perduca, Christine Sinoquet, Rapha{\"e}l Mourad, and Gregory Nuel.
+\newblock {A}lternative {M}ethods for {H1} {S}imulations in {G}enome-{W}ide
+  {A}ssociation {S}tudies.
+\newblock \emph{Human Heredity}, 73\penalty0 (2):\penalty0 95--104, 2012.
+
+\bibitem[Purcell et~al.(2007)Purcell, Neale, Todd-Brown, Thomas, Ferreira,
+  Bender, Maller, Sklar, De~Bakker, Daly, et~al.]{purcell2007plink}
+Shaun Purcell, Benjamin Neale, Kathe Todd-Brown, Lori Thomas, Manuel~AR
+  Ferreira, David Bender, Julian Maller, Pamela Sklar, Paul~IW De~Bakker,
+  Mark~J Daly, et~al.
+\newblock {PLINK}: a tool set for whole-genome association and population-based
+  linkage analyses.
+\newblock \emph{The American Journal of Human Genetics}, 81\penalty0
+  (3):\penalty0 559--575, 2007.
+
+\bibitem[{R Core Team}(2013)]{R2013}
+{R Core Team}.
+\newblock \emph{R: A Language and Environment for Statistical Computing}.
+\newblock R Foundation for Statistical Computing, Vienna, Austria, 2013.
+\newblock URL \url{http://www.R-project.org}.
+
+\bibitem[Robin et~al.(2011)Robin, Turck, Hainard, Tiberti, Lisacek, Sanchez,
+  and M{\"u}ller]{robin2011proc}
+Xavier Robin, Natacha Turck, Alexandre Hainard, Natalia Tiberti,
+  Fr{\'e}d{\'e}rique Lisacek, Jean-Charles Sanchez, and Markus M{\"u}ller.
+\newblock proc: an open-source package for r and s+ to analyze and compare roc
+  curves.
+\newblock \emph{BMC bioinformatics}, 12\penalty0 (1):\penalty0 77, 2011.
+
+\bibitem[Rothman et~al.(2010)Rothman, Garcia-Closas, Chatterjee, Malats, Wu,
+  Figueroa, Real, Van Den~Berg, Matullo, Baris, et~al.]{rothman2010multi}
+Nathaniel Rothman, Montserrat Garcia-Closas, Nilanjan Chatterjee, Nuria Malats,
+  Xifeng Wu, Jonine~D Figueroa, Francisco~X Real, David Van Den~Berg, Giuseppe
+  Matullo, Dalsu Baris, et~al.
+\newblock A multi-stage genome-wide association study of bladder cancer
+  identifies multiple susceptibility loci.
+\newblock \emph{Nature genetics}, 42\penalty0 (11):\penalty0 978--984, 2010.
+
+\bibitem[Spencer et~al.(2009)Spencer, Su, Donnelly, and
+  Marchini]{spencer2009designing}
+Chris~CA Spencer, Zhan Su, Peter Donnelly, and Jonathan Marchini.
+\newblock Designing genome-wide association studies: sample size, power,
+  imputation, and the choice of genotyping chip.
+\newblock \emph{PLoS genetics}, 5\penalty0 (5):\penalty0 e1000477, 2009.
+
+\bibitem[Su et~al.(2011)Su, Marchini, and Donnelly]{su2011hapgen2}
+Zhan Su, Jonathan Marchini, and Peter Donnelly.
+\newblock {HAPGEN2: simulation of multiple disease SNPs}.
+\newblock \emph{Bioinformatics}, 27\penalty0 (16):\penalty0 2304--2305, 2011.
+
+\bibitem[Thorisson et~al.(2005)Thorisson, Smith, Krishnan, and
+  Stein]{thorisson2005international}
+Gudmundur~A Thorisson, Albert~V Smith, Lalitha Krishnan, and Lincoln~D Stein.
+\newblock The international hapmap project web site.
+\newblock \emph{Genome research}, 15\penalty0 (11):\penalty0 1592--1593, 2005.
+
+\bibitem[Tsai et~al.(2008)Tsai, Tsai, Yang, and Kuo]{tsai2008gender}
+Yi-Wen Tsai, Tzu-I Tsai, Chung-Lin Yang, and Ken~N Kuo.
+\newblock Gender differences in smoking behaviors in an asian population.
+\newblock \emph{Journal of Women's Health}, 17\penalty0 (6):\penalty0 971--978,
+  2008.
+
+\bibitem[VanderWeele et~al.(2012)VanderWeele, Mukherjee, and
+  Chen]{vanderweele2012sensitivity}
+Tyler~J VanderWeele, Bhramar Mukherjee, and Jinbo Chen.
+\newblock Sensitivity analysis for interactions under unmeasured confounding.
+\newblock \emph{Statistics in medicine}, 31\penalty0 (22):\penalty0 2552--2564,
+  2012.
+
+\bibitem[VanderWeele et~al.(2013)VanderWeele, Ko, and
+  Mukherjee]{vanderweele2013environmental}
+Tyler~J VanderWeele, Yi-An Ko, and Bhramar Mukherjee.
+\newblock Environmental confounding in gene-environment interaction studies.
+\newblock \emph{American Journal of Epidemiology}, 2013.
+
+\end{thebibliography}

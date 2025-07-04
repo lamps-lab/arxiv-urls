@@ -1,0 +1,212 @@
+\section{Evaluation}\label{sec:evaluation}
+
+
+We evaluated our approach on stack traces collected from the internal system of JetBrains, a large software company. We aim to answer the following research questions:
+
+\textbf{RQ1:} How do ranking models work in comparison with classifying models?
+
+\textbf{RQ2:} Do frame-based features built from VCS annotations improve the model quality? Which of them affect the performance more, the manual ones or the features learned by the neural model automatically?
+
+\textbf{RQ3:} How does adding stack-based features to frame-based features affect the model?
+
+
+\secpart{Dataset Collection}
+
+To collect data for the evaluation, we used the crash report processing system that handles reports from various JetBrains products. When a crash occurs in the user's product (\textit{i.e.}, an IDE), an anonymous crash report is formed. If the user agreed to send such reports to the company, then it gets sent and is stored in the processing system. Since we are not able to publish internal company data, we have collected two datasets: from the company's private and public code repositories. Our datasets were created from stack traces that are automatically created after every crash of a product. The public dataset is a subset of the private dataset that contains stack traces that relate to public repositories. The public dataset is published for further research and can be found in the DapStep repository: \url{https://github.com/Sushentsev/DapStep}.
+
+The larger, private dataset contains a total of 11,139 bug reports from the crash system from October 2018 to April 2021. These bug stack traces include files from three JVM languages: Java, Kotlin, and Scala. The proposed solution is language-agnostic, files in different languages are processed in the same way. The developer who fixed the bug in the system will be referred to as the \textit{target developer}. For each error from the dataset, the target developer is known. As mentioned earlier, we use annotations to improve the quality of our model. Annotations can be obtained from the Git version control system using the file name and the file commit hash.
+
+The private dataset contains annotations for all files that are present in the stack trace, with the total number of annotations being 99,591. However, not all annotations are present in public repositories, only 32,908 of them. The public dataset contains stack traces, in which at least 75\% of the annotations are present publicly. This results in 3,361 different stack traces. Thus, a public dataset consists of a subset of reports from a private dataset, for which a sufficient number of annotations are available. We believe that this dataset can be useful for further research in the field and can facilitate the development of models, which work with the systems that process the reports in the form of stack traces.
+
+
+\secpart{Baseline Implementations}
+To compare our stack-trace-based approach with approaches that use reports description, we implement several baseline models. It is important to note that we are comparing models from the point of view of stack trace processing, because we have no textual descriptions of bugs. We apply preprocessing (\Cref{sec:preprocessing}) that converts a stack trace into a set of text tokens that can be processed as text data. As baseline models, we chose Logistic Regression and Random Forest. In addition, we have implemented a heuristic solution, which is based on counting the number of edited files by each developer. Let us describe these baselines in more detail.
+
+Logistic regression~\cite{Hosmer1989AppliedLR} is one of the simplest and most popular machine learning models that demonstrated its capabilities in the bug triage problem~\cite{sarkar2019improving}. Logistic regression performs a linear transformation on a vector of features; to obtain the distribution of probabilities by class, the sigmoid function is used. 
+In addition to logistic regression, we used Random Forest~\cite{Breiman2004RandomF} as a baseline model. Unlike Logistic Regression, Random Forests are capable of constructing a non-linear decision boundary. Thus, Random Forest is able to capture more complex data dependencies. 
+We used \textit{SGDClassifier} and \textit{
+RandomForestClassifier} from the \textit{scikit-learn} package as the implementations of the models.
+To apply classification algorithms, each stack trace must be represented with a feature vector. One of the most popular approaches that works well in practice is the TF-IDF approach~\cite{Ramos2003UsingTT}. 
+
+We also propose a baseline model based on a simple heuristic. For each frame of the stack trace, we know exactly which line in the file caused the bug. From the VCS annotation, we can find out which developer edited the given line last. Thus, for each developer, we count the number of edited lines that led to an error. The developer who edited the most error lines should be assigned to fix the bug. Additionally, we use the following ideas to improve the quality of this solution. Firstly, the frames at the top of the stack are usually more explanatory, therefore we can consider not all frames in the trace stack, but only Top-20 frames. Secondly, we consider each line edit with a weight that depends on the edit time: the later the line edit happened, the higher the weight is. As a weight function, we used $f(x) = e^{-x}$, where $x$ stands for the time elapsed from editing a line until a bug occurred in the system.
+
+\secpart{Model Parameters}
+
+Since we collected two different datasets from public and private repositories, for each dataset, the parameters of the models were selected independently. The model parameters are selected according to the results on the validation datasets.
+
+\begin{table}[t]
+    \centering
+    \caption{Parameters used for different models.}
+    \label{table:model_parameters}
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Parameter} & \textbf{Public dataset} & \textbf{Private dataset} \\
+        \midrule
+        \multicolumn{3}{c}{\textbf{Logistic Regression}} \\\midrule
+        \textbf{Loss} & log & log \\
+        \textbf{Regularization coefficient} & 1e-5 & 1e-5 \\\midrule
+        
+        \multicolumn{3}{c}{\textbf{Random Forest}} \\\midrule
+        \textbf{Number of estimators} & 100 & 100 \\
+        \textbf{Maximum depth} & $\infty$ & $ \infty$\\
+        \textbf{Minimum samples in a leaf} & 1 & 1 \\\midrule
+        
+        \multicolumn{3}{c}{\textbf{CNN}} \\\midrule
+        \textbf{Number of convolutional filters} & 32 & 64 \\
+        \textbf{Size of trainable embeddings} & 50 & 70\\\midrule
+        
+        \multicolumn{3}{c}{\textbf{RNN}} \\\midrule
+        \textbf{Hidden size} & 70 & 100 \\
+        \textbf{Size of trainable embeddings} & 50 & 70\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The detailed information about the parameters can be found in~\Cref{table:model_parameters}.
+In the proposed neural network models, the dropout~\cite{Srivastava2014DropoutAS} and weight decay~\cite{Loshchilov2019DecoupledWD} are applied to prevent overfitting. We used the Adam optimizer~\cite{Kingma2015AdamAM} with a learning rate of $1\mathrm{e}{-3}$ and a weight decay of $1\mathrm{e}{-3}$, dropout rate was $0.2$. The classifying models were trained for 25 epochs, and the ranking models were trained for 10 epochs because our experiments have shown that a larger number of epochs leads to the model overfitting.
+
+\secpart{Loss Function}
+
+Since we considered bug triage as a ranking problem, it is necessary to prepare labels for the ranking problem: the target developer must be the first in the list of the ranked developers. For our problem statement, a pairwise approach to RankNet~\cite{Burges2005LearningTR} loss is often used.
+
+The RankNet algorithm assumes that the training data consists of pairs of documents $(d_1, d_2)$ together with a target probability $\bar{P}$ of $d_1$ being ranked higher than $d_2$. For each query, there is only one relevant document (target developer), all other documents (developers) are considered irrelevant. 
+
+As a result, the final loss function with simplification for several pairs $(d_i, d_j)$ and query $q$ has the following form: 
+\begin{align}\label{eq:loss}
+    L = \sum_{d_i \prec d_j} \log{\left (1 + e^{-(f(q, d_i) - f(q, d_j))} \right)}
+\end{align}
+
+To evaluate our approach, we take a random query (bug stack trace) $q$ and a set of documents (developer vector representations) $\{d_1, \ldots, d_n \}$, 
+and make a gradient descent step according to \eqref{eq:loss}.
+Furthermore, we use the following heuristic observation: if the developer stack trace is empty, then they did not edit any file from the bug stack trace. It is unlikely that this developer will fix the current bug, therefore, we exclude such a developer from the list of possible assignees. It is also essential that the calculation of the loss function requires the score of the target developer. However, the target developer representation in the stack trace form may be empty, therefore, in such cases we remove such reports from the training data.
+
+\secpart{Performance Metrics}
+
+\begin{table*}
+    \centering
+    \caption{Comparison of the models on the public and private datasets.}
+    \begin{tabular}{clcccccccc} 
+        \toprule
+        \multicolumn{1}{c}{\multirow{2}{*}{\textbf{№}}} & \multicolumn{1}{c}{\multirow{2}{*}{\textbf{Model}}} & \multicolumn{4}{c}{\textbf{Public dataset}} & \multicolumn{4}{c}{\textbf{Private dataset}} \\ 
+        \cmidrule(lr){3-6}\cmidrule(lr){7-10}
+        && \textbf{Acc@1} 
+        & \textbf{Acc@5} & \textbf{Acc@10} & \textbf{MRR} & \textbf{Acc@1} 
+        & \textbf{Acc@5} & \textbf{Acc@10} & \textbf{MRR} \\ 
+        \midrule
+        1 &Heuristics & 0.26 
+        & 0.50	& 0.52 & 0.36 & 0.41 
+        & 0.73 & 0.80 & 0.54 \\ 
+        
+        2 & Logistic Regression & 0.19 
+        & 0.35 & 0.45 & 0.27 & 0.43 
+        & 0.56 & 0.62 & 0.50 \\ 
+        
+        3 & Random Forest & 0.16 
+        & 0.33 & 0.40 & 0.25 & 0.42 
+        & 0.57 & 0.64 & 0.50 \\ 
+        
+        4 & CNN classification & 0.14 
+        & 0.29 & 0.38 & 0.22	 & 0.42 
+        & 0.55 & 0.60 & 0.48 \\ 
+        
+        5 & RNN classification & 0.14 
+        & 0.27	& 0.34 & 0.21	& 0.42  
+        & 0.54 & 0.60 & 0.48 \\ 
+        
+        6 & CNN ranking (without VCS) & 0.13
+        & 0.37 &	0.47 & 0.25 & 0.35 
+        & 0.60 & 0.72 & 0.48 \\ 
+        
+        7 & RNN ranking (without VCS) & 0.21 
+        & 0.37 &	0.50 & 0.30 & 0.46 
+        & 0.69 & 0.76 & 0.57 \\ 
+        \midrule
+        8 &CNN ranking (VCS: manual frame-based) & 0.28	
+        & 0.48 & 0.54 & 0.38 & 0.53 
+        & 0.79 & 	0.84 & 0.65 \\ 
+        
+        9 & CNN ranking (VCS: neural frame-based) & 0.29 
+        & 0.48 & 0.54 & 0.39 & 0.54
+        & 0.80 & 0.84 & 0.66 \\ 
+        
+        10 & RNN ranking (VCS: manual frame-based) & \textbf{0.35} 
+        & \textbf{0.52}	 & \textbf{0.60}	& \textbf{0.44} & 0.58 
+        & 0.82 & 0.86 & 0.68 \\ 
+        
+        11 & RNN ranking (VCS: neural frame-based) & 0.27 
+        & 0.46 & 0.56 & 0.37 & 0.54 
+        & 0.79 & 0.83 & 0.65 \\ 
+        \midrule
+        12 & CNN ranking (VCS: manual frame-based \& stack-based) & 0.31 
+        & 0.49 &	0.56 & 0.40 & 0.57 
+        & 0.82 & \textbf{0.87} & 0.68 \\ 
+        
+        13 & RNN ranking (VCS: manual frame-based \& stack-based) & 0.34 
+        & \textbf{0.52} & 0.56 & 0.43 & \textbf{0.60} 
+        & \textbf{0.83} & \textbf{0.87} & \textbf{0.70} \\ 
+        \bottomrule
+    \end{tabular}
+    \label{table:results}
+\end{table*}
+
+To answer the research questions, we compared the proposed ranking model with the classification models adapted for stack traces. The most common quality metric for classification problems is Accuracy at K. Accuracy at K corresponds to the number of relevant results among the first $K$ positions. However, this metric does not take into account the position of the relevant document, therefore, we used different values of $k$ from the $\{ 1, 5, 10 \}$ set. More formally, the Accuracy at K metric is defined as follows: 
+\begin{align}
+    acc@k = \frac{1}{|D|} \sum_{(d, q) \in D} \mathbb{I} \left(d \in \{d_{q_i} \}_{i = 1}^{k} \right),
+\end{align}
+where $\mathbb{I}$ stands for the indicator function and $\{d_{q_i}\}$ is the ranked list of documents for query $q$.
+
+In the ranking problem, we use mean reciprocal rank (MRR) for evaluation, which corresponds to the harmonic mean of the relevant documents' ranks. It should be noted that only the rank of the first relevant document is considered in MRR. However, it is suitable for our task, since there is always one relevant document for each query. MRR can be calculated using the following formula: 
+\begin{align}
+    MRR = \frac{1}{|D|} \sum_{(d, q) \in D} \frac{1}{rank_d^q},
+\end{align}
+where $rank_d^q$ refers to the rank position of the target document $d$ for the query $q$.
+
+\secpart{Experiment Methodology}
+
+To evaluate our models, we divided both datasets into three sets: train, validation, and test. For the private dataset, the sizes of the train, validation, and test sets were 8139, 1500, and 1500 bug stack traces, respectively. For the public dataset, the split was 2461, 450, and 450, respectively. This corresponds to the validation and test sets being about 15\% of the sizes of the entire datasets, which is a common practice. This partitioning helps to prevent overfitting of the model. Since the data has a time component, the dataset is divided by time in order to avoid data leakage.
+
+Our methodology for the experiment with the classification models is as follows: we select hyperparameters using the validation datasets, then fit the model on the training and validation datasets, and, finally, evaluate the quality of the models on the test datasets. If the developer is found only in the test dataset, then we cannot correctly classify the bug, since the model was not trained for this class. In this case, we consider that the bug was assigned incorrectly.
+
+For the ranking problem, the model was evaluated as follows. During the training, a random stack trace is taken from the training dataset. Then, for each developer, their stack trace representation is built. If the target developer has an empty stack trace representation, then this means that the developer did not fix frames from this stack trace. In this case, we exclude this stack trace from the training dataset. When evaluating, the model considers only those developers whose stack trace representation is not empty. If the developer's stack trace representation is empty, then his score is equal to the minimum score predicted by the model.
+
+To test the statistical significance of our results, we use bootstrap~\cite{Efron1979BootstrapMA} to construct the confidence intervals. When comparing two models, we form 100 bootstrapping resamplings with the same size as the test dataset. Next, a 95\% confidence interval for the difference of the metric scores is calculated. If zero falls into the constructed interval, then there are no statistically significant differences between the models, otherwise, we say that there is statistical significance. 
+
+All the experiments were run on a server with the following technical characteristics: 8-core Intel Xeon CPU @2.3 GHz, NVidia K80 GPU, and 60 GB of RAM.
+
+\secpart{Results}
+
+
+The experimental results of running various models on both datasets are presented in~\Cref{table:results}. Resulting confidence intervals for all the experiments can be found in the online appendix: \url{https://doi.org/10.5281/zenodo.5596294}.
+
+First of all, it can be seen that the results are different for the public and the private datasets. We assume that this happened for three reasons. Firstly, the public dataset is several times smaller than the private dataset, which can affect the approaches that rely on a lot of data. Secondly, not all annotations are available for the public dataset, with the missing annotations likely containing some important information. Thirdly, we found that the test set from the public dataset contains more target developers who have not edited files from stack traces than the private dataset. Thus, their stack trace representation will be empty, and the result of the model will be incorrect on these reports.
+
+\subsubsection{Research Question 1} 
+To answer RQ1, let us evaluate and compare the quality of the classifying and ranking models. Our results show that classifying models based on classical machine learning algorithms perform as well as classifying algorithms based on RNNs or CNNs (\Cref{table:results}, lines 2--5). We believe that this can be explained by the fact that neural networks are most likely to extract features similar to TF-IDF features, so the results are similar. 
+
+The RNN ranking model performs better than the others (\Cref{table:results}, line 7, 0.21 Acc@1 on the Public dataset, 0.46 Acc@1 on the Private dataset), but the differences would be more significant if there were many developers in the test dataset that were not in the training dataset. We found that for the public and private datasets, there were 27 bug reports in the test data with developers that were not presented in train data. Thus, this represents only 6\% and 1.8\% of the total size of the test data, and the advantage of the ranking approach is not very noticeable. On the other hand, for projects that have a larger variety of developers (for example, some large open-source projects) the ranking approach can be expected to significantly improve the quality of the models.
+
+Another interesting observation is that the heuristic-based baseline shows the quality comparable to the ML-based approaches. Such high performance of the heuristic solution can be explained by the fact that the data was collected from industrial projects of a large software company with well-functioning bug fixing pipelines, and the proposed heuristic might be a good fit for such a pipeline. In open-source projects, error processing workflows might be different, and as a result, such a heuristic solution might work worse. However, this observation suggests that sometimes a simple heuristic might work better than complex statistical models that are not interpretable and need a lot of sophisticated data to train on.
+
+\observation{On our datasets, the ranking models perform slightly better, but the difference can be more significant in other settings, future research is required.}
+
+\subsubsection{Research Question 2} 
+Next, let us address RQ2 and investigate the significance of manual and neural frame-based features built from the VCS annotations. We trained a ranking model with only manual frame-based features and another model with only neural frame-based features. It can be seen (\Cref{table:results}, lines 8--11 compared to lines 6--7) that frame-based features increase the model quality, but the impact of the neural features is not as significant as in the case of manually extracted features in the RNN model (0.27 and 0.35 Acc@1 on the public dataset, 0.54 and 0.58 Acc@1 on the private dataset, respectively). However, in the case of the CNN-based approaches, manual and neural features show similar results. CNN captures the entire stack trace, rather than processing it in a sequential form like the RNN does. Therefore, feature normalization in the case of CNN may be necessary, since a lot of raw values are harmful. The difference between manual frame-based features and neural frame-based features turned out to be statistically significant for RNN and not significant for CNN on both datasets.
+
+An important disadvantage of the neural network annotation processing is the slow model training (one epoch takes 3-4 times longer compared to the manual features): each pass requires hundreds of annotations to be processed, each of them can contain thousands of lines, and since we use RNN, it takes a significant amount of time. On the other hand, the DL approach learns annotation embeddings automatically, and these embeddings could be useful in other related tasks (bug localization, bug report deduplication, etc.). This seems like a promising direction for future work.
+
+\observation{Adding frame-based features from the VCS annotations improves the quality of models. Manual features worked better for the RNN models, while in CNN models, the difference between manual and learned features is insignificant. Learning features takes noticeably more time, but leads to obtaining embeddings of annotations, which might be useful for other tasks.}
+
+\subsubsection{Research Question 3} 
+
+Finally, to answer RQ3, we trained models with both the frame-based and stack-based features from the VCS annotations. Since manual frame-based features demonstrated better results than neural features, we only used manual features. First, we can notice that the RNN-based model outperforms the CNN-based one by 3 percentage points according to Acc@1 (\Cref{table:results}, lines 12--13), however, in the case of the public dataset, this difference is not statistically significant. 
+Better performance of RNNs compared to CNNs may be attributed to the CNN training pipeline: to reduce the training time, stack traces are processed in batches. At the same time, CNN is not designed to process sequences of different lengths in batches, therefore, padding is necessary.  Moreover, the length of the sequences must not be shorter than the size of the convolution kernel, that is, 5. It is possible that padding in the training data leads to worse results. 
+
+Secondly, we can see that adding stack-based features has a positive statistically significant effect on the model performance (\Cref{table:results}, lines 8, 10, 12--13). 
+We believe that frame-based features are not taken into account in the best way in CNN models, therefore, stack-based features add new information to the model. However, in the case of RNN models, stack-based features do not lead to such improvements. Perhaps, better feature engineering could help us overcome this issue, future research is required.
+
+\observation{Combining stack-based and frame-based has a positive effect on the CNN-based appoaches, but for the RNN-based models the effect is not significant.}
+
+In the end, the RNN ranking model with frame-based and stack-based manual features obtained from the VCS annotations turned out to be the best performing model for bug assignee prediction based on the stack traces data. 
+It outperforms all the other models on the private dataset (\Cref{table:results}, line 13, 0.60 Acc@1 and 0.70 MRR) and achieves a significant boost in all metrics (17--18 percentage points) compared to the classical machine learning approaches. We release this model as \textit{DapStep} and plan to conduct more thorough experiments on it in the future work.
+
+Thus, the results of our experiments demonstrate that reformulating bug triage as a ranking problem is appropriate. Moreover, adding features from VCS annotations to the model has a positive effect on its performance, and the RNN-based models work slightly better in this setting than the CNN-based ones. From the practical standpoint, the RNN ranking model with all the features can be trained on the data of any specific project or company and be employed there. As for the research implications, the results show that more research is needed to improve the state-of-the-art solutions to the bug triage problem, employing more information about the stack traces. We hope that our results of using VCS annotations as the sources of features and the provided dataset can assist in conducting such research.

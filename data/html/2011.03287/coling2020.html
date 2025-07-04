@@ -1,0 +1,2043 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation</title>
+<!--Generated on Thu Dec  5 01:10:16 2024 by LaTeXML (version 0.8.8) http://dlmf.nist.gov/LaTeXML/.-->
+
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line">
+<div id="p1" class="ltx_para">
+<span class="ltx_ERROR undefined">\colingfinalcopy</span>
+</div>
+<h1 class="ltx_title ltx_title_document">The ApposCorpus:
+<br class="ltx_break">A new multilingual, multi-domain dataset for factual appositive generation</h1>
+<div class="ltx_authors">
+<span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Yova Kementchedjhieva 
+<br class="ltx_break">University of Copenhagen
+<br class="ltx_break"><span class="ltx_text ltx_font_typewriter">yova@di.ku.dk</span> 
+<br class="ltx_break"><span class="ltx_ERROR undefined">\And</span>Di Lu 
+<br class="ltx_break">Dataminr, Inc.
+<br class="ltx_break"><span class="ltx_text ltx_font_typewriter">dlu@dataminr.com</span> 
+<br class="ltx_break"><span class="ltx_ERROR undefined">\And</span>Joel Tetreault 
+<br class="ltx_break">Dataminr, Inc.
+<br class="ltx_break"><span class="ltx_text ltx_font_typewriter">jtetreault@dataminr.com</span>
+</span></span>
+</div>
+
+<div class="ltx_abstract">
+<h6 class="ltx_title ltx_title_abstract">Abstract</h6>
+    
+<p class="ltx_p">News articles, image captions, product reviews and many other texts mention people and organizations whose name recognition could vary for different audiences. In such cases, background information about the named entities could be provided in the form of an appositive noun phrase, either written by a human or generated automatically.
+We expand on the previous work in appositive generation with a new, more realistic, end-to-end definition of the task, instantiated by a dataset that spans four languages (English, Spanish, German and Polish), two entity types (person and organization) and two domains (Wikipedia and News).
+We carry out an extensive analysis of the data and the task, pointing to the various modeling challenges it poses. The results we obtain with standard language generation methods show that the task is indeed non-trivial, and leaves plenty of room for improvement.</p>
+  
+</div>
+<section id="S1" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">1 </span>Introduction</h2>
+
+<div id="S1.p1" class="ltx_para">
+<span class="ltx_ERROR undefined">\blfootnote</span>
+</div>
+<div id="S1.p2" class="ltx_para">
+<p class="ltx_p">This work is licensed under a Creative Commons
+Attribution 4.0 International Licence.
+Licence details:
+<span class="ltx_ref ltx_nolink ltx_url ltx_font_typewriter ltx_ref_self">http://creativecommons.org/licenses/by/4.0/</span>.
+
+</p>
+</div>
+<div id="S1.p3" class="ltx_para">
+<p class="ltx_p">News articles, image captions, product reviews and many other texts mention people and organizations, whose name recognition could vary for different audiences. A piece of news, for example, may concern people and organizations that are known locally, but are not necessarily well-recognized on a global level. In such cases, news pieces targeted at a wider audience would provide background information about the entity in focus, often in the form of an <span class="ltx_text ltx_font_italic">appositive</span>. For example:</p>
+<blockquote class="ltx_quote">
+<p class="ltx_p">In March 2017 , Natalie Jaresko, <span class="ltx_text ltx_font_italic">former Minister of Finance in Ukraine</span>, was appointed as the board’s executive director.</p>
+</blockquote>
+<p class="ltx_p">It is unlikely that many people outside of Ukraine know the name Natalie Jaresko, so a foreign reader would likely benefit from the extra bit of information about her former occupation as justification for her new appointment. An appositive could also be less contextualized and provide information of more general importance, for example:</p>
+</div>
+<div id="S1.p4" class="ltx_para">
+<blockquote class="ltx_quote">
+<p class="ltx_p">The conservation unit is in the Calhau bairro of São Luís, <span class="ltx_text ltx_font_italic">the state capital</span>.</p>
+</blockquote>
+</div>
+<div id="S1.p5" class="ltx_para">
+<p class="ltx_p">In general terms, appositives are phrases that appear next to a noun phrase and serve an explicative function <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib15" title="Nominal apposition in indo-european: its forms and functions, and its evolution in latin-romance" class="ltx_ref">3</a>]</cite>.
+Adding such explanations to text is a multi-step process. First, one has to decide whether an entity mention needs an appositive. That may not be the case for entities that are sufficiently well-known
+or that have been introduced earlier in the text. In case an appositive is indeed needed, the next step is to choose what information about the entity to disclose. If the information is to be of a factual nature, the writer needs to have prior knowledge of the entity, or access to an external knowledge resource–<span class="ltx_ERROR undefined">\newcite</span>kang2019pomo found appositives to be frequently based on facts of particular relevance to the context of the mention. Lastly, the surface form of the appositive, well-fitted to the surrounding context, needs to be produced. Viewed from the perspective of NLP, appositive generation is therefore an interesting and challenging natural language generation problem that involves reasoning over facts from an external knowledge source, with reference to a given context.</p>
+</div>
+<div id="S1.p6" class="ltx_para">
+<p class="ltx_p">The task of appositive generation, first introduced by <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo, is still in its early stages and data resources are limited. We expand on previous work in appositive generation with a new, more realistic, end-to-end definition of the task, instantiated by a dataset, <span class="ltx_text ltx_font_typewriter">ApposCorpus</span>,<span id="footnote1" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">1</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">1</sup>
+            <span class="ltx_tag ltx_tag_note">1</span>
+            
+            
+          Available at <span class="ltx_ref ltx_nolink ltx_url ltx_font_typewriter ltx_ref_self">https://yovakem.github.io/#ApposCorpus</span>.</span></span></span> that spans four languages (English, Spanish, German and Polish), two entity types (person and organization) and two domains (Wikipedia and News). While Wikipedia as a domain is curated for a world-wide audience and as such may not benefit much from appositive generation, we posit that it is a valuable source of abundant cross-lingual data which could be used as the basis for transfer learning. In addition to a large training set automatically sourced from Wikipedia, we therefore also introduce a gold standard test sourced from newswire, one of the true target domains for appositive generation <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib3" title="PoMo: generating entity-specific post-modifiers in context" class="ltx_ref">8</a>]</cite>.</p>
+</div>
+<div id="S1.p7" class="ltx_para">
+<p class="ltx_p">The next section of the paper outlines the theoretical framework behind the task of appositive generation. In Section <a href="#S3" title="3 Dataset collection: Wikipedia ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a> we describe the automatic data collection procedure used to obtain training data, and in Section <a href="#S4" title="4 Dataset collection: News ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4</span></a> we detail the further manual validation performed to obtain quality data for cross-domain evaluation. The properties of the dataset are discussed in detail in Section <a href="#S5" title="5 Data analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a>. Sections <a href="#S6" title="6 Experiments ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">6</span></a>, <a href="#S7" title="7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">7</span></a> and <a href="#S8" title="8 Analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">8</span></a> describe the experiments we performed and the main findings from them. Section <a href="#S9" title="9 Conclusion ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">9</span></a> concludes the paper and outlines avenues for future research.</p>
+</div>
+</section>
+<section id="S2" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">2 </span>The task: Appositive generation</h2>
+
+<div id="S2.p1" class="ltx_para">
+<span class="ltx_ERROR undefined">\newcite</span>
+<p class="ltx_p">kang2019pomo laid the groundwork for appositive generation and our work can be seen as an expansion of their efforts. Yet, we both rename the task and redefine it in more general terms.</p>
+</div>
+<section id="S2.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.1 </span>Prior work</h3>
+
+<div id="S2.SS1.p1" class="ltx_para">
+<span class="ltx_ERROR undefined">\newcite</span>
+<p class="ltx_p">kang2019pomo introduced the task of appositive generation. To date this is the only work on this task. They designed a data collection procedure where appositives are identified by locating instances of the <span class="ltx_text ltx_font_typewriter">appos</span> dependency label <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib2" title="Universal Dependencies v2: an evergrowing multilingual treebank collection" class="ltx_ref">12</a>]</cite> in parsed text, and used it to build a dataset of appositives for <span class="ltx_text ltx_font_smallcaps">person</span> entities in English news articles. The candidate appositives were cross-referenced with the WikiData knowledge base <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib1" title="Wikidata: a free collaborative knowledgebase" class="ltx_ref">18</a>]</cite> through word matching, and only those appositives were included in the final dataset which matched a fact from WikiData.</p>
+</div>
+<div id="S2.SS1.p2" class="ltx_para">
+<p class="ltx_p">More generally, appositive generation relates to work on joint fact selection and generation <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib12" title="Learning semantic correspondences with less supervision" class="ltx_ref">11</a>, <a href="#bib.bib10" title="Generative alignment and semantic parsing for learning from ambiguous supervision" class="ltx_ref">9</a>, <a href="#bib.bib11" title="A simple domain-independent probabilistic approach to generation" class="ltx_ref">1</a>, <a href="#bib.bib6" title="A global model for concept-to-text generation" class="ltx_ref">10</a>]</cite>.</p>
+</div>
+</section>
+<section id="S2.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.2 </span>A shift in terminology</h3>
+
+<div id="S2.SS2.p1" class="ltx_para">
+<span class="ltx_ERROR undefined">\newcite</span>
+<p class="ltx_p">kang2019pomo actually called the phrases in question <span class="ltx_text ltx_font_italic">post-modifiers</span>, rather than appositives. The linguistic term <span class="ltx_text ltx_font_italic">post-modifier</span> can be seen as subsuming appositives, but it is much broader, including also prepositional, non-finite and dependent clauses that appear in postposition. Meanwhile, appositives come in two forms, nominal appositives, where a single noun identifies or qualifies another noun, e.g. President <span class="ltx_text ltx_font_italic">Washington</span>, and explicative appositives, where a pronoun, an infinitive or a noun phrase is used to explain or specify the status of a noun <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib15" title="Nominal apposition in indo-european: its forms and functions, and its evolution in latin-romance" class="ltx_ref">3</a>]</cite>. Explicative appositives are further characterized as <span class="ltx_text ltx_font_italic">non-essential</span>, meaning that they are not integral to the grammatical or semantic well-formedness of the sentence it appears in, and as such are often delimited from the rest of the sentence by punctuation marks <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib17" title="Appositives-what they are and how to use them" class="ltx_ref">17</a>]</cite>. For the purposes of providing background information about named entities, we are in particular interested in <span class="ltx_text ltx_font_italic">explicative appositive noun phrases</span>, and that is what we refer to as an <span class="ltx_text ltx_font_italic">appositive</span> throughout this work.</p>
+</div>
+</section>
+<section id="S2.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.3 </span>Expanding the task definition</h3>
+
+<div id="S2.SS3.p1" class="ltx_para">
+<p class="ltx_p">Being built with reference to WikiData, the dataset of <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo creates the illusion that all facts necessary to generate an appositive are available in the knowledge base. <span class="ltx_ERROR undefined">\newcite</span>balaraman2018recoin studied the relative completeness of WikiData entries and found gaps to be the norm rather than an exception. Moreover, the dataset of <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo only includes positive samples, i.e. instances where an appositive is due. A more realistic scenario would also require the model to choose whether or not to add an appositive to a given entity mention. <span class="ltx_text ltx_font_typewriter">ApposCorpus</span>  is <span class="ltx_text ltx_font_italic">not</span> constrained by WikiData in terms of fact matching, and contains positive <span class="ltx_text ltx_font_italic">and</span> negative samples, i.e. instances of empty appositives. See Figure <a href="#S2.F1" title="Figure 1 ‣ 2.3 Expanding the task definition ‣ 2 The task: Appositive generation ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a> for an illustration. Moreover, it is multilingual and covers both <span class="ltx_text ltx_font_smallcaps">person</span> and <span class="ltx_text ltx_font_smallcaps">organization</span> named entities. We built this dataset primarily based on text from Wikipedia, chosen for its rich cross-lingual coverage.</p>
+</div>
+<figure id="S2.F1" class="ltx_figure">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1"><span class="ltx_ERROR ltx_centering ltx_figure_panel undefined">\includegraphics</span></div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1">
+<p class="ltx_p ltx_figure_panel ltx_align_center">[width=]task.pdf</p>
+</div>
+</div>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:90%;">Figure 1</span>: </span><span class="ltx_text" style="font-size:90%;">Illustration of the task in a <span class="ltx_text ltx_font_italic">constrained</span> setting, where an appositive is always due and the facts in it are always available in the knowledge base; and in a <span class="ltx_text ltx_font_italic">full, end-to-end</span> setting, where a decision has to be made as to whether or not to generate an appositive, and the facts in the appositive may be missing from the knowledge base. The entity in focus is shown in bold, the relevant facts are underlined (where available), and the <math id="S2.F1.m3" class="ltx_Math" alttext="&lt;" display="inline"><mo>&lt;</mo></math>EMPTY<math id="S2.F1.m4" class="ltx_Math" alttext="&gt;" display="inline"><mo>&gt;</mo></math> tag means no appositive is needed. Optionally, previous context can be included in the input, e.g. the three previous sentences–this is not shown in the figure.</span></figcaption>
+</figure>
+</section>
+</section>
+<section id="S3" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">3 </span>Dataset collection: Wikipedia</h2>
+
+<div id="S3.p1" class="ltx_para">
+<p class="ltx_p">We used the March 2020 Wikipedia dump<span id="footnote2" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">2</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">2</sup>
+            <span class="ltx_tag ltx_tag_note">2</span>
+            
+            
+          <span class="ltx_ref ltx_nolink ltx_url ltx_font_typewriter ltx_ref_self">https://dumps.wikimedia.org/</span></span></span></span> for English, Spanish, German and Polish, which we parsed with WikiExtractor,<span id="footnote3" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">3</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">3</sup>
+            <span class="ltx_tag ltx_tag_note">3</span>
+            
+            
+          <span class="ltx_ref ltx_nolink ltx_url ltx_font_typewriter ltx_ref_self">https://github.com/attardi/wikiextractor</span></span></span></span> preserving internal links.<span id="footnote4" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">4</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">4</sup>
+            <span class="ltx_tag ltx_tag_note">4</span>
+            
+            
+          These links point to other pages on Wikipedia and allow us to identify the Wikidata entry for the given named entity.</span></span></span> The choice of these particular languages was mostly based on the availability of good dependency parsers. Since dependency parsing is an integral step of the data collection process <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib3" title="PoMo: generating entity-specific post-modifiers in context" class="ltx_ref">8</a>]</cite>, it has to be as precise as possible, to maximize the quality of the outcome.<span id="footnote5" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">5</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">5</sup>
+            <span class="ltx_tag ltx_tag_note">5</span>
+            
+            
+          We only considered parsers with labeled accuracy score over <math id="footnote5.m1" class="ltx_Math" alttext="90.0" display="inline"><mn>90.0</mn></math></span></span></span> Below, we describe in detail the data collection procedure.</p>
+</div>
+<section id="S3.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.1 </span>Preprocessing</h3>
+
+<div id="S3.SS1.p1" class="ltx_para">
+<p class="ltx_p">We processed every article as follows:
+(1) tokenize the text and segment sentences; (2) normalize mentions of the entity in the article’s title and annotate them with internal links; (3) identify sentences which contain a linked named entity listed as an instance of type <span class="ltx_text ltx_font_italic">human</span> or of (a subclass of) type <span class="ltx_text ltx_font_italic">organization</span> in WikiData (corresponding to the <span class="ltx_text ltx_font_smallcaps">person</span> and <span class="ltx_text ltx_font_smallcaps">organization</span> named entity types);
+(4) run a dependency parser
+on these sentences.
+Steps (1) and (4) were performed with Stanza <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib4" title="Stanza: a Python natural language processing toolkit for many human languages" class="ltx_ref">15</a>]</cite>.</p>
+</div>
+</section>
+<section id="S3.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.2 </span>Detecting appositives</h3>
+
+<div id="S3.SS2.p1" class="ltx_para">
+<p class="ltx_p">Any instance of the <span class="ltx_text ltx_font_typewriter">appos</span> label that depends on a linked named entity and is separated from it with a comma or an opening parenthesis was considered a valid candidate. In this case, we recorded the source sentence, replacing the appositive with special token <span class="ltx_text ltx_font_typewriter">&lt;appos&gt;</span>, as input data, and the appositive as a target. The beginning of the appositive was taken to be the first token after the comma or opening parenthesis, and the end is taken to be the last token before the next comma/semicolon/full stop (if beginning was marked by a comma) or closing parenthesis (if beginning was marked by an opening parenthesis). We discarded any commas and parenthesis surrounding the appositive, but kept semicolons and full stops as part of the input sentence. We also recorded the three preceding sentences from the article and one following sentence.
+Similarly to <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo, we process one appositive per sentence, i.e. if there are multiple appositives in a sentence, we select the first one and do not consider the rest.</p>
+</div>
+<div id="S3.SS2.p2" class="ltx_para">
+<p class="ltx_p">Appositives containing just dates (usually the date of birth and/or death of a person) are ubiquitous across Wikipedia articles to the point that they constitute up to 30% of the data samples that we get with the procedure described above.
+We reduced this imbalance in the data by downsampling this type of appositives to only 10% of its occurrences.
+</p>
+</div>
+</section>
+<section id="S3.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.3 </span>Negative samples</h3>
+
+<div id="S3.SS3.p1" class="ltx_para">
+<p class="ltx_p">We added negative samples to the dataset, matching the number of positive ones. They were drawn according to the following criteria: (1) there is a <span class="ltx_text ltx_font_smallcaps">person</span> or <span class="ltx_text ltx_font_smallcaps">organization</span> entity in the sentence, (2) it is not followed by a comma or opening parenthesis, and (3) the rest of the sentence does not contain an appositive dependent on the <span class="ltx_text ltx_font_smallcaps">person</span> or <span class="ltx_text ltx_font_smallcaps">organization</span> entity. Condition (2) was used to reduce the chance of including instances of appositives that were not correctly tagged as such by the parser (recall that appositives are often delimited from the rest of the sentence by a punctuation), while (3) was used to ensure that we did not include instances that contain a non-essential appositive, which the author had failed to delimit by any punctuation. In negative samples the input is the original source sentence with an added token <span class="ltx_text ltx_font_typewriter">&lt;appos&gt;</span> just after the <span class="ltx_text ltx_font_smallcaps">person</span>/<span class="ltx_text ltx_font_smallcaps">organization</span> entity, and the target is a special <span class="ltx_text ltx_font_typewriter">&lt;EMPTY&gt;</span> token.</p>
+</div>
+<div id="S3.SS3.p2" class="ltx_para">
+<p class="ltx_p">The procedure described above was used to collect <span class="ltx_text ltx_font_italic">training</span> data for factual appositive generation. As it is our goal to study the potential of a cross-domain approach to appositive generation, the <span class="ltx_text ltx_font_typewriter">ApposCorpus</span> also contains an out-of-domain test set, sourced from newswire.</p>
+</div>
+</section>
+</section>
+<section id="S4" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">4 </span>Dataset collection: News</h2>
+
+<div id="S4.p1" class="ltx_para">
+<p class="ltx_p">We sourced our data for cross-domain evaluation from the news domain, following previous work <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib3" title="PoMo: generating entity-specific post-modifiers in context" class="ltx_ref">8</a>]</cite>, using these news corpora: Global Voices (English, Spanish, German, Polish) <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib14" title="Parallel data, tools and interfaces in opus" class="ltx_ref">16</a>]</cite>, News Commentary (English, Spanish, German) <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib14" title="Parallel data, tools and interfaces in opus" class="ltx_ref">16</a>]</cite> and Paralela <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib13" title="Exploring phraseological equivalence with paralela" class="ltx_ref">14</a>]</cite>.</p>
+</div>
+<section id="S4.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">4.1 </span>Entity linking</h3>
+
+<div id="S4.SS1.p1" class="ltx_para">
+<p class="ltx_p">Unlike Wikipedia, where entities are explicitly linked to WikiData entries through internal links, here, we had to perform additional entity linking. We did so in the following manner: (1) extract candidates from WikiData based on exact match between the full span of the named entity and all aliases of entities in the respective subset of WikiData (instances of type <span class="ltx_text ltx_font_italic">human</span> if NER label is <span class="ltx_text ltx_font_smallcaps">person</span> , else <span class="ltx_text ltx_font_italic">organization</span>), (2) obtain relative alias frequency distributions from Wikipedia, and (3) the candidate entity with the highest relative frequency given the alias is selected. We chose to use this prior-based method instead of a modeling approach since off-the-shelf entity linkers were not available for all the languages involved.
+Candidate appositives were then identified as described in 3.2.</p>
+</div>
+<div id="S4.SS1.p2" class="ltx_para">
+<p class="ltx_p">As errors could occur both in the entity linking and in the appositive detection, we hired manual annotators to verify the output of the two procedures (see details in Appendix <a href="#A1.SS1" title="A.1 Manual validation ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">A.1</span></a>). The News portion of the <span class="ltx_text ltx_font_typewriter">ApposCorpus</span>  is therefore gold standard and will serve for stable, accurate evaluation.</p>
+</div>
+</section>
+<section id="S4.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">4.2 </span>Negative samples</h3>
+
+<div id="S4.SS2.p1" class="ltx_para">
+<p class="ltx_p">We added <math id="S4.SS2.p1.m1" class="ltx_Math" alttext="1,000-n" display="inline"><mrow><mn>1</mn><mo>,</mo><mrow><mn>000</mn><mo>−</mo><mi>n</mi></mrow></mrow></math> negative samples to each subset of the data, where <math id="S4.SS2.p1.m2" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math> is the number of positive samples.
+The exact ratio of positive samples in each test set is reflected in the <span class="ltx_text ltx_font_typewriter">always yes</span> baseline shown in the Results section (see Figure <a href="#S7.F2" title="Figure 2 ‣ 7.2 Languages and entity types ‣ 7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>a), a dummy baseline which always predicts an appositive.</p>
+</div>
+</section>
+</section>
+<section id="S5" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">5 </span>Data analysis</h2>
+
+<div id="S5.p1" class="ltx_para">
+<p class="ltx_p">This section outlines some findings on the properties of our dataset, based on general statistics and WikiData cross-referencing. The procedure described above yielded less than four thousand samples of <span class="ltx_text ltx_font_smallcaps">org</span> appositives for Polish, so this subset is omitted from the <span class="ltx_text ltx_font_typewriter">ApposCorpus</span>.</p>
+</div>
+<figure id="S5.T1" class="ltx_table">
+<div class="ltx_flex_figure ltx_flex_table">
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure id="S5.T1.st1" class="ltx_table ltx_figure_panel">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<td class="ltx_td"></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">en</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">es</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">de</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">pl</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_right ltx_th ltx_th_row ltx_border_t" rowspan="3"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">per</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">Size</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">559k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">164k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">269k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">14k</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">Length</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.4</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.16</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.7</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.67</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">WD (%)</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">25.5</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">28.1</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">21.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">22.3</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="4"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">org</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">size</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">612k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">104k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">333k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">-</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">Length</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.19</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.09</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">1.64</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">-</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">WD (%)</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">27.8</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">24.9</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">22.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">-</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">(a) </span>Wikipedia data</figcaption>
+</figure>
+</div>
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure id="S5.T1.st2" class="ltx_table ltx_figure_panel">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<td class="ltx_td"></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">en</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">es</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">de</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">pl</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="3"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">per</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">size</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">1k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">1k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">1k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">1k</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">Length</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.07</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.51</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.43</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.32</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">WD (%)</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">29.3</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">30.8</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">21.7</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">20.7</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="4"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">org</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">Size</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">1k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">1k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">1k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">-</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">Length</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.31</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.08</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">1.87</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">-</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">WD (%)</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">35.4</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">30.0</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">22.8</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">-</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">(b) </span>News data</figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="ltx_caption" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">Table 1: </span>Dataset statistics. <span class="ltx_text ltx_font_italic">Size</span>: full dataset size, <span class="ltx_text ltx_font_italic">Length</span>: average appositive length, <span class="ltx_text ltx_font_italic">WD</span>: ratio of appositives matching a fact from WikiData.</figcaption>
+</figure>
+<section id="S5.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">5.1 </span>General statistics</h3>
+
+<div id="S5.SS1.p1" class="ltx_para">
+<p class="ltx_p">Table <a href="#S5.T1" title="Table 1 ‣ 5 Data analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a> lists some statistics about the two parts of the dataset, one based on Wikipedia (<span class="ltx_text ltx_font_italic">Wikipedia data</span>) and the other on news (<span class="ltx_text ltx_font_italic">News data</span>). Row <span class="ltx_text ltx_font_italic">Size</span> refers to the full size of the data as split into language and entity type. We further split each Wikipedia subset for training (70%), validation (15%) and testing (15%).
+Size varies greatly across the data, with the Polish <span class="ltx_text ltx_font_smallcaps">person</span> subset being merely 2.5% the size of the English <span class="ltx_text ltx_font_smallcaps">person</span> subset. This relates both to a difference in the Wikipedia sizes for these languages (6M English articles v. 1.4M Polish articles) and to a difference in the frequency of use of appositives across the languages.</p>
+</div>
+<div id="S5.SS1.p2" class="ltx_para">
+<p class="ltx_p">Row <span class="ltx_text ltx_font_italic">Length</span> in Table <a href="#S5.T1" title="Table 1 ‣ 5 Data analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a> lists the average number of tokens per appositive, which varies from two to four tokens, and is generally lower for <span class="ltx_text ltx_font_smallcaps">organization</span> appositives than for <span class="ltx_text ltx_font_smallcaps">person</span> ones.</p>
+</div>
+</section>
+<section id="S5.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">5.2 </span>Cross-referencing with WikiData</h3>
+
+<div id="S5.SS2.p1" class="ltx_para">
+<p class="ltx_p">As discussed before, fact matching is not part of our data collection procedure, but at training time it would be beneficial to have access to a knowledge base such as WikiData, and to draw from it, when possible. So we extract the WikiData entries for all named entities in our dataset and perform word matching between facts and appositives in the following way: (1) tokenize the fact and the appositive, (2) remove stopwords, (3) measure token overlap. If the overlap is non-zero, we consider there to be a match and annotate the fact as <span class="ltx_text ltx_font_typewriter">used</span>.<span id="footnote6" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">6</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">6</sup>
+              <span class="ltx_tag ltx_tag_note">6</span>
+              
+              
+            We experimented with other thresholds (2 and 3-word overlap) and with fuzzy matching, but found this method to work best.</span></span></span></p>
+</div>
+<div id="S5.SS2.p2" class="ltx_para">
+<p class="ltx_p">Cross-referencing the data with WikiData is also useful as an insight into the makeup of the data, albeit an insight that is biased the scope and completeness of the knowledge base.</p>
+</div>
+<section id="S5.SS2.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Coverage</h4>
+
+<div id="S5.SS2.SSS0.Px1.p1" class="ltx_para">
+<p class="ltx_p">Row <span class="ltx_text ltx_font_italic">WD</span> in Table <a href="#S5.T1.st1" title="In Table 1 ‣ 5 Data analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1(a)</span></a> shows the rather low percentage of appositives from the Wikipedia dataset that are matched to at least one fact from WikiData: from 21.2 for German <span class="ltx_text ltx_font_smallcaps">person</span> appositives to 28.1 for Spanish <span class="ltx_text ltx_font_smallcaps">person</span> appositives. The numbers for the News test set, shown in Table <a href="#S5.T1.st2" title="In Table 1 ‣ 5 Data analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1(b)</span></a>, are mostly similar to those for the WikiData. Another way to view these percentages is as an effective upper bound on the performance of a model trained with WikiData as the source of knowledge. Further work in identifying other sources of facts for appositive generation and new means of integrating them into a model could therefore prove very fruitful.</p>
+</div>
+<div id="S5.SS2.SSS0.Px1.p2" class="ltx_para">
+<p class="ltx_p">We manually inspected a random sample of 100 appositives from the English section of the Wikipedia dataset that were not matched to any fact from WikiData. In the majority of cases, the appositives concerned the occupation of a person, their position within an organization, their country of origin, or other type of information that is typically found in WikiData, but was missing for the given named entry.</p>
+</div>
+</section>
+<section id="S5.SS2.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Composition</h4>
+
+<div id="S5.SS2.SSS0.Px2.p1" class="ltx_para">
+<p class="ltx_p">We studied the composition of the data, as observed with reference to WikiData. We performed our analysis on all languages and found that similar trends hold cross-lingually, so here we discuss the English portion of the data only, and in the Appendix <a href="#A1.SS2" title="A.2 Composition of cross-lingual data ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">A.2</span></a> we include the corresponding tables for Spanish, German and Polish.</p>
+</div>
+<div id="S5.SS2.SSS0.Px2.p2" class="ltx_para">
+<p class="ltx_p">We looked at the types of facts that were matched to appositives from the News data. For all fact types that constitute 3% or more of all facts matched, we also looked at their frequency in the Wikipedia data. Results are shown in Table <a href="#S5.T2" title="Table 2 ‣ Composition ‣ 5.2 Cross-referencing with WikiData ‣ 5 Data analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>. We see that half of the top fact types in the News dataset are also well-attested in the Wikipedia data, i.e. their relative frequency is 3% or more. We can expect that knowledge concerning appositives based on these fact types would trivially transfer from one domain to the other. The low frequency for the remaining fact types (cf. <span class="ltx_text ltx_font_italic">has quality</span> and <span class="ltx_text ltx_font_italic">capital of</span>), on the other hand, poses a challenge whose solution would require deeper natural language understanding and, possibly, explicit domain transfer techniques.</p>
+</div>
+<figure id="S5.T2" class="ltx_table">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Fact type</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">News (%)</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Wiki(%)</span></th>
+<th class="ltx_td ltx_th ltx_th_column ltx_th_row"></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Fact type</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">News (%)</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Wiki(%)</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_b ltx_border_t" rowspan="7"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">per</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">position held</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">20.9</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">9.4</span></td>
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_b ltx_border_t" rowspan="7"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">org</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">instance of</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">23.1</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">10.9</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">occupation</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">15.9</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">10.6</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">official website</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">6.3</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">6.2</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">citizenship</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">10.1</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.3</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">country</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.9</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.3</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">member of party</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">7.6</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">1.9</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">member of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.4</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">award received</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.9</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">subsidiary</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.5</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.1</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">nominated for</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.6</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.4</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">capital of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.1</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_b"><span class="ltx_text" style="font-size:90%;">educated at</span></td>
+<td class="ltx_td ltx_align_left ltx_border_b"><span class="ltx_text" style="font-size:90%;">3.1</span></td>
+<td class="ltx_td ltx_align_left ltx_border_b"><span class="ltx_text" style="font-size:90%;">3.1</span></td>
+<td class="ltx_td ltx_align_left ltx_border_b"><span class="ltx_text" style="font-size:90%;">has quality</span></td>
+<td class="ltx_td ltx_align_left ltx_border_b"><span class="ltx_text" style="font-size:90%;">3.0</span></td>
+<td class="ltx_td ltx_align_left ltx_border_b"><span class="ltx_text" style="font-size:90%;">0.0</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">Table 2: </span>Top fact types. English. </figcaption>
+</figure>
+</section>
+</section>
+</section>
+<section id="S6" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">6 </span>Experiments</h2>
+
+<div id="S6.p1" class="ltx_para">
+<p class="ltx_p">To show how the new task formulation can be used,
+we experiment with three established language generation methods: the main method of <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo, which we refer to as <span class="ltx_text ltx_font_typewriter">base</span>; an extension of <span class="ltx_text ltx_font_typewriter">base</span> with external knowledge injected through embeddings with knowledge-base grounding (<span class="ltx_text ltx_font_typewriter">KB</span>); and a model enhanced with an explicit copy mechanism (<span class="ltx_text ltx_font_typewriter">copynet</span>, <span class="ltx_ERROR undefined">\newcite</span>gu-etal-2016-incorporating). Notice that our goal here is not to build the best model for this task, but to develop reasonable models which can serve as baselines for future work in this area.<span id="footnote7" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">7</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">7</sup>
+            <span class="ltx_tag ltx_tag_note">7</span>
+            
+            
+          We also experimented with a transformer architecture, but encountered optimization problems. See details in Appendix <a href="#A1.SS5" title="A.5 Transformer experiments ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">A.5</span></a>.</span></span></span></p>
+</div>
+<section id="S6.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">6.1 </span>Architectures</h3>
+
+<section id="S6.SS1.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">LSTM baseline, <span class="ltx_text ltx_font_typewriter">base</span>
+</h4>
+
+<div id="S6.SS1.SSS0.Px1.p1" class="ltx_para">
+<span class="ltx_ERROR undefined">\newcite</span>
+<p class="ltx_p">kang2019pomo introduced an LSTM-based encoder-decoder architecture with an auxiliary objective used to guide the attention of the decoder towards the WikiData facts that were matched during the data collection process. Input sentences and facts are represented with the same word embeddings and encoded by separate biLSTMs. The decoder is initialized with the encoding of the input and attends over the encodings of the facts. Our only modification here is to add a “None of the above” item to the list of facts about an entity and point the attention to that when no other fact was matched or the appositive was empty (i.e. for negative data instances).</p>
+</div>
+</section>
+<section id="S6.SS1.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">LSTM with external knowledge, <span class="ltx_text ltx_font_typewriter">KB</span>
+</h4>
+
+<div id="S6.SS1.SSS0.Px2.p1" class="ltx_para">
+<p class="ltx_p">External knowledge can be beneficial to a better understanding of the context and how it relates to the different facts known about an entity. Here, we use the same architecture as above, but initialize the embedding matrix of the model with the NTEE (Neural Text-Entity Encoder) word embeddings,
+trained on Wikipedia with WikiData grounding <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib21" title="Learning distributed representations of texts and entities from knowledge base" class="ltx_ref">19</a>]</cite>. They aim to represent a text and its relevant entities close to each other. We deem these embeddings suitable for our modeling setup, where input text and facts are represented in a shared space. Unfortunately, the NTEE embeddings are available only for English. So we used word-level translation to “project” them to Spanish, German and Polish. See more details in Appendix <a href="#A1.SS4" title="A.4 Projection of NTEE embeddings ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">A.4</span></a>. This approach is likely to introduce some noise, but we only use the projection to initialize the embedding matrix which is then further trained. So any signal coming from the embeddings can be used by the model and any noise can be filtered out during training.</p>
+</div>
+</section>
+<section id="S6.SS1.SSS0.Px3" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">LSTM with a copy mechanism, <span class="ltx_text ltx_font_typewriter">copynet</span>
+</h4>
+
+<div id="S6.SS1.SSS0.Px3.p1" class="ltx_para">
+<p class="ltx_p">Motivated by the observation that there is an overlap of at least one token between WikiData facts and appositives for about 25% of the datapoints in our dataset, we experiment with a method that allows the decoder to copy tokens directly from the input: Copynet <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib18" title="Incorporating copying mechanism in sequence-to-sequence learning" class="ltx_ref">6</a>]</cite>. <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo correctly point out that in their constrained data setting, where data points were selected based on word overlap with WikiData facts, using a copy mechanism would result in double-counting, i.e. artificially boosted results. In our data setting, however, this is not the case.
+
+<br class="ltx_break"></p>
+</div>
+<div id="S6.SS1.SSS0.Px3.p2" class="ltx_para">
+<p class="ltx_p">All three approaches are end-to-end in the sense that we do not split up the classification task of whether or not to predict an appositive from the task of generating an appositive where it is due. As negative samples in the dataset have the special <span class="ltx_text ltx_font_typewriter">&lt;EMPTY&gt;</span> token as target, the models are performing the classification task <span class="ltx_text ltx_font_italic">implicitly</span> by choosing whether to predict the <span class="ltx_text ltx_font_typewriter">&lt;EMPTY&gt;</span> token or not.</p>
+</div>
+<div id="S6.SS1.SSS0.Px3.p3" class="ltx_para">
+<p class="ltx_p">Preliminary experiments with the <span class="ltx_text ltx_font_typewriter">base</span> architecture showed that the choice between providing the model with three sentences of preceding context, one or zero had little impact on its performance, so all results reported below use one sentence of preceding context, following <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo. Further details on the implementations and the hyperparameters we used can be found in Appendix <a href="#A1.SS3" title="A.3 Implementations and hyperparameters ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">A.3</span></a>.</p>
+</div>
+</section>
+</section>
+<section id="S6.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">6.2 </span>Evaluation</h3>
+
+<div id="S6.SS2.p1" class="ltx_para">
+<p class="ltx_p">We follow <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo in the choice of performance metrics for predictions over the positive instances in the data: we measure F1 score of the predicted bag-of-words excluding stopwords; BLEU <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib7" title="BLEU: a method for automatic evaluation of machine translation" class="ltx_ref">13</a>]</cite> over n-grams, where <math id="S6.SS2.p1.m1" class="ltx_Math" alttext="n=1,2,3" display="inline"><mrow><mi>n</mi><mo>=</mo><mrow><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>3</mn></mrow></mrow></math>;<span id="footnote8" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">8</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">8</sup>
+              <span class="ltx_tag ltx_tag_note">8</span>
+              
+              
+            <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo also included four-grams, but seeing that the average length of an appositive across the different subsets of the data is 3.08 tokens, we exclude four-grams from consideration.</span></span></span> and METEOR <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib8" title="Meteor universal: language specific translation evaluation for any target language" class="ltx_ref">4</a>]</cite>, which supports stemming and synonymy only in English, Spanish and German, so these features are not used for Polish. We use accuracy to measure the models’ ability to determine when an appositive is due.</p>
+</div>
+</section>
+</section>
+<section id="S7" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">7 </span>Results</h2>
+
+<figure id="S7.T3" class="ltx_table">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_th_row"><span class="ltx_text" style="font-size:90%;">Train setting</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Test setting</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Dataset</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Acc(%)</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">F1</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">BLEU</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">MET.</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="2"><span class="ltx_text" style="font-size:90%;">constrained</span></th>
+<td class="ltx_td ltx_align_left ltx_border_t" rowspan="2"><span class="ltx_text" style="font-size:90%;">constrained</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">ApposCorpus (News)</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">-</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">19.61</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">7.93</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">9.12</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">PoMo</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">-</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">11.21</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.44</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.03</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row" rowspan="4"><span class="ltx_text" style="font-size:90%;">end-to-end</span></th>
+<td class="ltx_td ltx_align_left" rowspan="2"><span class="ltx_text" style="font-size:90%;">constrained</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">ApposCorpus (News)</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">95.0</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">10.76</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.39</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.41</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">PoMo</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">91.7</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.52</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.57</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.03</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">end-to-end</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">ApposCorpus (News)</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">72.33</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.97</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">1.03</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.96</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">Table 3: </span>Generation of English <span class="ltx_text ltx_font_smallcaps">person</span> appositives in a constrained v. end-to-end train and test setting.</figcaption>
+</figure>
+<div id="S7.p1" class="ltx_para">
+<p class="ltx_p">We view the results of our experiments from two angles: one concerns the expansion of the task definition we achieve with <span class="ltx_text ltx_font_typewriter">ApposCorpus</span>, from a constrained scenario to an end-to-end one; the other concerns the increased coverage of the dataset, which allows us to compare and contrast appositive generation across different languages and named entity types.</p>
+</div>
+<section id="S7.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">7.1 </span>Constrained v. end-to-end scenario</h3>
+
+<div id="S7.SS1.p1" class="ltx_para">
+<p class="ltx_p">To draw a direct comparison to the work of <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo, in this subsection we focus on English <span class="ltx_text ltx_font_smallcaps">person</span> appositives, as this is the subset that was covered by their dataset, dubbed <span class="ltx_text ltx_font_typewriter">PoMo</span>. We begin by replicating exactly their train and test settings, both constrained, using the model architecture they proposed, <span class="ltx_text ltx_font_typewriter">base</span>. In the first two rows of Table <a href="#S7.T3" title="Table 3 ‣ 7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>, the performance of the model is reported on both the constrained subset of our News test data and on the <span class="ltx_text ltx_font_typewriter">PoMo</span> test set, constrained by design. There is a considerable difference in performance as measured on the two test sets. Since they were both drawn from the same domain, this difference may largely be due to one test set being gold standard and the other silver standard, which highlights the importance of having gold standard evaluation data.</p>
+</div>
+<div id="S7.SS1.p2" class="ltx_para">
+<p class="ltx_p">Using these results as a starting point, we consider two important factors in the shift from a constrained to an end-to-end setting: one concerns learning and the other, evaluation.</p>
+</div>
+<section id="S7.SS1.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Learning complexity</h4>
+
+<div id="S7.SS1.SSS0.Px1.p1" class="ltx_para">
+<p class="ltx_p">can be expected to increase in the end-to-end training setting, since the model has to learn not just what appositive to predict, but also whether or not to predict an appositive. Due to gaps in WikiData, the model also has to learn how to best handle instances of appositives based on unobserved facts. We demonstrate how these factors affect performance by comparing the <span class="ltx_text ltx_font_typewriter">base</span> model trained in a constrained setting to one trained in an end-to-end setting. We measure the models’ performance in a constrained test setting, to make the comparison fair to the former. Shifting from a constrained train setting (rows 1 and 2 of Table <a href="#S7.T3" title="Table 3 ‣ 7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>) to an end-to-end setting (rows 3 and 4), we observe a drop in performance of around 50% on all generation metrics. The model trained end-to-end does very well on choosing whether or not to predict an appositive (accuracy is 95% for <span class="ltx_text ltx_font_typewriter">ApposCorpus</span>  and 91.7% for <span class="ltx_text ltx_font_typewriter">PoMo</span>) , so we have to conclude that the lower generation scores are not a matter of predicting empty appositives, but rather of predicting worse appositives due to the increased learning complexity.</p>
+</div>
+</section>
+<section id="S7.SS1.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Evaluation</h4>
+
+<div id="S7.SS1.SSS0.Px2.p1" class="ltx_para">
+<p class="ltx_p">is another aspect to consider when comparing the constrained and full data settings. The quality of evaluation is key to understanding how well a model would perform if deployed in the real world. Constrained evaluation, however, only tells us how a model would do in an idealistic scenario, where all the facts about all the entities were indeed covered by a knowledge base. As this is not the case with WikiData <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib16" title="Recoin: relative completeness in wikidata" class="ltx_ref">2</a>]</cite>, and with any existing knowledge base for that matter, it is important to evaluate models in a manner that reflect gaps in external knowledge sources. We report the performance of a model trained and tested in an end-to-end setting in the last row of Table <a href="#S7.T3" title="Table 3 ‣ 7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>. Compared to the model’s performance as measured on the constrained test set (row 3), these numbers are substantially lower. Yet, they are the numbers that most truly represent the performance of the base model, at least in terms of automatic evaluation. We return to this matter when analysing the model’s performance in Section <a href="#S8" title="8 Analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">8</span></a>.</p>
+</div>
+</section>
+</section>
+<section id="S7.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">7.2 </span>Languages and entity types</h3>
+
+<figure id="S7.F2" class="ltx_figure">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure id="S7.F2.sf1" class="ltx_figure ltx_figure_panel ltx_align_center">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1"><span class="ltx_ERROR ltx_figure_panel undefined">\resizebox</span></div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1">
+<p class="ltx_p ltx_figure_panel">!
+<span class="ltx_ERROR undefined">\includegraphics</span>yes-no_gold_results.pdf</p>
+</div>
+</div>
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:90%;">(a)</span> </span></figcaption>
+</figure>
+</div>
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure id="S7.F2.sf2" class="ltx_figure ltx_figure_panel ltx_align_center">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1"><span class="ltx_ERROR ltx_figure_panel undefined">\resizebox</span></div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1">
+<p class="ltx_p ltx_figure_panel">!
+<span class="ltx_ERROR undefined">\includegraphics</span>generation_gold_results.pdf</p>
+</div>
+</div>
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:90%;">(b)</span> </span></figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:90%;">Figure 2</span>: </span><span class="ltx_text" style="font-size:90%;">(a) Evaluation of (a) the models’ ability to correctly decide when an appositive is due, (b) generated predictions for positive test instances. Measured on the News test set. </span></figcaption>
+</figure>
+<div id="S7.SS2.p1" class="ltx_para">
+<p class="ltx_p">The full range of results on the News test set are shown in Figure <a href="#S7.F2" title="Figure 2 ‣ 7.2 Languages and entity types ‣ 7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>. Results are averaged over three models trained from different random initializations. We evaluate how well the models can detect when an appositive is needed (implicit classification) and how well it can perform the end-to-end task of classifying and generating a good appositive.</p>
+</div>
+<section id="S7.SS2.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Implicit classification</h4>
+
+<div id="S7.SS2.SSS0.Px1.p1" class="ltx_para">
+<p class="ltx_p">of the positive and negative samples in the data appears to be roughly equally challenging across the two entity types and the four languages, as viewed across all three models (see Figure <a href="#S7.F2" title="Figure 2 ‣ 7.2 Languages and entity types ‣ 7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>a. One exception is Polish <span class="ltx_text ltx_font_smallcaps">person</span> appositives, where <span class="ltx_text ltx_font_typewriter">base</span> and <span class="ltx_text ltx_font_typewriter">kb</span> score higher than they do on the other subsets, while <span class="ltx_text ltx_font_typewriter">copynet</span> barely beats the baseline. Since the models are not explicitly trained to perform this type of classification, it is encouraging to see that even in this setting, they can outperform the baseline (always predicting the positive class) by as much as 20% in several cases.</p>
+</div>
+</section>
+<section id="S7.SS2.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Generation</h4>
+
+<div id="S7.SS2.SSS0.Px2.p1" class="ltx_para">
+<p class="ltx_p">is the more difficult aspect of the task, as shown in Figure <a href="#S7.F2" title="Figure 2 ‣ 7.2 Languages and entity types ‣ 7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>b. We see that, somewhat surprisingly considering the amounts of training data (see Table <a href="#S5.T1.st1" title="In Table 1 ‣ 5 Data analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1(a)</span></a>), performance is not highest on English, but rather on Spanish. In line with the small amount of training data, on the other hand, performance on Polish is virtually non-existent. There are no clear differences between overall performance on <span class="ltx_text ltx_font_smallcaps">person</span> and <span class="ltx_text ltx_font_smallcaps">organization</span> appositives. Only in English, the latter seem to pose a greater challenge to all three models and according to all three metrics. Model comparison is not straightforward since the different metrics reveal different strengths and weaknesses in each approach. It does appear to be the case that injecting external knowledge through pretrained knowledge-base embeddings (<span class="ltx_text ltx_font_typewriter">kb</span>) is beneficial to the prediction of <span class="ltx_text ltx_font_smallcaps">organization</span> appositives and somewhat harmful to the prediction of <span class="ltx_text ltx_font_smallcaps">person</span> appositives. Since the differences between the three methods are not consistent across all languages, named entity types and metrics, we cannot conclusively say which method is best, but we do note that <span class="ltx_text ltx_font_typewriter">copynet</span> scores high on the most metrics, languages and entity types. To better understand the performance of this model, we stepped away from automatic generation metrics, which are known to suffer from certain biases and can be difficult to interpret, and we carried out an additional manual evaluation.</p>
+</div>
+</section>
+</section>
+</section>
+<section id="S8" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">8 </span>Analysis</h2>
+
+<section id="S8.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">8.1 </span>Manual evaluation</h3>
+
+<div id="S8.SS1.p1" class="ltx_para">
+<p class="ltx_p">We used Amazon Mechanical Turk to carry out a ranking paradigm study on the predictions of <span class="ltx_text ltx_font_typewriter">copynet</span> for English <span class="ltx_text ltx_font_smallcaps">person</span> and <span class="ltx_text ltx_font_smallcaps">organization</span> appositives. The annotators were shown a true appositive and a predicted appositive side-by-side (in the context of the input sentence) and were asked to express their preference towards either of these two, or their lack of preference as a third option. One example prompt is shown in Appendix <a href="#A1.SS7" title="A.7 Ranking paradigm study ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">A.7</span></a>. Five annotations were obtained per data instance, and we then took the majority vote as an indication of the overall preference. The results are shown in Table <a href="#S8.T4" title="Table 4 ‣ 8.1 Manual evaluation ‣ 8 Analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4</span></a>.
+For <span class="ltx_text ltx_font_smallcaps">person</span> appositives, the writer’s choice (true) and the system’s prediction
+were preferred at almost equal rates—this observation challenges the numbers obtained with the automatic evaluation metrics, as it suggests that the predicted appositives were not necessarily of poor quality. A bigger gap was observed between true and system-generated <span class="ltx_text ltx_font_smallcaps">organization</span> appositives, where the crowdworkers preferred the original appositive 66.0% of the time. The lower preference for <span class="ltx_text ltx_font_smallcaps">organization</span> predictions is in line with the trend in the automatic results, where performance on English <span class="ltx_text ltx_font_smallcaps">organization</span> appositives was shown to be lower than that on English <span class="ltx_text ltx_font_smallcaps">person</span> appositives. Notice, however, that even for <span class="ltx_text ltx_font_typewriter">organization</span> appositives, annotators still showed preference for the predicted ones at a considerable rate. This suggests that the automatic metrics may have severely under-represented the abilities of the models.</p>
+</div>
+<figure id="S8.T4" class="ltx_table">
+<table class="ltx_tabular ltx_centering ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td"></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">true</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">system</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">neutral</span></td>
+<td class="ltx_td"></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">true</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">system</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">neutral</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_smallcaps" style="font-size:90%;">per</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">46.3%</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">47.3%</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">6.1%</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text ltx_font_smallcaps" style="font-size:90%;">org</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">66.0%</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">26.5%</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">7.4%</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">Table 4: </span>Results from the ranking paradigm study comparing true appositives to system-generated ones.</figcaption>
+</figure>
+</section>
+<section id="S8.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">8.2 </span>Qualitative analysis</h3>
+
+<div id="S8.SS2.p1" class="ltx_para">
+<p class="ltx_p">To better understand the source of error in the models’ predictions, we manually inspected 50 data points from the <span class="ltx_text ltx_font_smallcaps">person</span> subset and 50 data points from the <span class="ltx_text ltx_font_smallcaps">organization</span> subset, where a choice was made in favour of the true appositive over the predicted one. Half of the data points were instances where the true appositive was not empty, but the models predicted an empty appositive. The annotators seemed to strongly prefer non-empty appositives, possibly due to the fact that they where shown sentences without their original context, where the role of an entity might have been clarified at an earlier mention. Yet, that is not categorically so as seen in example 1 in Table <a href="#S8.T5" title="Table 5 ‣ 8.2 Qualitative analysis ‣ 8 Analysis ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a>, where the predicted appositive is redundant in the given context, so the annotators preferred the true empty appositive. Other types of errors the models made were to predict appositives that concern the right piece of information but are too general (examples 2 and 3), to predict appositives based on the wrong piece of information (examples 4 and 5), and, specifically for <span class="ltx_text ltx_font_smallcaps">organization</span> appositives, to just repeat the named entity (example 6). While the latter is the result of either suboptimal learning or noise in the data, the rest of the errors we saw point to the need for an approach with deeper understanding of the facts and their relevance to the context.</p>
+</div>
+<figure id="S8.T5" class="ltx_table">
+<div class="ltx_flex_figure ltx_flex_table">
+<div class="ltx_flex_cell ltx_flex_size_1"><span class="ltx_ERROR ltx_figure_panel undefined">\resizebox</span></div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1">
+<p class="ltx_p ltx_figure_panel"><span class="ltx_text" style="font-size:90%;">!
+
+<span class="ltx_tabular ltx_guessed_headers ltx_align_middle">
+<span class="ltx_thead">
+<span class="ltx_tr">
+<span class="ltx_td ltx_align_justify ltx_align_top ltx_th ltx_th_column">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:0.1pt;"></span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top ltx_th ltx_th_column">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:332.9pt;">Gold sentence</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top ltx_th ltx_th_column">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:82.5pt;">Prediction</span>
+</span></span></span>
+</span>
+<span class="ltx_tbody">
+<span class="ltx_tr">
+<span class="ltx_td ltx_align_justify ltx_align_top ltx_border_t">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:0.1pt;">1</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top ltx_border_t">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:332.9pt;">In response to an April 9 court ruling declaring the military backed government of Frank Bainimarama <span class="ltx_text ltx_align_left ltx_font_typewriter" style="color:#0000FF;">&lt;EMPTY&gt;</span> to power illegally when he dissolved Parliament and deposed the government of Laisenia Qarase , the country ’s President nullified the Fiji ’s constitution , fired the entire judiciary and appointment himself head of state and the armed forces.</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top ltx_border_t">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:82.5pt;">the President of Fiji</span>
+</span></span></span>
+<span class="ltx_tr">
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:0.1pt;">2</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:332.9pt;">Artyom Loskutov, <span class="ltx_text ltx_align_left" style="color:#0000FF;">creator of the popular counter - culture art movement " Monstration "</span>, made waves on RuNet by signing a letter in support of Dmitry Kiselyov , a journalist who many consider to be Putin ’s chief propagandist.</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:82.5pt;">a Russian painter</span>
+</span></span></span>
+<span class="ltx_tr">
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:0.1pt;">3</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:332.9pt;">In a fatal blow to our already lackluster sources of entertainment , the Sudanese government has blocked access to YouTube, <span class="ltx_text ltx_align_left" style="color:#0000FF;">the online video sharing Web site</span>.</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:82.5pt;">platform</span>
+</span></span></span>
+<span class="ltx_tr">
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:0.1pt;">3</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:332.9pt;">Modi, <span class="ltx_text ltx_align_left" style="color:#0000FF;">a tech-savvy nationalist from the right-wing Bharata Janatiya Party</span>, has traveled the world to sell the idea of India as an emerging digital economy, making deals with the likes of Google and ( less successfully ) Facebook.</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:82.5pt;">the Prime minister of India</span>
+</span></span></span>
+<span class="ltx_tr">
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:0.1pt;">4</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:332.9pt;">Some critics also highlighted the fact that Jabrailov is from Chechnya, <span class="ltx_text ltx_align_left" style="color:#0000FF;">a republic in the Northern Caucasus region of Russia where Muslim separatists fought two bloody wars against the Russian army</span>.</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:82.5pt;">Chechnya</span>
+</span></span></span>
+<span class="ltx_tr">
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:0.1pt;">5</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:332.9pt;">He steers between Soukous , rhumba and RnB ” , and links to an interview with the singer on Radio Okapi, <span class="ltx_text ltx_align_left" style="color:#0000FF;">the nationwide radio station sponsored by the UN and Fondation Hirondelle</span>.</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:82.5pt;">the Democratic Republic of the Congo</span>
+</span></span></span>
+<span class="ltx_tr">
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:0.1pt;">6</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:332.9pt;">In particular , tweeps took note of Abed Rabbo ’s attacks on Qatar, <span class="ltx_text ltx_align_left" style="color:#0000FF;">the home of Al Jazeera</span>.</span>
+</span></span>
+<span class="ltx_td ltx_align_justify ltx_align_top">
+<span class="ltx_inline-block ltx_align_top">
+<span class="ltx_p" style="width:82.5pt;">Qatar</span>
+</span></span></span>
+</span>
+</span></span></p>
+</div>
+</div>
+<figcaption class="ltx_caption" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">Table 5: </span>Examples where true appositives were preferred over predicted ones by human annotators.</figcaption>
+</figure>
+</section>
+</section>
+<section id="S9" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">9 </span>Conclusion</h2>
+
+<div id="S9.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_typewriter">ApposCorpus</span>  targets factual appositive generation, a phenomenon frequently occurring in a range of textual domains. It substantially extends the prior resources in the area by spanning four languages, two named entity types
+, and two domains. This resource also allows the burgeoning field to investigate end-to-end appositive generation.
+Our manual and automatic evaluations with <span class="ltx_text ltx_font_typewriter">ApposCorpus</span>  show that standard model architectures can approach the quality of human targets in specific cases but there is still room for improvement.
+With this dataset, appositive generation can be studied in much more depth than previously possible, ultimately paving the way for novel NLP applications in the generation and writing space. The focus in future research, we believe, should fall on explicit methods for cross-domain learning, on richer knowledge sources, and on the development of test sets for new domains.
+</p>
+</div>
+</section>
+<section id="S10" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">10 </span>Acknowledgements</h2>
+
+<div id="S10.p1" class="ltx_para">
+<p class="ltx_p">We acknowledge the responsiveness and help of Jun Seok Kang and Robert L. Logan IV in discussions on the design choices and goals of their work on post-modifier generation and on how to accurately reproduce their experiments. We also thank researchers from Dataminr: Saran Krishnasamy, Lin Nie, and Isabel Zhang for their help in setting up experiments and annotation. Finally, we thank the three anonymous reviewers for their feedback and comments.</p>
+</div>
+</section>
+<section id="bib" class="ltx_bibliography">
+<h2 class="ltx_title ltx_title_bibliography">References</h2>
+
+<ul id="bib.L1" class="ltx_biblist">
+<li id="bib.bib11" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[1]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">G. Angeli, P. Liang, and D. Klein</span><span class="ltx_text ltx_bib_year"> (2010-10)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">A simple domain-independent probabilistic approach to generation</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of the 2010 Conference on Empirical Methods in Natural Language Processing</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_place">Cambridge, MA</span>, <span class="ltx_text ltx_bib_pages"> pp. 502–512</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.aclweb.org/anthology/D10-1049" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S2.SS1.p2" title="2.1 Prior work ‣ 2 The task: Appositive generation ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§2.1</span></a>.
+</span>
+</li>
+<li id="bib.bib16" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[2]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">V. Balaraman, S. Razniewski, and W. Nutt</span><span class="ltx_text ltx_bib_year"> (2018)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Recoin: relative completeness in wikidata</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Companion Proceedings of the The Web Conference 2018</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_pages"> pp. 1787–1792</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S7.SS1.SSS0.Px2.p1" title="Evaluation ‣ 7.1 Constrained v. end-to-end scenario ‣ 7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§7.1</span></a>.
+</span>
+</li>
+<li id="bib.bib15" class="ltx_bibitem ltx_bib_book">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[3]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">B.L.M. Bauer</span><span class="ltx_text ltx_bib_year"> (2017)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Nominal apposition in indo-european: its forms and functions, and its evolution in latin-romance</span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_series">Trends in Linguistics. Studies and Monographs [TiLSM]</span>,  <span class="ltx_text ltx_bib_publisher">De Gruyter</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><span class="ltx_text isbn ltx_bib_external">ISBN 9783110461756</span>,
+<a href="https://books.google.com/books?id=BWzNDgAAQBAJ" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p5" title="1 Introduction ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>,
+<a href="#S2.SS2.p1" title="2.2 A shift in terminology ‣ 2 The task: Appositive generation ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§2.2</span></a>.
+</span>
+</li>
+<li id="bib.bib8" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[4]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">M. Denkowski and A. Lavie</span><span class="ltx_text ltx_bib_year"> (2014-06)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Meteor universal: language specific translation evaluation for any target language</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of the Ninth Workshop on Statistical Machine Translation</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_place">Baltimore, Maryland, USA</span>, <span class="ltx_text ltx_bib_pages"> pp. 376–380</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.aclweb.org/anthology/W14-3348" title="" class="ltx_ref ltx_bib_external">Link</a>,
+<a href="https://dx.doi.org/10.3115/v1/W14-3348" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S6.SS2.p1" title="6.2 Evaluation ‣ 6 Experiments ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§6.2</span></a>.
+</span>
+</li>
+<li id="bib.bib5" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[5]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Devlin, M. Chang, K. Lee, and K. Toutanova</span><span class="ltx_text ltx_bib_year"> (2019)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">BERT: pre-training of deep bidirectional transformers for language understanding</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_pages"> pp. 4171–4186</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#A1.SS5.p1" title="A.5 Transformer experiments ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§A.5</span></a>.
+</span>
+</li>
+<li id="bib.bib18" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[6]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Gu, Z. Lu, H. Li, and V. O.K. Li</span><span class="ltx_text ltx_bib_year"> (2016-08)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Incorporating copying mechanism in sequence-to-sequence learning</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_place">Berlin, Germany</span>, <span class="ltx_text ltx_bib_pages"> pp. 1631–1640</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.aclweb.org/anthology/P16-1154" title="" class="ltx_ref ltx_bib_external">Link</a>,
+<a href="https://dx.doi.org/10.18653/v1/P16-1154" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S6.SS1.SSS0.Px3.p1" title="LSTM with a copy mechanism, copynet ‣ 6.1 Architectures ‣ 6 Experiments ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§6.1</span></a>.
+</span>
+</li>
+<li id="bib.bib20" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[7]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">A. Joulin, P. Bojanowski, T. Mikolov, H. Jégou, and E. Grave</span><span class="ltx_text ltx_bib_year"> (2018-October-November)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Loss in translation: learning bilingual word mapping with a retrieval criterion</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_place">Brussels, Belgium</span>, <span class="ltx_text ltx_bib_pages"> pp. 2979–2984</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.aclweb.org/anthology/D18-1330" title="" class="ltx_ref ltx_bib_external">Link</a>,
+<a href="https://dx.doi.org/10.18653/v1/D18-1330" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#A1.SS4.p1" title="A.4 Projection of NTEE embeddings ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§A.4</span></a>.
+</span>
+</li>
+<li id="bib.bib3" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[8]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. S. Kang, R. L. L. IV, Z. Chu, Y. Chen, D. Dua, K. Gimpel, S. Singh, and N. Balasubramanian</span><span class="ltx_text ltx_bib_year"> (2019)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">PoMo: generating entity-specific post-modifiers in context</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of NAACL-HLT</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_pages"> pp. 826–838</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S1.p6" title="1 Introduction ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§1</span></a>,
+<a href="#S3.p1" title="3 Dataset collection: Wikipedia ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§3</span></a>,
+<a href="#S4.p1" title="4 Dataset collection: News ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§4</span></a>.
+</span>
+</li>
+<li id="bib.bib10" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[9]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Kim and R. Mooney</span><span class="ltx_text ltx_bib_year"> (2010-08)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Generative alignment and semantic parsing for learning from ambiguous supervision</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Coling 2010: Posters</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_place">Beijing, China</span>, <span class="ltx_text ltx_bib_pages"> pp. 543–551</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.aclweb.org/anthology/C10-2062" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S2.SS1.p2" title="2.1 Prior work ‣ 2 The task: Appositive generation ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§2.1</span></a>.
+</span>
+</li>
+<li id="bib.bib6" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[10]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">I. Konstas and M. Lapata</span><span class="ltx_text ltx_bib_year"> (2013)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">A global model for concept-to-text generation</span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">J. Artif. Intell. Res.</span> <span class="ltx_text ltx_bib_volume">48</span>, <span class="ltx_text ltx_bib_pages"> pp. 305–346</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S2.SS1.p2" title="2.1 Prior work ‣ 2 The task: Appositive generation ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§2.1</span></a>.
+</span>
+</li>
+<li id="bib.bib12" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[11]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. Liang, M. Jordan, and D. Klein</span><span class="ltx_text ltx_bib_year"> (2009-08)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Learning semantic correspondences with less supervision</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of the Joint Conference of the 47th Annual Meeting of the ACL and the 4th International Joint Conference on Natural Language Processing of the AFNLP</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_place">Suntec, Singapore</span>, <span class="ltx_text ltx_bib_pages"> pp. 91–99</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.aclweb.org/anthology/P09-1011" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S2.SS1.p2" title="2.1 Prior work ‣ 2 The task: Appositive generation ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§2.1</span></a>.
+</span>
+</li>
+<li id="bib.bib2" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[12]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Nivre, M. de Marneffe, F. Ginter, J. Hajič, C. D. Manning, S. Pyysalo, S. Schuster, F. Tyers, and D. Zeman</span><span class="ltx_text ltx_bib_year"> (2020-05)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Universal Dependencies v2: an evergrowing multilingual treebank collection</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of the 12th Language Resources and Evaluation Conference</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_place">Marseille, France</span>, <span class="ltx_text ltx_bib_pages"> pp. 4034–4043</span> (<span class="ltx_text ltx_bib_language">English</span>).
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.aclweb.org/anthology/2020.lrec-1.497" title="" class="ltx_ref ltx_bib_external">Link</a>,
+<span class="ltx_text isbn ltx_bib_external">ISBN 979-10-95546-34-4</span></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S2.SS1.p1" title="2.1 Prior work ‣ 2 The task: Appositive generation ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§2.1</span></a>.
+</span>
+</li>
+<li id="bib.bib7" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[13]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">K. Papineni, S. Roukos, T. Ward, and W. Zhu</span><span class="ltx_text ltx_bib_year"> (2002)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">BLEU: a method for automatic evaluation of machine translation</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of the 40th Annual Meeting on Association for Computational Linguistics</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_series">ACL ’02</span>, <span class="ltx_text ltx_bib_place">USA</span>, <span class="ltx_text ltx_bib_pages"> pp. 311–318</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://doi.org/10.3115/1073083.1073135" title="" class="ltx_ref ltx_bib_external">Link</a>,
+<a href="https://dx.doi.org/10.3115/1073083.1073135" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S6.SS2.p1" title="6.2 Evaluation ‣ 6 Experiments ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§6.2</span></a>.
+</span>
+</li>
+<li id="bib.bib13" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[14]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. Pęzik</span><span class="ltx_text ltx_bib_year"> (2016)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Exploring phraseological equivalence with paralela</span>.
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S4.p1" title="4 Dataset collection: News ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§4</span></a>.
+</span>
+</li>
+<li id="bib.bib4" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[15]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">P. Qi, Y. Zhang, Y. Zhang, J. Bolton, and C. D. Manning</span><span class="ltx_text ltx_bib_year"> (2020)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Stanza: a Python natural language processing toolkit for many human languages</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics: System Demonstrations</span>,
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S3.SS1.p1" title="3.1 Preprocessing ‣ 3 Dataset collection: Wikipedia ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§3.1</span></a>.
+</span>
+</li>
+<li id="bib.bib14" class="ltx_bibitem ltx_bib_inproceedings">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[16]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">J. Tiedemann</span><span class="ltx_text ltx_bib_year"> (23-25)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Parallel data, tools and interfaces in opus</span>.
+</span>
+<span class="ltx_bibblock">In <span class="ltx_text ltx_bib_inbook">Proceedings of the Eight International Conference on Language Resources and Evaluation (LREC’12)</span>,  <span class="ltx_text ltx_bib_editor">N. C. (. Chair), K. Choukri, T. Declerck, M. U. Dogan, B. Maegaard, J. Mariani, J. Odijk, and S. Piperidis (Eds.)</span>,
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_place">Istanbul, Turkey</span> (<span class="ltx_text ltx_bib_language">english</span>).
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><span class="ltx_text isbn ltx_bib_external">ISBN 978-2-9517408-7-7</span></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S4.p1" title="4 Dataset collection: News ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§4</span></a>.
+</span>
+</li>
+<li id="bib.bib17" class="ltx_bibitem ltx_bib_misc">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[17]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">C. Traffis</span><span class="ltx_text ltx_bib_year"> (2019-05)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Appositives-what they are and how to use them</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.grammarly.com/blog/appositive/" title="" class="ltx_ref ltx_bib_external">Link</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S2.SS2.p1" title="2.2 A shift in terminology ‣ 2 The task: Appositive generation ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§2.2</span></a>.
+</span>
+</li>
+<li id="bib.bib1" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[18]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">D. Vrandečić and M. Krötzsch</span><span class="ltx_text ltx_bib_year"> (2014-09)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Wikidata: a free collaborative knowledgebase</span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Commun. ACM</span> <span class="ltx_text ltx_bib_volume">57</span> (<span class="ltx_text ltx_bib_number">10</span>), <span class="ltx_text ltx_bib_pages"> pp. 78–85</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><span class="ltx_text issn ltx_bib_external">ISSN 0001-0782</span>,
+<a href="https://doi.org/10.1145/2629489" title="" class="ltx_ref ltx_bib_external">Link</a>,
+<a href="https://dx.doi.org/10.1145/2629489" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S2.SS1.p1" title="2.1 Prior work ‣ 2 The task: Appositive generation ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§2.1</span></a>.
+</span>
+</li>
+<li id="bib.bib21" class="ltx_bibitem ltx_bib_article">
+<span class="ltx_tag ltx_bib_key ltx_role_refnum ltx_tag_bibitem">[19]</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_author">I. Yamada, H. Shindo, H. Takeda, and Y. Takefuji</span><span class="ltx_text ltx_bib_year"> (2017)</span>
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_title">Learning distributed representations of texts and entities from knowledge base</span>.
+</span>
+<span class="ltx_bibblock"><span class="ltx_text ltx_bib_journal">Transactions of the Association for Computational Linguistics</span> <span class="ltx_text ltx_bib_volume">5</span>, <span class="ltx_text ltx_bib_pages"> pp. 397–411</span>.
+</span>
+<span class="ltx_bibblock">External Links: <span class="ltx_text ltx_bib_links"><a href="https://www.aclweb.org/anthology/Q17-1028" title="" class="ltx_ref ltx_bib_external">Link</a>,
+<a href="https://dx.doi.org/10.1162/tacl%5Fa%5F00069" title="" class="ltx_ref doi ltx_bib_external">Document</a></span>
+</span>
+<span class="ltx_bibblock ltx_bib_cited">Cited by: <a href="#S6.SS1.SSS0.Px2.p1" title="LSTM with external knowledge, KB ‣ 6.1 Architectures ‣ 6 Experiments ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">§6.1</span></a>.
+</span>
+</li>
+</ul>
+</section>
+<div class="ltx_pagination ltx_role_newpage"></div>
+<section id="A1" class="ltx_appendix">
+<h2 class="ltx_title ltx_title_appendix">
+<span class="ltx_tag ltx_tag_appendix">Appendix A </span>Appendices</h2>
+
+<section id="A1.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">A.1 </span>Manual validation</h3>
+
+<div id="A1.SS1.p1" class="ltx_para">
+<p class="ltx_p">We hired annotators fluent in the languages of the data to manually validate it. They had to mark instances where an error had occurred in the appositive detection, the detected appositive was not factual, or the entity had been incorrectly linked to WikiData (all instances of <span class="ltx_text ltx_font_italic">noise</span> in the data, resulting from errors in appositive detection and entity linking). Our ultimate goal was to build test sets of 1,000 instances per language per entity type, equally balanced between positive and negative instances, i.e. we needed 500 valid data instances per language per entity type. Based on a pilot study, we determined that noise levels for candidate appositives for <span class="ltx_text ltx_font_smallcaps">person</span> entities were approximately 33% and for <span class="ltx_text ltx_font_smallcaps">organization</span> entities, 50% (averaged across languages). We therefore gave annotators 750 and 1,000 candidates to annotate for the <span class="ltx_text ltx_font_smallcaps">person</span> and <span class="ltx_text ltx_font_smallcaps">organization</span> types, respectively. For most language-entity type combinations, the manual annotation successfully yielded close to 500 valid instances. That was not the case for Polish <span class="ltx_text ltx_font_smallcaps">organization</span> appositives, where only 80 valid candidates were retrieved, so we excluded this language-entity type combination from our work. It remains an open question whether <span class="ltx_text ltx_font_smallcaps">organization</span> appositives in Polish are rare or our automatic detection method failed at catching them.</p>
+</div>
+</section>
+<section id="A1.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">A.2 </span>Composition of cross-lingual data</h3>
+
+<div id="A1.SS2.p1" class="ltx_para">
+<p class="ltx_p">Table <a href="#A1.T6" title="Table 6 ‣ A.2 Composition of cross-lingual data ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">6</span></a> present findings on the composition of the Spanish, German and Polish positions of the data, respectively, as observed through cross-referencing with WikiData. The low number of facts for Polish is the result of one fact type dominating a large amount of the data (<span class="ltx_text ltx_font_italic">position held</span>).</p>
+</div>
+<figure id="A1.T6" class="ltx_table">
+<div class="ltx_flex_figure ltx_flex_table">
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure id="A1.T6.st1" class="ltx_table ltx_figure_panel">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Fact type</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">News (%)</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Wiki(%)</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="7"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">per</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">position held</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">20.9</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">9.4</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">occupation</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">15.9</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">10.6</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">citizenship</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">10.1</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.3</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">member of party</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">7.6</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">1.9</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">award received</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.9</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">nominated for</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.6</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.4</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">educated at</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.1</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.1</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="7"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">org</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">instance of</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">23.1</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">10.9</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">official website</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">6.3</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">6.2</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">country</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.9</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.3</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">member of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.4</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">subsidiary</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.5</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.1</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">capital of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.1</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">has quality</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.0</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.0</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">(a) </span>English </figcaption>
+</figure>
+</div>
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure id="A1.T6.st2" class="ltx_table ltx_figure_panel">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Fact type</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">News (%)</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Wiki(%)</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="7"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">per</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">position held</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">27.1</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">4.9</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">occupation</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">11.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">10.3</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">citizenship</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">9.8</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.8</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">participant of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">8.7</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">1.1</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">member of party</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">7.3</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">1.3</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">award received</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.1</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.2</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">employer</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.5</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="6"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">org</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">instance of</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">28.9</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">10.5</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">country</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">7.8</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.5</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">has quality</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.1</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.1</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">capital of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.4</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.5</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">member of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.3</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.9</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">is located in</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.4</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.2</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">(b) </span>Spanish </figcaption>
+</figure>
+</div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure id="A1.T6.st3" class="ltx_table ltx_figure_panel">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Fact type</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">News (%)</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Wiki(%)</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="8"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">per</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">position held</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">35.2</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">6.7</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">employer</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.9</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.9</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">citizenship</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.9</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">1.3</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">member of party</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.3</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.4</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">award received</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.9</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.1</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">occupation</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.8</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.6</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">participant of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.6</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">1.5</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">member of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.6</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">1.0</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="6"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">org</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">official website</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">15.6</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">12.4</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">instance of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">15.1</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.5</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">owner of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">7.5</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2.4</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">member of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5.8</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.9</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">has quality</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.6</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.0</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">Commons category</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">4.5</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">(c) </span>German </figcaption>
+</figure>
+</div>
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure id="A1.T6.st4" class="ltx_table ltx_figure_panel">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Fact type</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">News (%)</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">Wiki(%)</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="2"><span class="ltx_text" style="font-size:90%;"><span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">per</span></span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">position held</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">77.2</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">5.7</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">participant of</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3.2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.7</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">(d) </span>Polish </figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_table"><span class="ltx_text" style="font-size:90%;">Table 6</span>: </span><span class="ltx_text" style="font-size:90%;">Top fact types per language.</span></figcaption>
+</figure>
+</section>
+<section id="A1.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">A.3 </span>Implementations and hyperparameters</h3>
+
+<section id="A1.SS3.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">[Base] and [KB]</h4>
+
+<div id="A1.SS3.SSS0.Px1.p1" class="ltx_para">
+<p class="ltx_p">We use the implementation of <span class="ltx_ERROR undefined">\newcite</span>kang2019pomo from <span class="ltx_ref ltx_nolink ltx_url ltx_font_typewriter ltx_ref_self">https://github.com/rloganiv/claimrank-allennlp</span>. We set the model hyperparameters to the ones reported in their paper, changing only the dimension of the embeddings from 500 to 300, to make the comparison between [Base] and [KB] fair in terms of model parameterization. Training hyperparameters were tweaked to achieve stable training that fits on one 16 GB GPU. See the full list of hyperparameters in Table <a href="#A1.T7" title="Table 7 ‣ Copynet ‣ A.4 Projection of NTEE embeddings ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">7</span></a>.</p>
+</div>
+</section>
+</section>
+<section id="A1.SS4" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">A.4 </span>Projection of NTEE embeddings</h3>
+
+<div id="A1.SS4.p1" class="ltx_para">
+<p class="ltx_p">We obtained a bilingual dictionary with CSLS retrieval over the cross-lingual FastText embeddings. CSLS retrieval is similar to nearest neighbor retrieval, but has proven more accurate: <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib20" title="Loss in translation: learning bilingual word mapping with a retrieval criterion" class="ltx_ref">7</a>]</cite> report an accuracy of 83.7%, 77.6% and 73.5% for word translation, respectively, from Spanish, German and Polish to English, as measured on a sample of 1,500 medium frequency words. Any errors in the bilingual dictionaries would inevitably lead to noise in the NTEE embedding projection.</p>
+</div>
+<section id="A1.SS4.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Copynet</h4>
+
+<div id="A1.SS4.SSS0.Px1.p1" class="ltx_para">
+<p class="ltx_p">We use the AllenNLP <cite class="ltx_cite ltx_citemacro_cite">[<span class="ltx_ref ltx_missing_citation ltx_ref_self">Gardner2017AllenNLP</span>]</cite> implementation of Copynet with the hyperpameters shown in Table <a href="#A1.T7" title="Table 7 ‣ Copynet ‣ A.4 Projection of NTEE embeddings ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">7</span></a>.</p>
+</div>
+<figure id="A1.T7" class="ltx_table">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">Base/KB</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">Copynet</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_t"><span class="ltx_text" style="font-size:90%;">vocab size</span></th>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">50k</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">50k</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text" style="font-size:90%;">embedding dim</span></th>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">300</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">300</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text" style="font-size:90%;">hidden units</span></th>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">250</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">250</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text" style="font-size:90%;">num layers</span></th>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">2</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text" style="font-size:90%;">optimizer</span></th>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">Adam</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">Adam</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text" style="font-size:90%;">learning rate</span></th>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.001</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.0001</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text" style="font-size:90%;">batch size</span></th>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">16</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">6</span></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row"><span class="ltx_text" style="font-size:90%;">dropout</span></th>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.3</span></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">0.3</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">Table 7: </span>Hyperparameter configurations for Base/KB models and Copynet models.</figcaption>
+</figure>
+</section>
+</section>
+<section id="A1.SS5" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">A.5 </span>Transformer experiments</h3>
+
+<div id="A1.SS5.p1" class="ltx_para">
+<p class="ltx_p">Transformer-based architectures are state-of-the-art for many NLP tasks, so it is only fair that we experiment with such an architecture as well. As BERT models <cite class="ltx_cite ltx_citemacro_cite">[<a href="#bib.bib5" title="BERT: pre-training of deep bidirectional transformers for language understanding" class="ltx_ref">5</a>]</cite> have been made available for all four languages we work with, we chose to train BERT-to-BERT encoder-decoder models for appositive generation. <span class="ltx_ERROR undefined">\newcite</span>DBLP:journals/corr/abs-1907-12461 found that architecture to give strong performance on tasks like sentence fusion and rephrasing. We used their training schedule but unfortunately, found that all models learned to predict the <span class="ltx_text ltx_font_typewriter">&lt;empty&gt;</span> token exclusively. As it is not the goal of our work to explore the capabilities of the BERT-to-BERT architecture in particular, we did not use further resources to adjust the training schedule. Yet, we do believe this to be an optimization problem, and we would not discourage future research from attempting to solve the task of appositive generation with a transformer-based approach.</p>
+</div>
+</section>
+<section id="A1.SS6" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">A.6 </span>Results</h3>
+
+<div id="A1.SS6.p1" class="ltx_para">
+<p class="ltx_p">The results as measured on the Wikipedia test set are shown in Figure <a href="#A1.F3" title="Figure 3 ‣ A.6 Results ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>. Compared to results on the News test set (see Figure <a href="#S7.F2" title="Figure 2 ‣ 7.2 Languages and entity types ‣ 7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>, the numbers seen here are higher, which is to be expected considering that this test set is in-domain and any noise found in it (due to it being silver standard) likely resembles the noise found in the training data. It is worth noting though, that certain patterns repeat between the two test sets, as for example the fact that <span class="ltx_text ltx_font_typewriter">copynet</span>, as measured on F1 score and BLEU, outperforms the other models on the majority of language-named entity type combinations, but not on Polish <span class="ltx_text ltx_font_smallcaps">person</span> appositives and Spanish <span class="ltx_text ltx_font_smallcaps">organization</span> appositives. This suggests that, while evaluation on the silver-standard Wikipedia test set cannot be consider fully stable and representative, it can be taken as a proxy in model comparison for developmental purposes.</p>
+</div>
+<figure id="A1.F3" class="ltx_figure">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure id="A1.F3.sf1" class="ltx_figure ltx_figure_panel ltx_align_center">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1"><span class="ltx_ERROR ltx_figure_panel undefined">\resizebox</span></div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1">
+<p class="ltx_p ltx_figure_panel">!
+<span class="ltx_ERROR undefined">\includegraphics</span>yes-no_silver_results.pdf</p>
+</div>
+</div>
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:90%;">(a)</span> </span></figcaption>
+</figure>
+</div>
+<div class="ltx_flex_cell ltx_flex_size_2">
+<figure id="A1.F3.sf2" class="ltx_figure ltx_figure_panel ltx_align_center">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1"><span class="ltx_ERROR ltx_figure_panel undefined">\resizebox</span></div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1">
+<p class="ltx_p ltx_figure_panel">!
+<span class="ltx_ERROR undefined">\includegraphics</span>generation_silver_results.pdf</p>
+</div>
+</div>
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:90%;">(b)</span> </span></figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:90%;">Figure 3</span>: </span><span class="ltx_text" style="font-size:90%;">(a) Evaluation of (a) the models’ ability to correctly decide when an appositive is due, (b) generated predictions for positive test instances. Measured on the News test set. </span></figcaption>
+</figure>
+<div id="A1.SS6.p2" class="ltx_para">
+<p class="ltx_p">The numbers behind the results from Figures <a href="#S7.F2" title="Figure 2 ‣ 7.2 Languages and entity types ‣ 7 Results ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a> and <a href="#A1.F3" title="Figure 3 ‣ A.6 Results ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a> are shown in Tables <a href="#A1.T8" title="Table 8 ‣ A.6 Results ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">8</span></a> and  <a href="#A1.T9" title="Table 9 ‣ A.6 Results ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">9</span></a>, respectively.</p>
+</div>
+<figure id="A1.T8" class="ltx_table">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<th class="ltx_td ltx_th ltx_th_column"></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column">Acc</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column">F1</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column">BLEU</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column">METEOR</th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">en-per</span>
+</th>
+<td class="ltx_td ltx_align_left ltx_border_t">always yes</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.5</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">base</td>
+<td class="ltx_td ltx_align_left">71.91</td>
+<td class="ltx_td ltx_align_left">0.72</td>
+<td class="ltx_td ltx_align_left">1.03</td>
+<td class="ltx_td ltx_align_left">2.96</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">71.73</td>
+<td class="ltx_td ltx_align_left">0.73</td>
+<td class="ltx_td ltx_align_left">1.03</td>
+<td class="ltx_td ltx_align_left">2.9</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">70.19</td>
+<td class="ltx_td ltx_align_left">0.71</td>
+<td class="ltx_td ltx_align_left">2.45</td>
+<td class="ltx_td ltx_align_left">2.24</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">en-org</span>
+</th>
+<td class="ltx_td ltx_align_left ltx_border_t">always yes</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.5</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">base</td>
+<td class="ltx_td ltx_align_left">68.09</td>
+<td class="ltx_td ltx_align_left">0.74</td>
+<td class="ltx_td ltx_align_left">0.23</td>
+<td class="ltx_td ltx_align_left">1.61</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">66.58</td>
+<td class="ltx_td ltx_align_left">0.74</td>
+<td class="ltx_td ltx_align_left">0.21</td>
+<td class="ltx_td ltx_align_left">1.58</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">65.98</td>
+<td class="ltx_td ltx_align_left">0.73</td>
+<td class="ltx_td ltx_align_left">0.52</td>
+<td class="ltx_td ltx_align_left">1.37</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">es-per</span>
+</th>
+<td class="ltx_td ltx_align_left ltx_border_t">always yes</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.58</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">base</td>
+<td class="ltx_td ltx_align_left">62.84</td>
+<td class="ltx_td ltx_align_left">0.67</td>
+<td class="ltx_td ltx_align_left">1.24</td>
+<td class="ltx_td ltx_align_left">5.44</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">61.18</td>
+<td class="ltx_td ltx_align_left">0.68</td>
+<td class="ltx_td ltx_align_left">0.79</td>
+<td class="ltx_td ltx_align_left">4.79</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">64.08</td>
+<td class="ltx_td ltx_align_left">0.67</td>
+<td class="ltx_td ltx_align_left">2.2</td>
+<td class="ltx_td ltx_align_left">4.36</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">es-org</span>
+</th>
+<td class="ltx_td ltx_align_left ltx_border_t">always yes</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.4</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">base</td>
+<td class="ltx_td ltx_align_left">47.39</td>
+<td class="ltx_td ltx_align_left">0.68</td>
+<td class="ltx_td ltx_align_left">1.32</td>
+<td class="ltx_td ltx_align_left">5.64</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">60.91</td>
+<td class="ltx_td ltx_align_left">0.71</td>
+<td class="ltx_td ltx_align_left">2.02</td>
+<td class="ltx_td ltx_align_left">6.83</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">33.57</td>
+<td class="ltx_td ltx_align_left">0.62</td>
+<td class="ltx_td ltx_align_left">0.33</td>
+<td class="ltx_td ltx_align_left">2.77</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">de-per</span>
+</th>
+<td class="ltx_td ltx_align_left ltx_border_t">always yes</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.54</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">base</td>
+<td class="ltx_td ltx_align_left">62.94</td>
+<td class="ltx_td ltx_align_left">0.67</td>
+<td class="ltx_td ltx_align_left">0.8</td>
+<td class="ltx_td ltx_align_left">3.19</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">63.47</td>
+<td class="ltx_td ltx_align_left">0.68</td>
+<td class="ltx_td ltx_align_left">0.75</td>
+<td class="ltx_td ltx_align_left">2.84</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">67.63</td>
+<td class="ltx_td ltx_align_left">0.69</td>
+<td class="ltx_td ltx_align_left">1.75</td>
+<td class="ltx_td ltx_align_left">1.76</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">de-org</span>
+</th>
+<td class="ltx_td ltx_align_left ltx_border_t">always yes</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.46</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">base</td>
+<td class="ltx_td ltx_align_left">62.77</td>
+<td class="ltx_td ltx_align_left">0.72</td>
+<td class="ltx_td ltx_align_left">0.54</td>
+<td class="ltx_td ltx_align_left">3.21</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">65.13</td>
+<td class="ltx_td ltx_align_left">0.73</td>
+<td class="ltx_td ltx_align_left">0.19</td>
+<td class="ltx_td ltx_align_left">3.47</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">62.22</td>
+<td class="ltx_td ltx_align_left">0.72</td>
+<td class="ltx_td ltx_align_left">0.43</td>
+<td class="ltx_td ltx_align_left">1.08</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">pl-per</span>
+</th>
+<td class="ltx_td ltx_align_left ltx_border_t">always yes</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.54</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+<td class="ltx_td ltx_align_left ltx_border_t">0.0</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">base</td>
+<td class="ltx_td ltx_align_left">72.83</td>
+<td class="ltx_td ltx_align_left">0.78</td>
+<td class="ltx_td ltx_align_left">0.16</td>
+<td class="ltx_td ltx_align_left">0.09</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">73.8</td>
+<td class="ltx_td ltx_align_left">0.77</td>
+<td class="ltx_td ltx_align_left">0.06</td>
+<td class="ltx_td ltx_align_left">0.13</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_th ltx_th_row"></th>
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">2.75</td>
+<td class="ltx_td ltx_align_left">0.58</td>
+<td class="ltx_td ltx_align_left">0.0</td>
+<td class="ltx_td ltx_align_left">0.12</td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_table"><span class="ltx_text" style="font-size:90%;">Table 8</span>: </span><span class="ltx_text" style="font-size:90%;">Evaluation of the models’ ability to correctly decide when an appositive is due and of generated predictions for positive test instances. Measured on the News test set. </span></figcaption>
+</figure>
+<figure id="A1.T9" class="ltx_table">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">en-per</span>
+</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">base</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">85.42</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">0.87</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">3.59</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">4.7</th>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">85.32</td>
+<td class="ltx_td ltx_align_left">0.87</td>
+<td class="ltx_td ltx_align_left">3.94</td>
+<td class="ltx_td ltx_align_left">5.07</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">81.95</td>
+<td class="ltx_td ltx_align_left">0.84</td>
+<td class="ltx_td ltx_align_left">5.7</td>
+<td class="ltx_td ltx_align_left">3.57</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">en-org</span>
+</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">base</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">89.47</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">0.9</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">5.99</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">7.54</th>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">89.43</td>
+<td class="ltx_td ltx_align_left">0.9</td>
+<td class="ltx_td ltx_align_left">5.65</td>
+<td class="ltx_td ltx_align_left">7.49</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">89.17</td>
+<td class="ltx_td ltx_align_left">0.91</td>
+<td class="ltx_td ltx_align_left">6.17</td>
+<td class="ltx_td ltx_align_left">8.53</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">es-per</span>
+</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">base</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">78.49</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">0.8</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">4.57</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">11.17</th>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">78.73</td>
+<td class="ltx_td ltx_align_left">0.8</td>
+<td class="ltx_td ltx_align_left">4.71</td>
+<td class="ltx_td ltx_align_left">11.19</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">79.1</td>
+<td class="ltx_td ltx_align_left">0.8</td>
+<td class="ltx_td ltx_align_left">7.54</td>
+<td class="ltx_td ltx_align_left">11.04</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">es-org</span>
+</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">base</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">61.63</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">0.73</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">3.58</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">9.07</th>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">80.69</td>
+<td class="ltx_td ltx_align_left">0.82</td>
+<td class="ltx_td ltx_align_left">5.45</td>
+<td class="ltx_td ltx_align_left">11.92</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">46.91</td>
+<td class="ltx_td ltx_align_left">0.62</td>
+<td class="ltx_td ltx_align_left">1.14</td>
+<td class="ltx_td ltx_align_left">4.46</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">de-per</span>
+</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">base</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">79.28</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">0.81</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">6.19</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">10.35</th>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">80.09</td>
+<td class="ltx_td ltx_align_left">0.81</td>
+<td class="ltx_td ltx_align_left">5.24</td>
+<td class="ltx_td ltx_align_left">9.19</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">80.12</td>
+<td class="ltx_td ltx_align_left">0.81</td>
+<td class="ltx_td ltx_align_left">7.85</td>
+<td class="ltx_td ltx_align_left">6.11</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">de-org</span>
+</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">base</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">84.09</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">0.85</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">12.04</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">14.45</th>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">84.58</td>
+<td class="ltx_td ltx_align_left">0.85</td>
+<td class="ltx_td ltx_align_left">10.28</td>
+<td class="ltx_td ltx_align_left">13.31</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">82.07</td>
+<td class="ltx_td ltx_align_left">0.84</td>
+<td class="ltx_td ltx_align_left">11.57</td>
+<td class="ltx_td ltx_align_left">4.19</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_th_row ltx_border_t" rowspan="3">
+<span class="ltx_ERROR undefined">\rotatebox</span>90<span class="ltx_text ltx_font_smallcaps">pl-per</span>
+</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">base</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">82.67</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">0.83</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">4.23</th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t">4.61</th>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">kb</td>
+<td class="ltx_td ltx_align_left">84.46</td>
+<td class="ltx_td ltx_align_left">0.85</td>
+<td class="ltx_td ltx_align_left">3.67</td>
+<td class="ltx_td ltx_align_left">4.29</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left">copynet</td>
+<td class="ltx_td ltx_align_left">24.49</td>
+<td class="ltx_td ltx_align_left">0.55</td>
+<td class="ltx_td ltx_align_left">1.1</td>
+<td class="ltx_td ltx_align_left">1.71</td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_table"><span class="ltx_text" style="font-size:90%;">Table 9</span>: </span><span class="ltx_text" style="font-size:90%;">Evaluation of the models’ ability to correctly decide when an appositive is due and of generated predictions for positive test instances. Measured on the Wiki test set. </span></figcaption>
+</figure>
+</section>
+<section id="A1.SS7" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">A.7 </span>Ranking paradigm study</h3>
+
+<div id="A1.SS7.p1" class="ltx_para">
+<p class="ltx_p">Figure <a href="#A1.F4" title="Figure 4 ‣ A.7 Ranking paradigm study ‣ Appendix A Appendices ‣ The ApposCorpus: A new multilingual, multi-domain dataset for factual appositive generation" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4</span></a> shows an example prompt from the blind taste test. Instances where either the true appositive was empty or the predicted one was empty were included in the the study, but instances where both were empty were excluded, as the comparison would not have been meaningful in this case. The average time for completing a HIT was 53 seconds.</p>
+</div>
+<figure id="A1.F4" class="ltx_figure">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1"><span class="ltx_ERROR ltx_centering ltx_figure_panel undefined">\resizebox</span></div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1">
+<p class="ltx_p ltx_figure_panel ltx_align_center">0.55!
+<span class="ltx_ERROR undefined">\includegraphics</span>tastetest.png</p>
+</div>
+</div>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure"><span class="ltx_text" style="font-size:90%;">Figure 4</span>: </span><span class="ltx_text" style="font-size:90%;">Prompt for manual evaluation.</span></figcaption>
+</figure>
+</section>
+</section>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Thu Dec  5 01:10:16 2024 by <a href="http://dlmf.nist.gov/LaTeXML/" class="ltx_LaTeXML_logo"><span style="letter-spacing:-0.2em; margin-right:0.1em;">L<span class="ltx_font_smallcaps" style="position:relative; bottom:2.2pt;">a</span>T<span class="ltx_font_smallcaps" style="font-size:120%;position:relative; bottom:-0.2ex;">e</span></span><span style="font-size:90%; position:relative; bottom:-0.2ex;">XML</span><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="Mascot Sammy"></a>
+</div></footer>
+</div>
+</body>
+</html>

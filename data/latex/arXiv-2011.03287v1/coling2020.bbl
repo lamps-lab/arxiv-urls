@@ -1,0 +1,169 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citename{Angeli \bgroup et al.\egroup
+  }2010]{angeli-etal-2010-simple}
+Gabor Angeli, Percy Liang, and Dan Klein.
+\newblock 2010.
+\newblock A simple domain-independent probabilistic approach to generation.
+\newblock In {\em Proceedings of the 2010 Conference on Empirical Methods in
+  Natural Language Processing}, pages 502--512, Cambridge, MA, October.
+  Association for Computational Linguistics.
+
+\bibitem[\protect\citename{Balaraman \bgroup et al.\egroup
+  }2018]{balaraman2018recoin}
+Vevake Balaraman, Simon Razniewski, and Werner Nutt.
+\newblock 2018.
+\newblock Recoin: relative completeness in wikidata.
+\newblock In {\em Companion Proceedings of the The Web Conference 2018}, pages
+  1787--1792.
+
+\bibitem[\protect\citename{Bauer}2017]{bauer2017nominal}
+B.L.M. Bauer.
+\newblock 2017.
+\newblock {\em Nominal Apposition in Indo-European: Its Forms and Functions,
+  and its Evolution in Latin-Romance}.
+\newblock Trends in Linguistics. Studies and Monographs [TiLSM]. De Gruyter.
+
+\bibitem[\protect\citename{Denkowski and
+  Lavie}2014]{denkowski-lavie-2014-meteor}
+Michael Denkowski and Alon Lavie.
+\newblock 2014.
+\newblock Meteor universal: Language specific translation evaluation for any
+  target language.
+\newblock In {\em Proceedings of the Ninth Workshop on Statistical Machine
+  Translation}, pages 376--380, Baltimore, Maryland, USA, June. Association for
+  Computational Linguistics.
+
+\bibitem[\protect\citename{Devlin \bgroup et al.\egroup }2019]{devlin2019bert}
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova.
+\newblock 2019.
+\newblock Bert: Pre-training of deep bidirectional transformers for language
+  understanding.
+\newblock In {\em Proceedings of the 2019 Conference of the North American
+  Chapter of the Association for Computational Linguistics: Human Language
+  Technologies, Volume 1 (Long and Short Papers)}, pages 4171--4186.
+
+\bibitem[\protect\citename{Gu \bgroup et al.\egroup
+  }2016]{gu-etal-2016-incorporating}
+Jiatao Gu, Zhengdong Lu, Hang Li, and Victor~O.K. Li.
+\newblock 2016.
+\newblock Incorporating copying mechanism in sequence-to-sequence learning.
+\newblock In {\em Proceedings of the 54th Annual Meeting of the Association for
+  Computational Linguistics (Volume 1: Long Papers)}, pages 1631--1640, Berlin,
+  Germany, August. Association for Computational Linguistics.
+
+\bibitem[\protect\citename{Joulin \bgroup et al.\egroup
+  }2018]{joulin-etal-2018-loss}
+Armand Joulin, Piotr Bojanowski, Tomas Mikolov, Herv{\'e} J{\'e}gou, and
+  Edouard Grave.
+\newblock 2018.
+\newblock Loss in translation: Learning bilingual word mapping with a retrieval
+  criterion.
+\newblock In {\em Proceedings of the 2018 Conference on Empirical Methods in
+  Natural Language Processing}, pages 2979--2984, Brussels, Belgium,
+  October-November. Association for Computational Linguistics.
+
+\bibitem[\protect\citename{Kang \bgroup et al.\egroup }2019]{kang2019pomo}
+Jun~Seok Kang, Robert L~Logan IV, Zewei Chu, Yang Chen, Dheeru Dua, Kevin
+  Gimpel, Sameer Singh, and Niranjan Balasubramanian.
+\newblock 2019.
+\newblock Pomo: Generating entity-specific post-modifiers in context.
+\newblock In {\em Proceedings of NAACL-HLT}, pages 826--838.
+
+\bibitem[\protect\citename{Kim and Mooney}2010]{kim-mooney-2010-generative}
+Joohyun Kim and Raymond Mooney.
+\newblock 2010.
+\newblock Generative alignment and semantic parsing for learning from ambiguous
+  supervision.
+\newblock In {\em Coling 2010: Posters}, pages 543--551, Beijing, China,
+  August. Coling 2010 Organizing Committee.
+
+\bibitem[\protect\citename{Konstas and Lapata}2013]{Konstas2013AGM}
+Ioannis Konstas and Mirella Lapata.
+\newblock 2013.
+\newblock A global model for concept-to-text generation.
+\newblock {\em J. Artif. Intell. Res.}, 48:305--346.
+
+\bibitem[\protect\citename{Liang \bgroup et al.\egroup
+  }2009]{liang-etal-2009-learning}
+Percy Liang, Michael Jordan, and Dan Klein.
+\newblock 2009.
+\newblock Learning semantic correspondences with less supervision.
+\newblock In {\em Proceedings of the Joint Conference of the 47th Annual
+  Meeting of the {ACL} and the 4th International Joint Conference on Natural
+  Language Processing of the {AFNLP}}, pages 91--99, Suntec, Singapore, August.
+  Association for Computational Linguistics.
+
+\bibitem[\protect\citename{Nivre \bgroup et al.\egroup
+  }2020]{nivre-etal-2020-universal}
+Joakim Nivre, Marie-Catherine de~Marneffe, Filip Ginter, Jan Haji{\v{c}},
+  Christopher~D. Manning, Sampo Pyysalo, Sebastian Schuster, Francis Tyers, and
+  Daniel Zeman.
+\newblock 2020.
+\newblock {U}niversal {D}ependencies v2: An evergrowing multilingual treebank
+  collection.
+\newblock In {\em Proceedings of the 12th Language Resources and Evaluation
+  Conference}, pages 4034--4043, Marseille, France, May. European Language
+  Resources Association.
+
+\bibitem[\protect\citename{Papineni \bgroup et al.\egroup
+  }2002]{10.3115/1073083.1073135}
+Kishore Papineni, Salim Roukos, Todd Ward, and Wei-Jing Zhu.
+\newblock 2002.
+\newblock Bleu: A method for automatic evaluation of machine translation.
+\newblock In {\em Proceedings of the 40th Annual Meeting on Association for
+  Computational Linguistics}, ACL ’02, page 311–318, USA. Association for
+  Computational Linguistics.
+
+\bibitem[\protect\citename{P{\k{e}}zik}2016]{pkezik2016exploring}
+Piotr P{\k{e}}zik.
+\newblock 2016.
+\newblock Exploring phraseological equivalence with paralela.
+
+\bibitem[\protect\citename{Qi \bgroup et al.\egroup }2020]{qi2020stanza}
+Peng Qi, Yuhao Zhang, Yuhui Zhang, Jason Bolton, and Christopher~D. Manning.
+\newblock 2020.
+\newblock Stanza: A {Python} natural language processing toolkit for many human
+  languages.
+\newblock In {\em Proceedings of the 58th Annual Meeting of the Association for
+  Computational Linguistics: System Demonstrations}.
+
+\bibitem[\protect\citename{Rothe \bgroup et al.\egroup
+  }2019]{DBLP:journals/corr/abs-1907-12461}
+Sascha Rothe, Shashi Narayan, and Aliaksei Severyn.
+\newblock 2019.
+\newblock Leveraging pre-trained checkpoints for sequence generation tasks.
+\newblock {\em CoRR}, abs/1907.12461.
+
+\bibitem[\protect\citename{Tiedemann}2012]{TIEDEMANN12.463}
+Jörg Tiedemann.
+\newblock 2012.
+\newblock Parallel data, tools and interfaces in opus.
+\newblock In Nicoletta Calzolari~(Conference Chair), Khalid Choukri, Thierry
+  Declerck, Mehmet~Ugur Dogan, Bente Maegaard, Joseph Mariani, Jan Odijk, and
+  Stelios Piperidis, editors, {\em Proceedings of the Eight International
+  Conference on Language Resources and Evaluation (LREC'12)}, Istanbul, Turkey,
+  may. European Language Resources Association (ELRA).
+
+\bibitem[\protect\citename{Traffis}2019]{traffis_2019}
+Catherine Traffis.
+\newblock 2019.
+\newblock Appositives-what they are and how to use them, May.
+
+\bibitem[\protect\citename{Vrande\v{c}i\'{c} and
+  Kr\"{o}tzsch}2014]{10.1145/2629489}
+Denny Vrande\v{c}i\'{c} and Markus Kr\"{o}tzsch.
+\newblock 2014.
+\newblock Wikidata: A free collaborative knowledgebase.
+\newblock {\em Commun. ACM}, 57(10):78–85, September.
+
+\bibitem[\protect\citename{Yamada \bgroup et al.\egroup
+  }2017]{yamada-etal-2017-learning}
+Ikuya Yamada, Hiroyuki Shindo, Hideaki Takeda, and Yoshiyasu Takefuji.
+\newblock 2017.
+\newblock Learning distributed representations of texts and entities from
+  knowledge base.
+\newblock {\em Transactions of the Association for Computational Linguistics},
+  5:397--411.
+
+\end{thebibliography}

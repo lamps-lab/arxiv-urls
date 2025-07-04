@@ -1,0 +1,142 @@
+\begin{thebibliography}{17}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[ADMINISTRATION(2019)]{vaers_article}
+U.S. FOOD \&~DRUG ADMINISTRATION.
+\newblock Vaers overview, 2019.
+\newblock URL
+  \url{https://www.fda.gov/vaccines-blood-biologics/vaccine-adverse-events/vaers-overview}.
+
+\bibitem[Bae et~al.(2020)Bae, Gandhi, Kothari, Shankar, Bae, Patwa, Sukumaran,
+  V., Mishra, Murali, Saxena, Jakimowicz, Sharma, Iyer, Mehra, Radunsky,
+  Katiyar, Anand, Advani, Dhaliwal, and Raskar]{bae2020challenges}
+Joseph Bae, Darshan Gandhi, Jil Kothari, Sheshank Shankar, Jonah Bae, Parth
+  Patwa, Rohan Sukumaran, Sethuraman~T. V., Krutika Mishra, Srinidhi Murali,
+  Aishwariya Saxena, Kasia Jakimowicz, Vivek Sharma, Rohan Iyer, Ashley Mehra,
+  Alex Radunsky, Priyanshi Katiyar, Sunaina Anand, Shailesh Advani, Jagjit
+  Dhaliwal, and Ramesh Raskar.
+\newblock Challenges of equitable vaccine distribution in the covid-19
+  pandemic, 2020.
+
+\bibitem[Borenstein \& Weintraub(2020)Borenstein and Weintraub]{hbr}
+Joram Borenstein and Rebecca Weintraub.
+\newblock Rolling out the covid vaccine is a huge it challenge, 2020.
+\newblock URL
+  \url{https://hbr.org/2020/12/rolling-out-the-covid-vaccine-is-a-huge-it-challenge}.
+
+\bibitem[for Disease~Control \& Prevention(2020{\natexlab{a}})for
+  Disease~Control and Prevention]{cdc1}
+Center for Disease~Control and Prevention.
+\newblock Using telehealth to expand access to essential health services during
+  the covid-19 pandemic, 2020{\natexlab{a}}.
+\newblock URL
+  \url{https://www.cdc.gov/coronavirus/2019-ncov/hcp/telehealth.html}.
+
+\bibitem[for Disease~Control \& Prevention(2020{\natexlab{b}})for
+  Disease~Control and Prevention]{cdc3}
+Center for Disease~Control and Prevention.
+\newblock Using digital technologies in precision public health: Covid-19 and
+  beyond, 2020{\natexlab{b}}.
+\newblock URL \url{https://blogs.cdc.gov/genomics/2020/04/06/using-digital/}.
+
+\bibitem[for Disease~Control \& Prevention(2020{\natexlab{c}})for
+  Disease~Control and Prevention]{webtrack}
+Center for Disease~Control and Prevention.
+\newblock Cdc covid data tracker, 2020{\natexlab{c}}.
+
+\bibitem[for Disease Control~(CDC)(2020{\natexlab{a}})]{IIS}
+Center for Disease Control~(CDC).
+\newblock \emph{About Immunization Information Systems (IIS)},
+  2020{\natexlab{a}}.
+\newblock \url{https://www.cdc.gov/vaccines/programs/iis/about.html}.
+
+\bibitem[for Disease Control~(CDC)(2020{\natexlab{b}})]{VAERS}
+Center for Disease Control~(CDC).
+\newblock \emph{VAERS | Vaccine Safety | CDC}, 2020{\natexlab{b}}.
+\newblock
+  \url{https://www.cdc.gov/vaccinesafety/ensuringsafety/monitoring/vaers/index.html}.
+
+\bibitem[for Disease Control~(CDC)(2020{\natexlab{c}})]{VAMS}
+Center for Disease Control~(CDC).
+\newblock \emph{VAMS | COVID-19 Vaccination Reporting Systems | CDC},
+  2020{\natexlab{c}}.
+\newblock
+  \url{https://www.cdc.gov/vaccines/covid-19/reporting/vams/index.html}.
+
+\bibitem[M et~al.(2020)M, EK, R, A, SJ, M, L, J, J, N, LL, N, A, L, H, BF, SB,
+  WA, GA, L, SC, D, and A]{PMC}
+Schoch-Spana M, Brunson EK, Long R, Ruth A, Ravi SJ, Trotochaud M, Borio L,
+  Brewer J, Buccina J, Connell N, Hall LL, Kass N, Kirkland A, Koonin L, Larson
+  H, Lu~BF, Omer SB, Orenstein WA, Poland GA, Privor-Dumm L, Quinn SC, Salmon
+  D, and White A.
+\newblock The public's role in covid-19 vaccination: Human-centered
+  recommendations to enhance pandemic vaccine awareness, access, and acceptance
+  in the united states. vaccine., Oct 2020.
+\newblock URL
+  \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7598529/#b0160}.
+
+\bibitem[Morales et~al.(2021)Morales, Barbar, Gandhi, Landuge, Bae, Vats,
+  Kothari, Shankar, Sukumaran, Mathur, Misra, Saxena, Patwa, V., Arseni,
+  Advani, Jakimowicz, Anand, Katiyar, Mehra, Iyer, Murali, Mahindra,
+  Dmitrienko, Srivastava, Gangavarapu, Penrod, Sharma, Singh, and
+  Raskar]{morales2021covid19}
+Manuel Morales, Rachel Barbar, Darshan Gandhi, Sanskruti Landuge, Joseph Bae,
+  Arpita Vats, Jil Kothari, Sheshank Shankar, Rohan Sukumaran, Himi Mathur,
+  Krutika Misra, Aishwarya Saxena, Parth Patwa, Sethuraman~T. V., Maurizio
+  Arseni, Shailesh Advani, Kasia Jakimowicz, Sunaina Anand, Priyanshi Katiyar,
+  Ashley Mehra, Rohan Iyer, Srinidhi Murali, Aryan Mahindra, Mikhail
+  Dmitrienko, Saurish Srivastava, Ananya Gangavarapu, Steve Penrod, Vivek
+  Sharma, Abhishek Singh, and Ramesh Raskar.
+\newblock Covid-19 tests gone rogue: Privacy, efficacy,mismanagement and
+  misunderstandings, 2021.
+
+\bibitem[MPH(2020)]{vaccinetrack}
+Kathleen Dooling~MD MPH.
+\newblock Phased allocation of covid-19 vaccines, 2020.
+
+\bibitem[Omer(2021)]{wp_article}
+Saad~B. Omer.
+\newblock Rapid development of a vaccine won’t help much if people refuse to
+  take it, 2021.
+
+\bibitem[Palamenghi et~al.(2020)Palamenghi, Barello, Boccia, and
+  Graffigna]{Palamenghi2020}
+Lorenzo Palamenghi, Serena Barello, Stefania Boccia, and Guendalina Graffigna.
+\newblock Mistrust in biomedical research and vaccine hesitancy: the forefront
+  challenge in the battle against covid-19 in italy.
+\newblock \emph{European journal of epidemiology}, 35\penalty0 (8):\penalty0
+  785--788, Aug 2020.
+\newblock ISSN 1573-7284.
+\newblock \doi{10.1007/s10654-020-00675-8}.
+\newblock URL \url{https://pubmed.ncbi.nlm.nih.gov/32808095}.
+\newblock 32808095[pmid].
+
+\bibitem[Singh et~al.(2020)Singh, Raskar, and Lysyanskaya]{crypt}
+Abhishek Singh, Ramesh Raskar, and Anna Lysyanskaya.
+\newblock Safepaths: Vaccine diary protocol and decentralized vaccine
+  coordination system using a privacy preserving user centric experience, 2020.
+
+\bibitem[Smith \& Mennis(2020)Smith and Mennis]{cdc2}
+Charlotte~D. Smith and Jeremy Mennis.
+\newblock Incorporating geographic information science and technology in
+  response to the covid-19 pandemic, Jul 2020.
+\newblock URL \url{https://www.cdc.gov/PCD/issues/2020/20_0246.htm}.
+
+\bibitem[Toner et~al.(2020)Toner, Barnill, Krubiner, Bernstein, Privor-Dumm,
+  Watson, Martin, Potter, Hosangadi, Connell, Watson, Schoch-Spana, Veenema,
+  Meyer, Biddison, Regenberg, Inglesby, and Cicero]{JHU}
+Eric Toner, Anne Barnill, Carleigh Krubiner, Justin Bernstein, Lois
+  Privor-Dumm, Mathew Watson, Elena Martin, Christina Potter, Divya Hosangadi,
+  Nancy Connell, Crystal Watson, Monica Schoch-Spana, Tener~Goodwin Veenema,
+  Diane Meyer, E.~Lee~Daugherty Biddison, Alan Regenberg, Tom Inglesby, and
+  Anita Cicero.
+\newblock Interim framework for covid-19 vaccine allocation and distribution in
+  the united states, Aug 2020.
+\newblock URL
+  \url{https://www.centerforhealthsecurity.org/our-work/publications/interim-framework-for-covid-19-vaccine-allocation-and-distribut\\ion-in-the-us}.
+
+\end{thebibliography}

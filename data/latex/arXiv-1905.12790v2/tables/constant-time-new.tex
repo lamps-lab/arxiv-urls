@@ -1,0 +1,71 @@
+\centering \small
+\begin{tabular}[t]{cc||cccccc}
+$T$ & $o_t$ & 
+\rotatebox{0}{Uniform} & 
+\rotatebox{0}{Left2Right} &
+\rotatebox{0}{Least2Most} &
+% \rotatebox{10}{Most2Least} &
+\rotatebox{0}{Easy-First} &
+\rotatebox{0}{Hard-First} &
+\rotatebox{0}{Learned}
+\\
+\toprule
+$10$ & $L\to 1$ & 
+22.38 &
+22.38 &
+27.14 &
+% 19.21 &
+22.21 &
+26.66 &
+12.70
+\\
+$10$ & $L\to 1$\text{*} & 
+23.64 &
+23.64 &
+\textbf{28.63} &
+23.79 &
+\textbf{28.46} &
+13.18
+\\
+$10$ & $\lceil L/T \rceil$ &
+22.43 &
+21.92 &
+24.69 &
+% 0.09 &
+25.16 &
+23.46 &
+26.47  % 26.91 w/ ar-rescoring 16
+\\
+\midrule
+$20$ & $L\to 1$ & 
+26.01 &
+26.01 &
+28.54 &
+% 19.21 &
+22.24 &
+28.32 &
+12.85
+\\
+$20$ & $L\to 1$\text{*} & 
+27.28 &
+27.28 &
+\textbf{30.13} &
+24.55 &
+\textbf{29.82} &
+13.19 \\
+$20$ & $\lceil L/T \rceil$ &
+24.69 &
+25.94 &
+27.01 &
+% 0.00 &
+27.49 &
+25.56 &
+27.82  % 28.54 w/ ar-rescoring 16
+\\
+\end{tabular}
+
+\caption{Constant-time machine translation on WMT'14 De$\rightarrow$En with different settings of the budget ($T$) and number of tokens predicted each iteration ($o_t$). \text{*} denotes rescoring generated hypotheses using autoregressive model instead of proposed model.
+}
+
+\vspace{-4mm}
+% $L \rightarrow 1$ indicates a linear decaying schedule of number of tokens predicted. $\lceil L/T \rceil$ indicates a constant number of tokens that is being predicted. For each sentence we use $4$ most likely sentence lengths.}

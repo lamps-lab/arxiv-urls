@@ -1,0 +1,513 @@
+MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes
+MIT SAFEPATHS CARD (MISACA):
+AUGMENTING
+PAPER BASED VACCINATION CARDS WITH PRINTED
+CODES
+Joseph Bae1, 3, Rohan Sukumaran1, Sheshank Shankar1, Saurish Srivastava1, Rohan Iyer1,
+Aryan Mahindra1, Qamil Mirza1, Maurizio Arseni1, Anshuman Sharma1, Saras Agrawal1,
+Orna Mukhopadhyay1, Colin Kang1, Priyanshi Katiyar1, Apurv Shekhar1, Sifat Hasan1,
+Krishnendu Dasgupta1, Darshan Gandhi1, Sethuraman TV1, Parth Patwa1, Ishaan Singh1,
+Abhishek Singh2, Ramesh Raskar1,2
+1PathCheck Foundation, 02139 Cambridge, USA.
+2MIT Media Lab, 02139 Cambridge, USA.
+3Renaissance School of Medicine, Stony Brook University, 11794 Stony Brook, USA.
+raskar@media.mit.edu
+ABSTRACT
+In this early draft, we describe a user-centric, card-based system for vaccine dis-
+tribution. Our system makes use of digitally signed QR codes and their use for
+phased vaccine distribution, vaccine administration/record-keeping, immuniza-
+tion veriﬁcation, and follow-up symptom reporting. Furthermore, we propose and
+describe a complementary scanner app system to be used by vaccination clinics,
+public health ofﬁcials, and immunization veriﬁcation parties to effectively utilize
+card-based framework. We believe that the proposed system provides a privacy-
+preserving and efﬁcient framework for vaccine distribution in both developed and
+developing regions.
+1
+INTRODUCTION
+Without an effective curative or preventative measure, the unprecedented coronavirus disease 2019
+(COVID-19) pandemic has led to a signiﬁcant amount of human deaths (1,900,000 at the time of
+publication (for Disease Control & Prevention (2020c))). However, now with the advent of vaccines,
+we face the challenges of strategic, equitable and privacy preserved ways for last-mile vaccine dis-
+tribution (Bae et al. (2020); MPH (2020)).
+First, the vaccine recipients must be dynamically prioritized to ensure an equitable reach, especially
+as multiple vaccines with different protocols are approved in various areas. In addition, once a
+citizen’s ﬁrst dose is administered, they must follow through with their second dose as well. Also,
+a communication plan must also be put in place to combat inevitable rumours, misinformation, and
+conspiracy theories aiming to disrupt citizen engagement in the vaccination process ( Morales et al.
+(2021); Omer (2021)). It must also address the mistrust of vaccines in society (Palamenghi et al.
+(2020)), especially within previously marginalized minority populations (Toner et al. (2020)). This
+is why we must take a user-centric approach that preserves trust — vaccines are meaningless if
+citizens aren’t willing to take them (M et al. (2020)). Lastly, the health outcomes (effectiveness,
+safety, long-term effects, etc) of the vaccines must be effectively monitored in a privacy-preserving
+way (Borenstein & Weintraub (2020)).
+In today’s society, multiple technological systems are being utilized by the Center for Disease Con-
+trol (CDC) to combat these challenges ( for Disease Control & Prevention (2020a); Smith & Mennis
+(2020); for Disease Control & Prevention (2020b)). For example, the Vaccine Administration Man-
+agement System (VAMS) streamlines the vaccine distribution process for jurisdictions, employers,
+and healthcare providers. In addition, it’s an effective user-centric system as it allows for vaccine
+recipients to schedule appointments, receive records of their visit, and receive reminders for a sec-
+1
+arXiv:2101.07931v2  [cs.CY]  21 Jan 2021
+
+MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes
+ond dose (for Disease Control (CDC)). The Immunization Information Systems (IIS) are a group
+of privacy preserving database systems that track all vaccinations within various areas (for Disease
+Control (CDC)). Lastly, the Vaccine Adverse Event Reporting System (VAERS) is the prominent
+system for the monitoring of health outcomes ( for Disease Control (CDC); ADMINISTRATION
+(2019)).
+In our previous work, we detail the MIT SafePaths app-based protocol for vaccine distribution. In
+this paper, we introduce a separate user-centric card protocol that uses printed codes as a supplement
+to traditional paper based vaccination cards.
+2
+CARD FLOW
+2.1
+OVERVIEW
+Here we present a vaccine distribution system utilizing physical SafePaths cards and four digitally
+signed QR code stickers (henceforth termed Coupon, Badge, Passkey, and Status). The digital sign-
+ing of a QR code is simply a secure process of verifying the authenticity of the information contained
+in the QR code (Singh et al. (2020)). These QR code stickers are simply QR codes printed onto ad-
+hesive stickers that can then be attached to a user’s physical card.
+Side 1
+Side 2
+Coupon 
+Badge 
+Status
+Pass Key 
+Pass Key
+ Conatins encrypted personal information such 
+as name, age, sex, etc.
+ 
+ 
+Coupon 
+Issued by central government agency. 
+Distributed by employer or local government 
+institutions. Contains information to identify 
+users. 
+Badge 
+ Issued by vaccination clinic. Contains vaccine 
+related information such as lot, manufacturer, 
+first/second dose, time, date and location of 
+vaccination.
+Status
+Contains unencrypted vaccination status
+ 
+4
+Figure 1: The 4 digitally signed QR code stickers (Coupon, Badge, Status, and Passkey) present on
+the SafePaths cards.
+The digital signature of the QR codes take place as below Certiﬁcate = (message, signa-
+ture(messages))
+For each sticker below the message is as follows -
+• Coupon = (number, total, city, phase, (age, job, comorbidities/sick))
+• Badge = (coupon, dose info, Hash(passkey())
+• Status = ((vaccinated = 0,1,2), Hash(passkey())
+• Passkey = (name, DOB, salt)
+= hash:sj2d8k8hy7j
+Our solution is intended to decouple the health information and personally identiﬁable information
+(PII) in this process. Thereby, we are essentially proposing to separate the eligibility of the vaccina-
+tion from the distribution of it. This way we can have the health information centralised, whilst the
+PII information decentralised.
+2.2
+VACCINE ELIGIBILITY CONFIRMATION
+To accommodate the several-stage vaccination policies that countries have begun to employ,
+SafePaths cards will be distributed containing one digitally-signed Coupon QR code. This would
+2
+
+MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes
+Figure 2: MIT SafePaths Card Mockup
+Name
+Equation
+Description
+Example
+Coupon
+{m, sign(m)}
+where m = (i, zip code,
+job type)
+Coupon code is signed
+by CDC and indicates the
+zip code and job type of the
+receiver
+{37, 5000, Springﬁeld, 1B,
+Teacher}
+Badge
+{m, sign(m)}
+where m = (dose info,
+coupon, hash(passkey))
+Badge is available after 2
+doses and it gives the
+information pertinent to
+the vaccine shot.
+{[Pﬁzer, “1st Dose”,
+1/1/2021], fe4c2,
+3be33c20cc4c85a0c32f7bf5b4}
+Status
+{m, sign(m)}
+where m = (status,
+hash(passkey))
+Contains bare minimum
+information to prove the
+user is vaccinated
+{vaccinated,
+3be33c20cc4c85a0c32f7bf5b4}
+Passkey
+ID = User PII
+Key = salt
+Key is the random salt
+used for increasing the
+entropy of hashed data
+{John Doe,
+6363fe744f74ee8f280958}
+Table 1: This outlines the four QR codes and what information is digitally signed in it.
+be provided by a central government agency such as the CDC and made available to users either by
+an employer or local government location. A pseudo random identiﬁer generated for this Coupon
+serves as the identifying information for the user throughout the remaining workﬂow. This Coupon
+would initially come with SafePaths cards while the remaining three adhesive stickers must be ob-
+tained and placed onto the card following vaccination events.
+2.3
+VACCINE ADMINISTRATION
+Check-in at a vaccination clinic would require the veriﬁcation of a user’s Coupon.
+Upon vaccination, the vaccination clinic would create a digitally-signed record of immunization
+and print it as a QR code on an adhesive sticker. This adhesive sticker (henceforth referred to as
+the Badge) would contain information regarding vaccine lot, manufacturer, and ﬁrst/second dose
+information. The Badge would also contain information regarding the time, date, and location of
+vaccination.
+3
+
+MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes
+The vaccination clinic would also create a unique encryption key to encrypt the Badge. This key, as
+well as encrypted PII such as name, age, sex, etc. would be stored on a Passkey QR code, printed
+onto a Passkey QR sticker. This Passkey is required for decryption of PII and in-depth vaccination
+information (time, date, location of vaccination).
+At this stage, a vaccine recipient would then have Coupon, Badge, and Passkey QR stickers.
+2.4
+SECOND DOSE
+When a user attempts to receive a second dose of a vaccine, the vaccination clinic would utilize
+a user’s Badge to determine the appropriate vaccine type and dose and the Passkey to conﬁrm a
+user’s identity. Again, the user Passkey contains information that solely exists on the physical card
+carried by a user. Use of this sticker is required to decrypt in depth vaccination information for a
+patient contained in the Badge (location of vaccination, date, etc.). Once ﬁnal vaccination has been
+performed, the vaccine clinic would create a fourth and ﬁnal Status QR code sticker for a recipient’s
+SafePaths card, which would simply indicate whether or not a user has been vaccinated. Status
+would not contain any further information and therefore would be unencrypted.
+2.5
+RECORD-KEEPING
+User vaccination records could be linked by anonymized upload to a centralized system using a
+user’s pseudorandom identiﬁer. The user’s Passkey, containing their encryption key that decrypts
+their PII, would not be uploaded to the CDC without consent. Alternatively, we propose an anony-
+mous record keeping function in our Scanner App section.
+2.6
+VACCINATION VERIFICATION
+Veriﬁcation of immunization status might be required in various scenarios such as airline travel,
+return to school/work, etc. Vaccine veriﬁcation at these venues would follow the receipt of a second
+COVID-19 dose.
+Information regarding an individual’s vaccination status would be digitally signed by the vaccine
+clinic onto the Status sticker. When scanned, this sticker would provide the veriﬁer with informa-
+tion regarding whether or not an individual has been vaccinated. If further veriﬁcation of identity
+is required, the veriﬁer could make use of a consenting individual’s Passkey sticker to decrypt the
+holder’s name. With this method, a user would have multiple levels of information they can share,
+beginning with vaccination status in the unencrypted Status sticker, basic personal information (i.e.
+name) that must be decrypted using the Passkey sticker, and ﬁnally full personal vaccination infor-
+mation encrypted in the Badge.
+2.7
+SAFETY AND EFFICACY MONITORING
+Short and long-term monitoring of health outcomes would rely on self-reporting. These cards could
+still facilitate the anonymous information upload by interacting with existing centralized systems
+such as VAERS or V-Safe while bypassing PII input. All health and symptom information could
+instead be tied to a user’s pseudorandom ID. We also propose a scanner app solution in the Scanner
+Flow section that could aggregate symptom reporting and vaccine record data anonymously.
+3
+SCANNER FLOW
+3.1
+OVERVIEW
+Here we discuss the systems that must be built for vaccine clinics and distributors in order to enable
+the use of the SafePaths card framework presented above. We present several relevant protocols as
+well as the functionality of a proposed vaccine distributor/veriﬁer scanner app. This scanner app
+would be necessary to function with the encrypted QR codes described above.
+4
+
+MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes
+PathCheck Foundation
+Card Protocol Flow
+The SafePaths card are distributed by the local 
+government or employers. These cards contain 
+one initial digitally-signed coupon QR code 
+which would serve as proof of vaccination 
+eligibility for an individual
+Vaccine Eligibility Confirmation
+1
+Vaccine Administration
+Post-vaccination, the clinic creates a 
+digitally-signed immunization certificate and 
+prints it as a badge QR sticker which contains 
+vaccine information. Another Passkey QR 
+sticker is also created and printed by the clinic 
+to encrypt the badge sticker
+2
+Record Keeping & 2nd Dose
+User records could be linked by anonymized 
+upload to centralized systems such as VAMS. 
+Once user receives their second vaccination 
+dose, the clinic will create a fourth status QR 
+sticker which will only contain information on 
+vaccination status for future verification 
+3
+Vaccine Verification
+The status QR sticker would be scanned at 
+venues such as airports or other public spaces 
+to confirm an individual’s vaccination status. 
+Users could choose to allow a venue to scan 
+the badge QR sticker using the Passkey QR 
+sticker to provide personal information for 
+identity verification
+4
+Safety & Efficacy Monitoring
+Monitoring of health outcomes 
+post-vaccination would follow a self-reporting 
+scheme. This could be done by anonymized 
+uploads to current government systems. 
+PathCheck’s scanner app could also be used to 
+anonymously upload vaccine data and 
+symptom reporting data to health officials and 
+vaccine makers
+5
+Trust & Communication
+Digitally-signed QR codes may be convenient 
+and non-intrusive for users seeking vaccination. 
+QR codes also enable verification of 
+authentically created immunization records. 
+Information is stored physically on a user’s 
+SafePaths card in a decentralized manner. The 
+card enables the extension of protocols to 
+low-resource areas to equalize disparities.
+6
+Figure 3: Card protocol workﬂow diagram.
+3.2
+VACCINE ELIGIBILITY CONFIRMATION
+Phased vaccination using the SafePaths card system requires the distribution of SafePaths cards
+containing digitally signed Coupons to appropriate subsets of the population during each stage of
+vaccination. There are several ways that this might be achieved. We propose potential solutions
+below, though we recognize that these strategies must be determined by individual jurisdictions to
+meet the circumstances in different locations.
+1. Disseminate to businesses to provide to employees (eg: hospitals, restaurants, etc. as ap-
+propriate)
+2. Make available at local government building (similar to DMV process of obtaining a
+driver’s license)
+3. Mail out to individuals based on employment/other factors (via background check systems,
+centralized databases such as IRS)
+3.3
+VACCINE ADMINISTRATION
+To conﬁrm an individual for vaccination scheduling/check-in, a clinic must verify the authenticity
+of a vaccine recipient’s QR Coupons. The ﬁrst function of our proposed scanner app would be to
+scan a vaccine recipient’s Coupon to determine authenticity and prevent the use of a single Coupon
+by multiple individuals. This would be achieved by scanning the digital signature present on a
+SafePaths Coupon and verifying its digital signature.
+The second function of our proposed scanner app would be to create digitally signed Badge and
+Passkey stickers for post vaccination. This would make use of our previously described algorithm
+(Singh et al. (2020)) for secure recording of vaccine information into a Badge sticker, encrypted
+using the encryption key present in the Passkey. After creating these stickers, the proposed scanner
+app would not store any information regarding a recipient’s encryption key; that information would
+only exist within the Passkey sticker.
+5
+
+MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes
+PathCheck Foundation
+Vaccine Scanner
+App Flow
+Vaccinators will be required to login to confirm 
+their names and affiliation, while selecting a 
+vaccination location.
+
+Login and password
+Confirms: Name, Affiliation
+Select: Vaccination Location
+Authentication
+1
+Eligibility ‘Coupon’ Scan
+1: Scan ‘Coupon’ QR code
+2: Decode: Town, State, Phase, Job, Comorbidity
+3: Activation or not
+4: Confirm - Coupon has been activated by XYZ 
+location on this date
+5: Vaccination status - Coupon user status is 
+[Vaccinated at Pharmacy on date]
+2A
+Local Operations
+The app would show a list of people that have 
+checked in today. If real time internet access is 
+not availble daylong, data can be uploaded to a 
+central server, with an option to delete data 
+from the app.
+3
+Health Reporting Scans
+Scans can be performed by doctors or frontline 
+healthcare workers to monitor symptoms and 
+send anonymized data to governments.
+
+Scan ‘Badge’ QR code and passkey
+Select from a set of side effects symptoms 
+‘Upload’ to CDC
+2D
+Verification Scans
+Verification scans can be performed by 
+different venues to determine whether an 
+individual has been vaccinated.
+
+Scan ‘Status’ QR code and user passkey: if all 
+matches, screen will turn green
+In-person verification will prompt “Ask for 
+government ID”
+2C
+‘Badge’ Scans
+First-dose
+Daily-updated dose-info: vaccine company and lot, 
+vaccine location, date
+Eligibility ‘Coupon’ Scan (2A) and get user passkey
+Create Badge: coupon + dose-info + passkey 
+Deliver Badge, status, passkey via SMS, print, email, 
+or onscreen photo of QR code
+Second-dose
+Scan old Badge and get old dosage-info
+Use same process to create second-dose badge
+2B
+Figure 4: Scanner app protocol workﬂow diagram.
+3.4
+SECOND DOSE
+Second dose administration functionality would be implemented into the scanner app in the same
+manner as described in the previous section for ‘Vaccine Administration’. A Status sticker would
+be created by the scanner app in a similar manner to the Badge sticker, also drawing on the methods
+described in our cryptographic protocol (Singh et al. (2020)).
+3.5
+RECORD-KEEPING
+Another critical function of our scanner app would be the ability to integrate with existing systems,
+such as VAMS in the United States. Ideally, our app would be able to automatically provide vacci-
+nation record information to VAMS while replacing PII with pseudo identiﬁers.
+Alternatively, our scanner system would also have the capability to directly aggregate vaccination
+record data in an anonymized fashion, retaining population-level statistics such as vaccination preva-
+lence in a given jurisdiction that might be important for public health policy development. Details
+concerning clinic location, vaccine dose, and vaccine manufacturer could be stored by the scanner
+app and aggregated for public health ofﬁcial viewing.
+3.6
+VACCINATION VERIFICATION
+Our proposed scanner app would enable vaccination veriﬁcation simply by reading immunization
+status contained in a user’s Status sticker. For further identity veriﬁcation, a form of ID (such as
+driver’s license) can be compared with the decrypted PII from the scanner app using an individual’s
+Passkey sticker. The scanner app would not store this information following completion of the
+immunization conﬁrmation.
+6
+
+MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes
+4
+CONCLUSION
+In this early draft, we present a complete protocol for a physical card-based system for phased
+vaccine distribution, individual vaccination, second-dose adherence, and symptom follow-up. Due
+to their physical nature and simplicity, digitally-signed QR codes may be a convenient and non-
+intrusive modality for some users seeking vaccination. Digitally-signed QR stickers enable veriﬁ-
+cation of authentically created immunization records, and the encryption schema presented using
+a unique passkey sticker ensures that user PII can only be decrypted with the user’s consent. This
+information is stored physically on the user’s SafePaths card in a decentralized manner wherein
+a user must provide their physical passkey sticker for decryption of PII. These cards also extend
+privacy-focused protocols to low-resource areas and populations, equalizing disparities in access to
+individual-centric solutions and frameworks for COVID-19 vaccination. The centralised health data
+collected (which is rid of all PIIs) can be used by the concerned authorities to have population aggre-
+gated view of the vaccine adherence in a region. Furthermore, such privacy preserving dashboards
+which show aggregated data can help the authorities take informed decisions.
+ACKNOWLEDGMENTS
+We are grateful to Riyanka Roy Choudhury, CodeX Fellow, Stanford University, Adam Berrey, CEO
+of PathCheck Foundation, Dr. Brooke Struck, Research Director at The Decision Lab, Canada,
+Vinay Gidwaney, Entrepreneur and Advisor, PathCheck Foundation, and Paola Heudebert, co-
+founder of Blockchain for Human Rights, Alison Tinker, Saswati Soumya, Sunny Manduva, Bhavya
+Pandey, and Aarathi Prasad for their assistance in discussions, support and guidance in writing of
+this paper.
+REFERENCES
+U.S. FOOD & DRUG ADMINISTRATION.
+Vaers overview,
+2019.
+URL https:
+//www.fda.gov/vaccines-blood-biologics/vaccine-adverse-events/
+vaers-overview.
+Joseph Bae, Darshan Gandhi, Jil Kothari, Sheshank Shankar, Jonah Bae, Parth Patwa, Rohan
+Sukumaran, Sethuraman T. V., Krutika Mishra, Srinidhi Murali, Aishwariya Saxena, Kasia Jaki-
+mowicz, Vivek Sharma, Rohan Iyer, Ashley Mehra, Alex Radunsky, Priyanshi Katiyar, Sunaina
+Anand, Shailesh Advani, Jagjit Dhaliwal, and Ramesh Raskar. Challenges of equitable vaccine
+distribution in the covid-19 pandemic, 2020.
+Joram
+Borenstein
+and
+Rebecca
+Weintraub.
+Rolling
+out
+the
+covid
+vaccine
+is
+a
+huge
+it
+challenge,
+2020.
+URL
+https://hbr.org/2020/12/
+rolling-out-the-covid-vaccine-is-a-huge-it-challenge.
+Center for Disease Control and Prevention.
+Using telehealth to expand access to essential
+health services during the covid-19 pandemic, 2020a.
+URL https://www.cdc.gov/
+coronavirus/2019-ncov/hcp/telehealth.html.
+Center for Disease Control and Prevention. Using digital technologies in precision public health:
+Covid-19 and beyond, 2020b. URL https://blogs.cdc.gov/genomics/2020/04/
+06/using-digital/.
+Center for Disease Control and Prevention. Cdc covid data tracker, 2020c.
+Center for Disease Control (CDC). About Immunization Information Systems (IIS), 2020a. https:
+//www.cdc.gov/vaccines/programs/iis/about.html.
+Center for Disease Control (CDC). VAERS — Vaccine Safety — CDC, 2020b. https://www.
+cdc.gov/vaccinesafety/ensuringsafety/monitoring/vaers/index.html.
+Center for Disease Control (CDC). VAMS — COVID-19 Vaccination Reporting Systems — CDC,
+2020c. https://www.cdc.gov/vaccines/covid-19/reporting/vams/index.
+html.
+7
+
+MIT SafePaths Card (MiSaCa): Augmenting Paper Based Vaccination Cards with Printed Codes
+Schoch-Spana M, Brunson EK, Long R, Ruth A, Ravi SJ, Trotochaud M, Borio L, Brewer J, Buccina
+J, Connell N, Hall LL, Kass N, Kirkland A, Koonin L, Larson H, Lu BF, Omer SB, Orenstein WA,
+Poland GA, Privor-Dumm L, Quinn SC, Salmon D, and White A. The public’s role in covid-19
+vaccination: Human-centered recommendations to enhance pandemic vaccine awareness, access,
+and acceptance in the united states. vaccine., Oct 2020. URL https://www.ncbi.nlm.
+nih.gov/pmc/articles/PMC7598529/#b0160.
+Manuel Morales, Rachel Barbar, Darshan Gandhi, Sanskruti Landuge, Joseph Bae, Arpita Vats, Jil
+Kothari, Sheshank Shankar, Rohan Sukumaran, Himi Mathur, Krutika Misra, Aishwarya Saxena,
+Parth Patwa, Sethuraman T. V., Maurizio Arseni, Shailesh Advani, Kasia Jakimowicz, Sunaina
+Anand, Priyanshi Katiyar, Ashley Mehra, Rohan Iyer, Srinidhi Murali, Aryan Mahindra, Mikhail
+Dmitrienko, Saurish Srivastava, Ananya Gangavarapu, Steve Penrod, Vivek Sharma, Abhishek
+Singh, and Ramesh Raskar. Covid-19 tests gone rogue: Privacy, efﬁcacy,mismanagement and
+misunderstandings, 2021.
+Kathleen Dooling MD MPH. Phased allocation of covid-19 vaccines, 2020.
+Saad B. Omer. Rapid development of a vaccine won’t help much if people refuse to take it, 2021.
+Lorenzo Palamenghi, Serena Barello, Stefania Boccia, and Guendalina Grafﬁgna.
+Mistrust in
+biomedical research and vaccine hesitancy: the forefront challenge in the battle against covid-19
+in italy. European journal of epidemiology, 35(8):785–788, Aug 2020. ISSN 1573-7284. doi: 10.
+1007/s10654-020-00675-8.
+URL https://pubmed.ncbi.nlm.nih.gov/32808095.
+32808095[pmid].
+Abhishek Singh, Ramesh Raskar, and Anna Lysyanskaya. Safepaths: Vaccine diary protocol and
+decentralized vaccine coordination system using a privacy preserving user centric experience,
+2020.
+Charlotte D. Smith and Jeremy Mennis. Incorporating geographic information science and technol-
+ogy in response to the covid-19 pandemic, Jul 2020. URL https://www.cdc.gov/PCD/
+issues/2020/20_0246.htm.
+Eric Toner, Anne Barnill, Carleigh Krubiner, Justin Bernstein, Lois Privor-Dumm, Mathew
+Watson, Elena Martin, Christina Potter, Divya Hosangadi, Nancy Connell, Crystal Wat-
+son,
+Monica Schoch-Spana,
+Tener Goodwin Veenema,
+Diane Meyer,
+E. Lee Daugh-
+erty Biddison, Alan Regenberg, Tom Inglesby, and Anita Cicero.
+Interim framework
+for covid-19 vaccine allocation and distribution in the united states, Aug 2020.
+URL
+https://www.centerforhealthsecurity.org/our-work/publications/
+interim-framework-for-covid-19-vaccine-allocation-and-distribut\
+ion-in-the-us.
+8
+

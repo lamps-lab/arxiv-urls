@@ -1,0 +1,20 @@
+\begin{center}
+\begin{tabular}[b]{llcc}
+\toprule
+& & \multicolumn{1}{c}{WMT'14 De$\rightarrow$En} & \multicolumn{1}{c}{WMT'14 En$\rightarrow$De} \\
+   \midrule
+   \midrule
+%\multirow{4}{*}{\rotatebox[origin=c]{90}{\scriptsize Our Model}}
+    & Most-to-least; $K$\;=\;$1$, $T$\;=\;$L$ & 26.03 & 20.72 \\
+    & Easy-first; $K$\;=\;$1$, $T$\;=\;$L$ & 26.03 & 20.72 \\
+    \midrule
+    & Most-to-least; $K$\;=\;$T \rightarrow 1$, $T$\;=\;10 & 26.03 & 20.72 \\
+	& Easy-first; $K$\;=\;$T \rightarrow 1$, $T$\;=\;10 & 19.05 & 15.07 \\ 
+	\midrule
+	& Easy-first $K$\;=\;2, $T$\;=\;$L$ / 2 & \elman{TODO} & \elman{TODO}\\
+	& Easy-first $K$\;=\;3, $T$\;=\;$L$ / 3 & \elman{TODO} & \elman{TODO}\\
+    \bottomrule
+\end{tabular}
+\vspace{-2mm}
+\caption{\alert{Number are outdated, do we still need to flex with constant machine translation }Effect of various hyperparameters to allow faster decoding from the model. Add decodings were ran using }
+\end{center}

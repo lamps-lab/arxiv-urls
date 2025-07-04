@@ -1,0 +1,124 @@
+\documentclass[10pt,conference]{IEEEtran}
+\usepackage[utf8]{inputenc}
+%\pagestyle{plain}
+
+\usepackage{balance}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[noadjust]{cite}
+\usepackage{hyperref} 
+\usepackage{soul}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{listings,multicol}
+\usepackage[caption=false]{subfig}  
+\usepackage[export]{adjustbox}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{textcomp}
+\usepackage{breakurl} 
+\usepackage{listings}
+\usepackage{cleveref}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\algnewcommand\algorithmicinput{\textbf{Input:}}
+\algnewcommand\algorithmicoutput{\textbf{Output:}}
+\algnewcommand\Input{\item[\algorithmicinput]}%
+\algnewcommand\Output{\item[\algorithmicoutput]}%
+
+\DeclareRobustCommand{\hlgreen}[1]{{\sethlcolor{green}\hl{#1}}}
+\DeclareRobustCommand{\hlred}[1]{{\sethlcolor{red}\hl{#1}}}
+\newcommand{\todo}[1]{\hl{\textbf{TODO: ``#1''}}}
+\newcommand{\fixed}[1]{\hlgreen{\textbf{#1}}}
+\newcommand{\ie}{\emph{i.e.,}\xspace}
+\newcommand{\eg}{\emph{e.g.,}\xspace}
+
+\newcommand{\toolname}{\textsc{\textbf{DapStep}}: \textbf{D}eep \textbf{A}ssignee \textbf{P}rediction \\ for \textbf{S}tack \textbf{T}race \textbf{E}rror re\textbf{P}resentation}
+
+\newcommand{\secpart}[1]{\subsection{#1}}
+\newcommand{\subsecpart}{\subsubsection}
+
+\makeatletter
+\newcommand{\linebreakand}{%
+  \end{@IEEEauthorhalign}
+  \hfill\mbox{}\par
+  \mbox{}\hfill\begin{@IEEEauthorhalign}
+}
+\makeatother
+
+\newcounter{observation}
+\newcommand{\observation}[1]{\refstepcounter{observation}
+	\begin{center}
+		\framebox{
+			\begin{minipage}{0.93\columnwidth}
+				{\bf Answer to RQ\arabic{observation}:} \textit{#1}
+			\end{minipage}
+		}
+	\end{center}
+}
+
+\title{\toolname}
+
+\author{
+\IEEEauthorblockN{Denis Sushentsev}
+\IEEEauthorblockA{
+    \textit{HSE University}\\
+    \textit{JetBrains}\\
+    Saint Petersburg, Russia \\
+    denis.sushentsev@jetbrains.com
+}
+\and
+\IEEEauthorblockN{Aleksandr Khvorov}
+\IEEEauthorblockA{
+    \textit{HSE University}\\
+    \textit{JetBrains}\\
+    Saint Petersburg, Russia \\
+    aleksandr.khvorov@jetbrains.com
+}
+\and
+\IEEEauthorblockN{Roman Vasiliev}
+\IEEEauthorblockA{
+    \textit{JetBrains}\\
+    Saint Petersburg, Russia \\
+    roman.vasiliev@jetbrains.com
+}
+\linebreakand
+\IEEEauthorblockN{Yaroslav Golubev}
+\IEEEauthorblockA{
+    \textit{JetBrains Research}\\
+    Saint Petersburg, Russia \\
+    yaroslav.golubev@jetbrains.com
+}
+\and
+\IEEEauthorblockN{Timofey Bryksin}
+\IEEEauthorblockA{
+    \textit{JetBrains Research}\\
+    \textit{HSE University}\\
+    Saint Petersburg, Russia \\
+    timofey.bryksin@jetbrains.com
+}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    The task of finding the best developer to fix a bug is called \textit{bug triage}. Most of the existing approaches consider the bug triage task as a classification problem, however, classification is not appropriate when the sets of classes change over time (as developers often do in a project). Furthermore, to the best of our knowledge, all the existing models use textual sources of information, \textit{i.e.,} bug descriptions, which are not always available.
+    
+    In this work, we explore the applicability of existing solutions for the bug triage problem when stack traces are used as the main data source of bug reports. Additionally, we reformulate this task as a ranking problem and propose new deep learning models to solve it. The models are based on a bidirectional recurrent neural network with attention and on a convolutional neural network, with the weights of the models optimized using a ranking loss function. To improve the quality of ranking, we propose using additional information from version control system annotations. Two approaches are proposed for extracting features from annotations: manual and using an additional neural network. To evaluate our models, we collected two datasets of real-world stack traces. Our experiments show that the proposed models outperform existing models adapted to handle stack traces. To facilitate further research in this area, we publish the source code of our models and one of the collected datasets.
+\end{abstract}
+
+\input{sections/01-introduction}
+\input{sections/02-related-work}
+\input{sections/03-approach}
+\input{sections/04-evaluation}
+\input{sections/05-threats-to-validity}
+\input{sections/06-conclusion}
+
+\balance
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,paper}
+\end{document}

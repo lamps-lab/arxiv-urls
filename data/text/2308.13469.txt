@@ -1,0 +1,758 @@
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+1
+RestNet: Boosting Cross-Domain Few-Shot
+Segmentation with Residual Transformation
+Network
+Xinyang Huang
+hsinyanghuang7@gmail.com
+Chuang Zhu*
+czhu@bupt.edu.com
+Wenkai Chen
+wkchen@bupt.edu.com
+School of Artificial Intelligence,
+Beijing University of Posts and
+Telecommunications
+Beijing, China
+Abstract
+Cross-domain few-shot segmentation (CD-FSS) aims to achieve semantic segmen-
+tation in previously unseen domains with a limited number of annotated samples. Al-
+though existing CD-FSS models focus on cross-domain feature transformation, relying
+exclusively on inter-domain knowledge transfer may lead to the loss of critical intra-
+domain information. To this end, we propose a novel residual transformation network
+(RestNet) that facilitates knowledge transfer while retaining the intra-domain support-
+query feature information. Specifically, we propose a Semantic Enhanced Anchor Trans-
+form (SEAT) module that maps features to a stable domain-agnostic space using ad-
+vanced semantics. Additionally, an Intra-domain Residual Enhancement (IRE) mod-
+ule is designed to maintain the intra-domain representation of the original discriminant
+space in the new space. We also propose a mask prediction strategy based on proto-
+type fusion to help the model gradually learn how to segment. Our RestNet can trans-
+fer cross-domain knowledge from both inter-domain and intra-domain without requir-
+ing additional fine-tuning. Extensive experiments on ISIC, Chest X-ray, and FSS-1000
+show that our RestNet achieves state-of-the-art performance. Our code is available at
+https://github.com/bupt-ai-cz/RestNet.
+1
+Introduction
+Deep convolutional neural networks (CNNs) have demonstrated remarkable performance
+in diverse computer vision tasks, including semantic segmentation [24, 29, 43] and object
+detection [7, 13, 28]. Although CNNs are effective, their dependence on a large number
+of labeled data is still a constraint. To alleviate this dependence, the Few-shot Semantic
+Segmentation (FSS) [31] was proposed to learn the model of segmenting new classes with
+only a few pixel-level annotations. In recent years, significant progress has been made in the
+FSS [2, 21, 22, 26, 27, 32, 34, 36, 41, 42]. However, it is still challenging to apply them to
+cross-domain scenarios. To solve this problem, the Cross-Domain Few-Shot Segmentation
+*Corresponding author
+© 2023. The copyright of this document resides with its authors.
+It may be distributed unchanged freely in print or electronic forms.
+arXiv:2308.13469v2  [cs.CV]  14 Sep 2023
+
+2
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+(a) Previous CD-FFS Method [18]
+(b) Our Residual Transformation Network (RestNet)
+Figure 1:
+The comparison between the previous cross-domain few-shot segmentation
+method and our RestNet. (a) The previous CD-FSS method focused on knowledge trans-
+fer using an inter-domain transformation that may lose the intra-domain information, so
+additional target domain fine-tuning is required. (b) Our RestNet learns knowledge from
+both inter-domain and intra-domain. It performs cross-domain enhancement transformation
+while preserving the intra-domain matching information.
+(CD-FSS) was proposed [18] to generalize meta-knowledge from the source domain with
+sufficient labels to the target domain with limited labels.
+The CD-FSS problem considers a more realistic scenario: the model cannot access the
+target data during training, and the data distribution and label space in the test phase are
+different from those in the training phase. To accomplish the CD-FSS, PATNet [18] was pro-
+posed to perform a linear transformation on the support foreground features and query fea-
+tures, project them into domain-agnostic features, and compute the feature similarity in the
+new spaces before exporting the query mask. However, the cross-domain feature mapping
+by imprecise projection layers often makes the distribution alignment of features aligned in
+the original space fail in the new space. In the CD-FSS scenarios, it reflects reduced match-
+ing between intra-domain support and query samples, so additional fine-tuning is required
+in the target domain, as shown in Figure 1(a). In addition, due to the fine-grained differ-
+ences between support and query samples and the presence of support masks, the learning of
+knowledge may be biased towards the support samples even if they belong to the same class
+[40]. To address these problems, we propose the Residual Transformation Network (Rest-
+Net). It considers not only inter-domain transfer but also the preservation of intra-domain
+knowledge, as illustrated in Figure 1(b).
+For the inter-domain, we propose a novel Semantic Enhanced Anchor Transform (SEAT),
+which uses the attention to help the model learn advanced semantic features that are then
+mapped to domain unknown spaces for knowledge migration. Further, we propose a sim-
+ple and effective Intra-domain Residual Enhancement (IRE) mechanism. It associates the
+information of the original discriminative space to the present domain-agnostic space via
+residual connection [12] and helps the model to align the support and query features of the
+domain-agnostic feature space to enhance the intra-domain knowledge representation. The
+two mechanisms each help the model adapt more comprehensively to cross-domain small-
+
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+3
+sample tasks from different perspectives. Finally, we generate a coarse soft query mask and
+feed it to the network with the support mask through prototype fusion to obtain the final
+mask, which can help the model learn how to segment step by step.
+In summary, our contributions are summarized as follows:
+• We propose a Residual Transform network (RestNet) that uses the proposed SEAT and
+IRE modules to help the model preserve key information in the original domain while
+performing cross-domain few-shot segmentation.
+• We propose a new mask prediction strategy based on the prototype fusion. This strat-
+egy helps the proposed RestNet gradually learn how to segment the unseen domain.
+• Our method achieves state-of-the-art results on three CD-FSS benchmarks, namely
+ISIC, Chest X-ray, and FSS-1000. Our RestNet solves the problem of intra-domain
+knowledge loss under the condition of considering inter-domain knowledge transfer,
+which provides a new idea for future research in this field.
+2
+Related Work
+2.1
+Domain Adaptive Segmentation
+Domain adaptive segmentation has led to some achievements. The goal of the method is to
+transfer knowledge learned from a labeled source domain to an unlabeled or weakly labeled
+target domain. The method based on adversarial learning [4, 5, 8, 15] aims to learn domain
+invariant representations in features. In addition, the design loss function [14, 23, 37] to
+constrain the data distribution can also achieve feature alignment. These methods operate
+in settings where the target domain data can be accessed during training to drive model
+adaption and compensate for domain offsets. In contrast, our source and target domain have
+completely disjoint label spaces and no target data is required during the CD-FSS training.
+2.2
+Few-Shot Semantic Segmentation
+Unlike domain adaptive semantic segmentation, the target domain cannot be accessed by
+the FSS tasks during training. The goal is to segment new semantic objects in the image,
+with only a few labeled available. Current methods mainly focus on the improvement of the
+meta-learning stage. Prototype-based approach [27, 32, 36, 42] is to use methods to extract
+representative foreground or background prototypes that support data and then use different
+strategies to interact between different prototypes or between prototypes and query features.
+Relation-based methods [20, 21, 22, 26, 34, 41] also achieved success in the few-shot seg-
+mentation. HSNet [26] uses multi-scale dense matching to construct hypercorrelation and
+uses 4D convolution to capture context information. RePRI [2] presents a transduction infer-
+ence for feature extraction on a base class without meta-learning. However, these methods
+focus only on segmenting new categories from the same domain. Because of the large dif-
+ferences in cross-domain distributions, they cannot be extended to invisible domains.
+3
+Method
+3.1
+Problem Setting
+In the problem setting of the CD-FSS, there exists a source domain (Xs,Ys) and a target
+domain (Xt,Yt), where X denotes the distribution of the input data and Y denotes the space
+
+4
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+Figure 2: The framework of our RestNet. The model maps support and query features to a
+new domain-independent space using Semantic Enhanced Anchor Transform (SEAT). The
+Intra-Domain Residual Enhancement (IRE) module is designed to preserve the matching
+information of the original feature space in the new space. Next, the similarity between the
+support and query is calculated and input into the encoder and decoder to generate a rough
+mask. The final mask is obtained by a prototype fusion mechanism in the fine stage.
+of the data label. The input data distribution of the source domain is different from the target
+domain, and the label space of the source domain does not intersect with the target domain,
+i.e., Xs ̸= Xt and Ys ∩Yt = /0. The model is trained on the source domain and does not have
+access to the target data. We place it in a few-shot learning scenario [10] for training and
+inference based on the episode data (S,Q) as same as the previous work [18]. For the few-
+shot setup, the support set S = (Ii
+s,Mi
+s)K
+i=1 contains K image mask pairs, where Ii
+s denotes the
+i-th support image and Mi
+s denotes the corresponding binary mask. Similarly, the query set
+is defined as Q = (Ii
+q,Mi
+q)K
+i=1. In the training or meta-training phase, the model obtains the
+support set S and the query set Iq from a specific class c as input and predicts the mask Mq
+of the query image. In the testing or meta-testing phase, the model performance is evaluated
+by providing the model with the support set and using the query set of the target domain.
+3.2
+Overview
+Figure 2 illustrates our RestNet, which incorporates two key components to enable rapid
+CD-FSS adaptation across both inter- and intra-domain: Semantic Enhancement Anchor
+Transformation (SEAT) and Intra-domain Residual Enhancement (IRE) module. Given the
+support set S = (Ii
+s,Mi
+s)K
+i=1 and the query image Iq, we first derive a multi-level feature map
+by extracting the features of different layers of the shared backbone weights. We map sup-
+port and query features to a new domain-agnostic space through the semantic enhancement
+anchor transformation (SEAT). Then, the intra-domain residual enhancement (IRE) module
+is designed to preserve the matching information of the original feature space in the new
+feature space. After realignment, we calculate the similarity between the support and query
+features and input it into the 4D convolution encoder and 2D convolution decoder [26] to
+generate a coarse query mask. The coarse mask is fed to the network with the support mask
+through the prototype fusion mechanism to obtain the final mask.
+
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+5
+3.3
+Semantic Enhanced Anchor Transformation
+To help the model transfer the cross-domain knowledge, we propose a novel semantic en-
+hancement anchor transformation (SEAT). The goal is to learn a stable pyramid anchor layer
+using advanced semantic features derived from a unified attention mechanism to translate
+features into domain-agnostic features. The downstream partitioning module will be easier
+to predict in such a stable space.
+Semantic Enhancement. Before the transformation, the quality of segmentation predic-
+tion is highly dependent on the quality of advanced features from the encoder. If the encoder
+fails to provide informative advanced features, it is impossible to obtain useful domain-
+agnostic features. Thus, we use a unified attention mechanism [38] to enhance the support
+and query feature semantics at intermediate layer l:
+ˆFl = σ(Conv([AvgPool( ˆFl);MaxPool( ˆFl)]))⊗ˆFl,
+(1)
+where ˆFl denotes the masked feature, σ denotes the sigmoid function, [·;·] represents the
+concatenation and ⊗represents the element-wise multiplication. The unified spatial attention
+mechanism can share an attention extraction module for the feature layers of different feature
+channels and support-query samples. It can reduce the number of parameters to be learned
+and help the model learn a unified domain-invariant knowledge between different feature
+maps from the support and query.
+Anchor Transformation. Inspired by the previous work [18, 30], we use the linear
+transformation matrix as the transformation mapper. The matrix can be calculated from
+the anchor layer parameter matrix and the support prototype. Taking 1-way 1-shot as an
+example, for the intermediate feature layer {Fl
+s }L
+l=1 supporting the image, the l-th foreground
+support prototype is as follows:
+cl
+s,f = ∑i ∑j Fl,i, j
+s
+ψl(Mi, j
+s )
+∑i ∑j ψl(Mi, j
+s )
+,
+(2)
+where ψl(·) denotes the bilinear interpolation, Fl,i, j
+s
+and Mi, j
+s
+represent the pixel values cor-
+responding to the support feature and the mask in row i and column j respectively. Similarly,
+the supporting background prototype cl
+s,b can be obtained in the same way. Therefore, given
+the weight matrix of anchor layer A, the definition of transformation matrix is as follows:
+WCs = A,
+(3)
+where Cs =
+h cs,f
+∥cs,f ∥,
+cs,b
+∥cs,b∥
+i
+, A =
+h a f
+∥a f ∥,
+ab
+∥ab∥
+i
+and a is the anchor vector that has the length
+matching the number of channels in the high-level feature. Therefore, we can calculate
+the transformation matrix W conveniently. However, since the prototype Cs is usually a
+non-square matrix, we can calculate its generalized inverse [1] with C+
+s = {CT
+s Cs}−1CT
+s .
+Therefore, the transformation matrix of the l-th intermediate layer is calculated as Wl =
+AlCl+
+s . Similar to [18], we have three anchor layers for low, medium, and high-level features
+respectively. Then, we can map the support and query features to stable domain-agnostic
+space more effectively through this transformation matrix.
+3.4
+Intra-domain Residual Enhancement
+Considering only inter-domain knowledge transfer, the model’s ability to perform few-shot
+tasks in unseen domains is limited. This limitation arises from the fact that the features are
+
+6
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+transformed into a unified space solely through an anchor layer, leading to the loss of crucial
+intra-domain information. This loss is reflected in the reduced matching between support-
+query features within the same domain. To address this issue, we propose an intra-domain
+residual enhancement module that leverages residual connections to preserve essential infor-
+mation from the original space to help the model perform well in the unseen domain.
+Formally, for the transformed feature ˆFl
+trans = Wl ˆFl, the definition of intra-domain resid-
+ual enhancement is as follows:
+Rl = ˆFl
+trans ⊕ˆFl,
+(4)
+where ⊕denotes the residual connection and ˆFl denotes the masked feature. The residual
+enhancement module reduces the cross-domain knowledge forgetting caused by anchor layer
+transformation by introducing support and query information in the original domain. It does
+not introduce additional parameters or require additional fine-tuning in the target domain.
+For each residual enhancement support-query pair, the cosine similarity is calculated to
+form a 4D hypercorrelation tensor:
+Cosl
+i, j = ReLU
+ 
+Rl
+s(i)·Rl
+q( j)
+∥Rls(i)∥
+Rlq(j)
+
+!
+,
+(5)
+where Rl
+s(i) and Rl
+q( j) means the i-th support and j-th query residual enhancement feature.
+The similarity is fed to the 4D convolution encoder and the 2D convolution decoder to gen-
+erate the query mask. The prediction query mask and the ground truth mask are used to
+calculate the cross-entropy loss, and the model parameters are updated by backpropagation.
+3.5
+Mask Prediction Strategy
+Due to the fine-grained difference between the support query samples and the lack of the
+query mask, the learning of knowledge may also be biased towards the support samples [40].
+At the same time, we can not calculate the query prototype, resulting in the transformation
+matrix being biased toward the support. To solve the above problems, we use the idea of
+coarse to fine [25] to generate a coarse query mask, and then feed it and the support mask to
+the network through the prototype fusion mechanism to get the final prediction mask.
+Specifically, the model first generates a coarse soft mask ˆMq for query samples, and the
+query foreground mask is calculated as follows:
+ˆcl
+q, f = ∑i ∑j Fl,i, j
+q
+ψl( ˆMi, j
+q )
+∑i ∑j ψl( ˆMi, j
+q )
+,
+(6)
+where Fl,i, j
+q
+and ˆMi, j
+q
+represent the pixel values corresponding to the query feature and the
+soft mask respectively. The background mask for the query can also be calculated in the same
+way. Then we use a simple prototype fusion mechanism to get the final unbiased prototype:
+cl
+f = αcl
+s, f +(1−α)ˆcl
+q, f ,
+(7)
+where α is a learnable parameter. Bring the fused prototype into Equation 3 to get the exact
+transformation matrix and go through subsequent modules to get the final query mask. This
+method not only solves the potential phenomenon of supporting sample over-fitting in FSS
+but also helps the model learn how to segment across domains step by step. Finally, we
+optimize the whole model through the cross-entropy loss.
+
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+7
+Table 1: The results of comparison with FSS and CD-FSS methods under 1-way 1-shot and
+5-shot settings on the CD-FSS benchmark. It is noteworthy that all methods are trained in
+PASCAL VOC and tested on the CD-FSS benchmark.
+Methods
+Backbone
+ISIC
+Chest X-ray
+FSS-1000
+Average
+1-shot
+5-shot
+1-shot
+5-shot
+1-shot
+5-shot
+1-shot
+5-shot
+Few-shot Segmentation Methods
+AMP [32]
+VGG-16
+28.42
+30.41
+51.23
+53.04
+57.18
+59.24
+45.61
+47.56
+PGNet [41]
+ResNet-50
+21.86
+21.25
+33.95
+27.96
+62.42
+62.74
+39.41
+37.32
+PANet [36]
+ResNet-50
+25.29
+33.99
+57.75
+69.31
+69.15
+71.68
+50.73
+58.33
+CaNet [42]
+ResNet-50
+25.16
+28.22
+28.35
+28.62
+70.67
+72.03
+41.39
+42.96
+RPMMs [39]
+ResNet-50
+18.02
+20.04
+30.11
+30.82
+65.12
+67.06
+37.75
+39.31
+PFENet [34]
+ResNet-50
+23.50
+23.83
+27.22
+27.57
+70.87
+70.52
+40.53
+40.64
+RePRI [2]
+ResNet-50
+23.27
+26.23
+65.08
+65.48
+70.96
+74.23
+53.10
+55.31
+HSNet [26]
+ResNet-50
+31.20
+35.10
+51.88
+54.36
+77.53
+80.99
+53.54
+56.82
+Cross-domain Few-shot Segmentation Methods
+PATNet [18]
+VGG-16
+33.07
+45.83
+57.83
+60.55
+71.60
+76.17
+54.17
+60.85
+RestNet (Ours)
+VGG-16
+37.00
+43.10
+62.03
+62.41
+75.20
+78.81
+58.08
+61.44
+PATNet [18]
+ResNet-50
+41.16
+53.58
+66.61
+70.20
+78.59
+81.23
+62.12
+68.34
+RestNet (Ours)
+ResNet-50
+42.25
+51.10
+70.43
+73.69
+81.53
+84.89
+64.74
+69.89
+4
+Experiments
+4.1
+Implementation Details
+Following the previous approach, we used PASCAL VOC 2012 [9] and SBD [11] as training
+domains, and then tested our models on ISIC [6, 35], Chest X-ray [3, 16], and FSS-1000
+[19], respectively. Each run contains 1200 tasks that contain all datasets except FSS-1000.
+FSS-1000 has 2400 tasks per run [18]. We chose VGG-16 [33] and ResNet-50 [12] for
+feature extraction. During the training, we kept these weights frozen and selected the feature
+map as the same as the previous work [18]. We employed Adam [17] as the optimizer with
+a learning rate of 1e-3.
+4.2
+Experimental Results
+As shown in Table 1, our average results at 1-shot and 5-shot show that compared to exist-
+ing methods, the mIOU of VGG-16 has increased by 3.91% and 0.59%, and the mIOU of
+ResNet-50 has increased by 2.62% and 1.55%. In the case of a large gap between the fields in
+the source domain dataset, our model achieves SOTA in all results for Chest X-rays. In ISIC,
+the mIOU of VGG-16 increased by 3.93% (1-shot), and the mIOU of ResNet-50 increased
+by 1.09% (1-shot). For FSS-1000, which has a relatively small gap from the source domain
+dataset, our model surpasses all existing methods and validates its advantages in CD-FSS. In
+addition, we show some qualitative results of the proposed method on different datasets in
+Figure 3. These results prove that our method can improve the generalization ability, which
+benefits from that our method can learn cross-domain knowledge from different views.
+4.3
+Ablation Study
+4.3.1
+Component Analysis
+Our method mainly includes three parts, namely the Semantic Enhanced Anchor Transfor-
+mation (SEAT) module and the Residual Enhancement (IRE) module, and Mask Prediction
+Strategy (MPS). We validated the effectiveness of each component and presented the results
+
+8
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+Figure 3: Qualitative results of our model for 1-way 1-shot in different CD-FSS datasets.
+The model is trained using PASCAL VOC. Best color view and zoom in.
+in Table 2. It can be concluded that SEAT and IRE have brought significant improvements
+to the model from different perspectives, and MPS is also indispensable.
+4.3.2
+Effect of Different Attention
+We mentioned a unified attention mechanism in Section 3.3. In Table 3, we calculated its
+results on the FSS-1000 with different attention mechanisms (i.e., support and query non-
+shared attention mechanism modules). The results show that a unified attention mechanism
+can not only help the model reduce learnable parameters but also help the model learn unified
+support query attention information to achieve better segmentation results.
+Table 2:
+Ablation study of key
+modules on FSS-1000.
+Baseline
+SEAT
+IRE
+MPS
+1-shot mIOU
+✓
+77.53
+✓
+✓
+78.21
+✓
+✓
+✓
+81.03
+✓
+✓
+✓
+✓
+81.53
+Table 3: Ablation study of dif-
+ferent attention on FSS-1000.
+Method
+1-shot mIOU
+Different Attention
+81.69
+Unified Attention
+82.03
+4.4
+Additional Analysis
+4.4.1
+Visualization of Intra-domain Knowledge
+In Section 3.4, we mentioned the importance of intra-domain matching similarity. To quan-
+tify this attribute, for the same domain support and query samples, we calculate the support-
+query similarity in Equation 5 and count the pixel pairs in each similarity whose value is
+greater than zero. We call these pixel pairs intra-domain active matching. The Intra-domain
+active matching reflects the knowledge learning between support and query samples from
+the same domain, which can well represent the retention of intra-domain knowledge by the
+model after cross-domain feature projection in the CD-FSS.
+Specifically, we visualized the active matching of our method and existing methods [18]
+during the training process, as shown in Figure 4(a), where Original denotes no feature trans-
+formation. Compared to existing methods, our method can well preserve the intra-domain
+
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+9
+(a) Activate Matching
+(b) PATNet [18]
+(c) RestNet (Ours)
+Figure 4: Visualization of the Intra-domain support-query activate matching.
+Table 4: Comparison of the number of additional parameters of different methods.
+Method
+HSNet [26]
+PATNet [18]
+RestNet (Ours)
+Additional Parameters (M)
+2.5740 M
+2.5809 M
+2.5812 M
+knowledge in the original space and reduce the loss caused by cross-domain transformation.
+Further, we visualize the support-query similarity for the 30th epoch. For ease of visualiza-
+tion, we reshape the similarity from R∈H×W×H×W to R∈HW×HW, as shown in Figure 4(b)
+and Figure 4(c). It can be shown that our method can activate more intra-domain matching,
+helping the model utilize more intra-domain support-query information.
+4.4.2
+Comparison of Model Parameter Quantities
+In Table 4, we compare the number of parameters with those of existing FSS methods and
+CD-FSS methods. We calculate the number of additional parameters relative to the back-
+bone. The results show that our method only introduces a very small number of parameters
+but has additional performance improvements compared with the recent CD-FSS method.
+5
+Conclusion
+In this work, we propose a residual transform network (RestNet) to solve the cross-domain
+few-shot segmentation (CD-FSS). It is to comprehensively help the model to transfer knowl-
+edge with few samples from both inter-domain and intra-domain perspectives. To achieve
+this, we propose a Semantic Enhanced Anchor Transformation (SEAT) module to help the
+model learn domain-independent features using advanced semantic features. In addition, an
+intra-domain residual enhancement (IRE) module is also involved to help the model enhance
+intra-domain information while transferring knowledge between domains. Finally, we use
+the mask prediction strategy based on prototype fusion to help the model gradually learn
+how to segment the unseen domain. On the three CD-FSS benchmarks, several experiments
+have proved that our RestNet achieves state-of-the-art performance.
+
+10
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+Acknowledgement
+This work was supported by the National Key R&D Program of China (2021ZD0109800),
+by the National Natural Science Foundation of China (81972248).
+References
+[1] Adi Ben-Israel and Thomas NE Greville. Generalized inverses: theory and applica-
+tions, volume 15. Springer Science & Business Media, 2003.
+[2] Malik Boudiaf, Hoel Kervadec, Ziko Imtiaz Masud, Pablo Piantanida, Ismail Ben Ayed,
+and Jose Dolz. Few-shot segmentation without meta-learning: A good transductive
+inference is all you need? In Proceedings of the IEEE/CVF Conference on Computer
+Vision and Pattern Recognition, pages 13979–13988, 2021.
+[3] Sema Candemir, Stefan Jaeger, Kannappan Palaniappan, Jonathan P Musco, Rahul K
+Singh, Zhiyun Xue, Alexandros Karargyris, Sameer Antani, George Thoma, and
+Clement J McDonald. Lung segmentation in chest radiographs using anatomical at-
+lases with nonrigid registration. IEEE transactions on medical imaging, 33(2):577–
+590, 2013.
+[4] Yi-Hsin Chen, Wei-Yu Chen, Yu-Ting Chen, Bo-Cheng Tsai, Yu-Chiang Frank Wang,
+and Min Sun. No more discrimination: Cross city adaptation of road scene segmenters.
+In Proceedings of the IEEE International Conference on Computer Vision, pages 1992–
+2001, 2017.
+[5] Yuhua Chen, Wen Li, and Luc Van Gool. Road: Reality oriented adaptation for seman-
+tic segmentation of urban scenes. In Proceedings of the IEEE conference on computer
+vision and pattern recognition, pages 7892–7901, 2018.
+[6] Noel Codella, Veronica Rotemberg, Philipp Tschandl, M Emre Celebi, Stephen Dusza,
+David Gutman, Brian Helba, Aadi Kalloo, Konstantinos Liopyris, Michael Marchetti,
+et al. Skin lesion analysis toward melanoma detection 2018: A challenge hosted by
+the international skin imaging collaboration (isic). arXiv preprint arXiv:1902.03368,
+2019.
+[7] Jifeng Dai, Haozhi Qi, Yuwen Xiong, Yi Li, Guodong Zhang, Han Hu, and Yichen
+Wei. Deformable convolutional networks. In Proceedings of the IEEE international
+conference on computer vision, pages 764–773, 2017.
+[8] Liang Du, Jingang Tan, Hongye Yang, Jianfeng Feng, Xiangyang Xue, Qibao Zheng,
+Xiaoqing Ye, and Xiaolin Zhang. Ssf-dan: Separated semantic feature based domain
+adaptation network for semantic segmentation. In Proceedings of the IEEE/CVF Inter-
+national Conference on Computer Vision, pages 982–991, 2019.
+[9] Mark Everingham, Luc Van Gool, Christopher KI Williams, John Winn, and Andrew
+Zisserman. The pascal visual object classes (voc) challenge. International journal of
+computer vision, 88:303–308, 2009.
+
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+11
+[10] Chelsea Finn and Sergey Levine. Meta-learning and universality: Deep representa-
+tions and gradient descent can approximate any learning algorithm. arXiv preprint
+arXiv:1710.11622, 2017.
+[11] Bharath Hariharan, Pablo Arbeláez, Lubomir Bourdev, Subhransu Maji, and Jitendra
+Malik. Semantic contours from inverse detectors. In 2011 international conference on
+computer vision, pages 991–998. IEEE, 2011.
+[12] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning
+for image recognition. In Proceedings of the IEEE conference on computer vision and
+pattern recognition, pages 770–778, 2016.
+[13] Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick. Mask r-cnn. In Pro-
+ceedings of the IEEE international conference on computer vision, pages 2961–2969,
+2017.
+[14] Joy Hsu, Wah Chiu, and Serena Yeung. Darcnn: Domain adaptive region-based convo-
+lutional neural network for unsupervised instance segmentation in biomedical images.
+In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recog-
+nition, pages 1003–1012, 2021.
+[15] Jiaxing Huang, Dayan Guan, Aoran Xiao, and Shijian Lu. Multi-level adversarial net-
+work for domain adaptive semantic segmentation. Pattern Recognition, 123:108384,
+2022.
+[16] Stefan Jaeger, Alexandros Karargyris, Sema Candemir, Les Folio, Jenifer Siegelman,
+Fiona Callaghan, Zhiyun Xue, Kannappan Palaniappan, Rahul K Singh, Sameer An-
+tani, et al. Automatic tuberculosis screening using chest radiographs. IEEE transac-
+tions on medical imaging, 33(2):233–245, 2013.
+[17] Diederik P Kingma and Jimmy Ba. Adam: A method for stochastic optimization. arXiv
+preprint arXiv:1412.6980, 2014.
+[18] Shuo Lei, Xuchao Zhang, Jianfeng He, Fanglan Chen, Bowen Du, and Chang-Tien Lu.
+Cross-domain few-shot semantic segmentation. In Computer Vision–ECCV 2022: 17th
+European Conference, Tel Aviv, Israel, October 23–27, 2022, Proceedings, Part XXX,
+pages 73–90. Springer, 2022.
+[19] Xiang Li, Tianhan Wei, Yau Pun Chen, Yu-Wing Tai, and Chi-Keung Tang. Fss-1000:
+A 1000-class dataset for few-shot segmentation. In Proceedings of the IEEE/CVF con-
+ference on computer vision and pattern recognition, pages 2869–2878, 2020.
+[20] Yiwen Li, Gratianus Wesley Putra Data, Yunguan Fu, Yipeng Hu, and Victor Adrian
+Prisacariu. Few-shot semantic segmentation with self-supervision from pseudo-classes.
+In 32nd British Machine Vision Conference 2021, BMVC 2021, November 22-25, 2021,
+2021.
+[21] Jie Liu, Yanqi Bao, Wenzhe Yin, haochen wang, Yang Gao, Jan-Jakob Sonke, and Ef-
+stratios Gavves. Few-shot semantic segmentation with support-induced graph convo-
+lutional network. In 33rd British Machine Vision Conference 2022, BMVC 2022, Lon-
+don, UK, November 21-24, 2022. BMVA Press, 2022. URL https://bmvc2022.
+mpi-inf.mpg.de/0126.pdf.
+
+12
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+[22] Weide Liu, Chi Zhang, Guosheng Lin, and Fayao Liu. Crnet: Cross-reference networks
+for few-shot segmentation. In Proceedings of the IEEE/CVF Conference on Computer
+Vision and Pattern Recognition, pages 4165–4173, 2020.
+[23] Yuang Liu, Wei Zhang, and Jun Wang. Source-free domain adaptation for semantic
+segmentation. In Proceedings of the IEEE/CVF Conference on Computer Vision and
+Pattern Recognition, pages 1215–1224, 2021.
+[24] Jonathan Long, Evan Shelhamer, and Trevor Darrell. Fully convolutional networks for
+semantic segmentation. In Proceedings of the IEEE conference on computer vision and
+pattern recognition, pages 3431–3440, 2015.
+[25] David Marr. Vision: A computational investigation into the human representation and
+processing of visual information. MIT press, 2010.
+[26] Juhong Min, Dahyun Kang, and Minsu Cho. Hypercorrelation squeeze for few-shot
+segmentation. In Proceedings of the IEEE/CVF international conference on computer
+vision, pages 6941–6952, 2021.
+[27] Atsuro Okazawa. Interclass prototype relation for few-shot segmentation. In Computer
+Vision–ECCV 2022: 17th European Conference, Tel Aviv, Israel, October 23–27, 2022,
+Proceedings, Part XXIX, pages 362–378. Springer, 2022.
+[28] Joseph Redmon, Santosh Divvala, Ross Girshick, and Ali Farhadi. You only look once:
+Unified, real-time object detection. In Proceedings of the IEEE conference on computer
+vision and pattern recognition, pages 779–788, 2016.
+[29] Olaf Ronneberger, Philipp Fischer, and Thomas Brox. U-net: Convolutional networks
+for biomedical image segmentation.
+In Medical Image Computing and Computer-
+Assisted Intervention–MICCAI 2015: 18th International Conference, Munich, Ger-
+many, October 5-9, 2015, Proceedings, Part III 18, pages 234–241. Springer, 2015.
+[30] Jun Seo, Young-Hyun Park, Sung Whan Yoon, and Jaekyun Moon. Task-adaptive fea-
+ture transformer with semantic enrichment for few-shot segmentation. arXiv preprint
+arXiv:2202.06498, 2022.
+[31] Amirreza Shaban, Shray Bansal, Zhen Liu, Irfan Essa, and Byron Boots. One-shot
+learning for semantic segmentation. arXiv preprint arXiv:1709.03410, 2017.
+[32] Mennatullah Siam, Boris N Oreshkin, and Martin Jagersand. Amp: Adaptive masked
+proxies for few-shot segmentation.
+In Proceedings of the IEEE/CVF International
+Conference on Computer Vision, pages 5249–5258, 2019.
+[33] Karen Simonyan and Andrew Zisserman. Very deep convolutional networks for large-
+scale image recognition. arXiv preprint arXiv:1409.1556, 2014.
+[34] Zhuotao Tian, Hengshuang Zhao, Michelle Shu, Zhicheng Yang, Ruiyu Li, and Jiaya
+Jia. Prior guided feature enrichment network for few-shot segmentation. IEEE trans-
+actions on pattern analysis and machine intelligence, 44(2):1050–1065, 2020.
+[35] Philipp Tschandl, Cliff Rosendahl, and Harald Kittler. The ham10000 dataset, a large
+collection of multi-source dermatoscopic images of common pigmented skin lesions.
+Scientific data, 5(1):1–9, 2018.
+
+HUANG, ZHU, CHEN: RESTNET: BOOSTING CROSS-DOMAIN FEW-SHOT
+13
+[36] Kaixin Wang, Jun Hao Liew, Yingtian Zou, Daquan Zhou, and Jiashi Feng. Panet:
+Few-shot image semantic segmentation with prototype alignment. In proceedings of
+the IEEE/CVF international conference on computer vision, pages 9197–9206, 2019.
+[37] Wenguan Wang, Tianfei Zhou, Fisher Yu, Jifeng Dai, Ender Konukoglu, and Luc
+Van Gool. Exploring cross-image pixel contrast for semantic segmentation. In Pro-
+ceedings of the IEEE/CVF International Conference on Computer Vision, pages 7303–
+7313, 2021.
+[38] Sanghyun Woo, Jongchan Park, Joon-Young Lee, and In So Kweon. Cbam: Convolu-
+tional block attention module. In Proceedings of the European conference on computer
+vision (ECCV), pages 3–19, 2018.
+[39] Boyu Yang, Chang Liu, Bohao Li, Jianbin Jiao, and Qixiang Ye. Prototype mixture
+models for few-shot semantic segmentation. In Computer Vision–ECCV 2020: 16th
+European Conference, Glasgow, UK, August 23–28, 2020, Proceedings, Part VIII 16,
+pages 763–778. Springer, 2020.
+[40] Zican Zha, Hao Tang, Yunlian Sun, and Jinhui Tang. Boosting few-shot fine-grained
+recognition with background suppression and foreground alignment. IEEE Transac-
+tions on Circuits and Systems for Video Technology, 2023.
+[41] Chi Zhang, Guosheng Lin, Fayao Liu, Jiushuang Guo, Qingyao Wu, and Rui Yao.
+Pyramid graph networks with connection attentions for region-based one-shot semantic
+segmentation. In Proceedings of the IEEE/CVF International Conference on Computer
+Vision, pages 9587–9595, 2019.
+[42] Chi Zhang, Guosheng Lin, Fayao Liu, Rui Yao, and Chunhua Shen. Canet: Class-
+agnostic segmentation networks with iterative refinement and attentive few-shot learn-
+ing. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+Recognition, pages 5217–5226, 2019.
+[43] Hengshuang Zhao, Jianping Shi, Xiaojuan Qi, Xiaogang Wang, and Jiaya Jia. Pyramid
+scene parsing network. In Proceedings of the IEEE conference on computer vision and
+pattern recognition, pages 2881–2890, 2017.
+

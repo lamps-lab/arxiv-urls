@@ -1,0 +1,882 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>ITA-ELECTION-2022: A multi-platform dataset of social media conversations around the 2022 Italian general election</title>
+<!--Generated on Thu Dec  5 01:44:47 2024 by LaTeXML (version 0.8.8) http://dlmf.nist.gov/LaTeXML/.-->
+
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<link rel="stylesheet" href="ltx-amsart.css" type="text/css">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="keywords" lang="en" content="advertisement,  Italy,  multi-platform,  politics,  social media">
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line ltx_leqno">
+<h1 class="ltx_title ltx_title_document">ITA-ELECTION-2022: A multi-platform dataset of social media
+<br class="ltx_break">conversations around the 2022 Italian general election</h1>
+<div class="ltx_authors">
+<span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Francesco Pierri
+</span><span class="ltx_author_notes">
+<span class="ltx_contact ltx_role_email"><a href="mailto:francesco.pierri@polimi.it">francesco.pierri@polimi.it</a>
+</span>
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_text ltx_affiliation_institution">Dipartimento di Elettronica, Informazione e Bioingegneria, Politecnico di Milano</span><span class="ltx_text ltx_affiliation_city">Milano</span><span class="ltx_text ltx_affiliation_country">Italy</span>
+</span></span></span>
+<span class="ltx_author_before">, </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Geng Liu
+</span><span class="ltx_author_notes">
+<span class="ltx_contact ltx_role_email"><a href="mailto:geng.liu@polimi.it">geng.liu@polimi.it</a>
+</span>
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_text ltx_affiliation_institution">Dipartimento di Elettronica, Informazione e Bioingegneria, Politecnico di Milano</span><span class="ltx_text ltx_affiliation_city">Milano</span><span class="ltx_text ltx_affiliation_country">Italy</span>
+</span></span></span>
+<span class="ltx_author_before"> and </span><span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Stefano Ceri
+</span><span class="ltx_author_notes">
+<span class="ltx_contact ltx_role_email"><a href="mailto:stefano.ceri@polimi.it">stefano.ceri@polimi.it</a>
+</span>
+<span class="ltx_contact ltx_role_affiliation"><span class="ltx_text ltx_affiliation_institution">Dipartimento di Elettronica, Informazione e Bioingegneria, Politecnico di Milano</span><span class="ltx_text ltx_affiliation_city">Milano</span><span class="ltx_text ltx_affiliation_country">Italy</span>
+</span></span></span>
+</div>
+<div class="ltx_dates">(2023)</div>
+
+<div class="ltx_abstract">
+<h6 class="ltx_title ltx_title_abstract">Abstract.</h6>
+    
+<p class="ltx_p">Online social media play a major role in shaping public discourse and opinion, especially during political events.
+We present the first public multi-platform dataset of Italian-language political conversations, focused on the 2022 Italian general election taking place on September 25th. Leveraging public APIs and a keyword-based search, we collected millions of posts published by users, pages and groups on Facebook, Instagram and Twitter, along with metadata of TikTok and YouTube videos shared on these platforms, over a period of four months. We augmented the dataset with a collection of political ads sponsored on Meta platforms, and a list of social media handles associated with political representatives. Our data resource will allow researchers and academics to further our understanding of the role of social media in the democratic process.</p>
+  
+</div>
+<div class="ltx_keywords">advertisement, Italy, multi-platform, politics, social media
+</div>
+<span class="ltx_note ltx_note_frontmatter ltx_role_copyright"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">copyright: </span>acmcopyright</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_journalyear"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">journalyear: </span>2023</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_doi"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">doi: </span>XXXXXXX.XXXXXXX</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_conference"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">conference: </span>32nd ACM International Conference on Information and Knowledge Management; October 21–25, 2023; University of Birmingham and Eastside Rooms, UK</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_booktitle"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">booktitle: </span>CIKM ’23: 32nd ACM International Conference on Information and Knowledge Management, October 21–25, 2023, University of Birmingham and Eastside Rooms, UK</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_price"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">price: </span>15.00</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_isbn"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">isbn: </span>978-1-4503-XXXX-X/23/10</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_ccs"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">ccs: </span>Applied computing Voting / election technologies</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_ccs"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">ccs: </span>Computer systems organization Embedded systems</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_ccs"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">ccs: </span>Computer systems organization Redundancy</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_ccs"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">ccs: </span>Computer systems organization Robotics</span></span></span><span class="ltx_note ltx_note_frontmatter ltx_role_ccs"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">ccs: </span>Networks Network reliability</span></span></span>
+<section id="S1" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">1. </span>Introduction</h2>
+
+<div id="S1.p1" class="ltx_para">
+<p class="ltx_p">Online social media provide researchers and academics with unprecedented opportunities to observe a wide range of political and societal phenomena <cite class="ltx_cite ltx_citemacro_citep">(Rossi et al., <a href="#bib.bib22" title="" class="ltx_ref">2021</a>)</cite>. They also play a critical role in shaping public opinion during political events <cite class="ltx_cite ltx_citemacro_citep">(Vitak et al., <a href="#bib.bib24" title="" class="ltx_ref">2011</a>)</cite>, and represent a rich source of data to study the interplay between political actors’ campaigns <cite class="ltx_cite ltx_citemacro_citep">(Sahly et al., <a href="#bib.bib23" title="" class="ltx_ref">2019</a>)</cite>, media outlets’ agenda settings <cite class="ltx_cite ltx_citemacro_citep">(Kim et al., <a href="#bib.bib18" title="" class="ltx_ref">2016</a>)</cite>, and users’ news consumption <cite class="ltx_cite ltx_citemacro_citep">(Allcott and Gentzkow, <a href="#bib.bib4" title="" class="ltx_ref">2017</a>)</cite>.</p>
+</div>
+<div id="S1.p2" class="ltx_para">
+<p class="ltx_p">In Italy, as of 2022<span id="footnote1" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">1</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">1</sup>
+            <span class="ltx_tag ltx_tag_note">1</span>
+            
+            
+            
+          <a href="www.statista.com/statistics/1311549/top-social-platforms-italy/" title="" class="ltx_ref ltx_url ltx_font_typewriter">www.statista.com/statistics/1311549/top-social-platforms-italy/</a></span></span></span>, YouTube is the platform used by the largest amount of internet users (88%), followed by Meta platforms (64%) and TikTok (54%), whereas Twitter only accounts for approximately 7%<span id="footnote2" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">2</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">2</sup>
+            <span class="ltx_tag ltx_tag_note">2</span>
+            
+            
+            
+          <a href="datareportal.com/reports/digital-2022-italy" title="" class="ltx_ref ltx_url ltx_font_typewriter">datareportal.com/reports/digital-2022-italy</a></span></span></span>. However, previous studies of online social media during Italian elections and referendum mostly focused on Twitter <cite class="ltx_cite ltx_citemacro_citep">(Rossi et al., <a href="#bib.bib22" title="" class="ltx_ref">2021</a>)</cite>, due to the large availability of data via its APIs. In this work, instead, we present a public data resource of political conversations and user-generated content shared around the 2022 Italian general election, which allows researchers and academics to study multiple social platforms simultaneously.</p>
+</div>
+<div id="S1.p3" class="ltx_para">
+<p class="ltx_p">The 2022 Italian general election was the first ever to take place in autumn, as a consequence of the fall of the government of national unity led by Mario Draghi in July<span id="footnote3" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">3</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">3</sup>
+            <span class="ltx_tag ltx_tag_note">3</span>
+            
+            
+            
+          <a href="https://www.reuters.com/world/europe/italys-meloni-sworn-head-right-wing-government-2022-10-22/" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://www.reuters.com/world/europe/italys-meloni-sworn-head-right-wing-government-2022-10-22/</a></span></span></span>. The election had a record-low voter turnout and it was won by the right-wing coalition of Giorgia Meloni with over 43% of the vote share. Among the opponents, the Centre-left coalition led by Enrico Letta obtained approximately 25% of the voters, the populist Movimento 5 Stelle led by former PM Giuseppe Conte reached less than 16%, and the liberal and centrist Third Pole, which included former PM Matteo Renzi, obtained almost 8% of the vote share.</p>
+</div>
+<div id="S1.p4" class="ltx_para">
+<p class="ltx_p">We present <span class="ltx_text ltx_font_typewriter">ITA-ELECTION-2022</span>, the first public multi-platform dataset of Italian-language political conversations taking place on online social media, with a focus on the 2022 Italian general election. We collected millions of social media posts from Facebook, Instagram and Twitter, as well as advertisements sponsored on Meta platforms and metadata for TikTok and YouTube videos shared on the aforementioned platforms. We finally augment the dataset with a collection of social media handles associated with Italian political representatives. To collect the data, we employed a snowball sampling procedure and curated a list of relevant terms to accordingly perform a keyword-based search during a period of four months (July 2022 - October 2022). We provide public access to the data via GitHub and DataVerse repositories, as detailed next.</p>
+</div>
+<div id="S1.p5" class="ltx_para">
+<p class="ltx_p">Given the nature of multi-platform, our dataset offers a unique opportunity for researchers to explore online political discourse during election seasons. It is particularly beneficial for researchers in those fields such as political science, sociology, digital ethics, and information disorder studies to study political communication, and information dissemination on social media.</p>
+</div>
+<div id="S1.p6" class="ltx_para">
+<p class="ltx_p">The outline of this paper is the following: in the next section we review existing public data resources related to the present work; then, we describe the data collection procedure(s) carried out to build the dataset; next, we describe a few potential applications of the collected data; finally, we discuss limitations, draw conclusions and provide some ethical remarks.</p>
+</div>
+</section>
+<section id="S2" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">2. </span>Related Work</h2>
+
+<div id="S2.p1" class="ltx_para">
+<p class="ltx_p">There are several public datasets that allow to study social media conversations around political issues. We focus our literature review on the Italian context, and then describe a few datasets related to other countries. We also refer the interested reader to <cite class="ltx_cite ltx_citemacro_citep">(Rossi et al., <a href="#bib.bib22" title="" class="ltx_ref">2021</a>)</cite> for an overview of studies that describe the interplay between social media and Italian politics.</p>
+</div>
+<div id="S2.p2" class="ltx_para">
+<p class="ltx_p"><cite class="ltx_cite ltx_citemacro_citep">(Basile et al., <a href="#bib.bib5" title="" class="ltx_ref">2018</a>)</cite> collect tweets in the Italian language continuously from 2012 to 2018, extracting a number of smaller datasets enriched with different kinds of annotations for linguistic purposes. They provide access to tweet IDs and annotations in a public repository.</p>
+</div>
+<div id="S2.p3" class="ltx_para">
+<p class="ltx_p"><cite class="ltx_cite ltx_citemacro_citep">(Pierri et al., <a href="#bib.bib21" title="" class="ltx_ref">2020</a>)</cite> analyze the prevalence of Italian disinformation spreading on Twitter in the five months preceding the 2019 European Parliament election. They collect over 300 k tweets sharing thousands of news articles originating from websites flagged as unreliable by journalists and fact-checkers, providing public access to tweet IDs and lists of websites. The same authors provide a similar dataset collected in a different period of 2019, and that contains tweets sharing links to mainstream and traditional news websites, both in the Italian and French language <cite class="ltx_cite ltx_citemacro_citep">(Pierri, <a href="#bib.bib20" title="" class="ltx_ref">2020</a>)</cite>.</p>
+</div>
+<div id="S2.p4" class="ltx_para">
+<p class="ltx_p"><cite class="ltx_cite ltx_citemacro_citep">(Di Giovanni and Brambilla, <a href="#bib.bib13" title="" class="ltx_ref">2021</a>)</cite> study the polarization around the 2020 Italian constitutional referendum. They collect a dataset of 1.2 M tweets discussing the event – and provide access to their IDs –, with the goal of designing a hashtag-based semi-automatic approach to label Twitter users’ stance towards the referendum.</p>
+</div>
+<div id="S2.p5" class="ltx_para">
+<p class="ltx_p">Following the COVID-19 pandemic, several researchers collected social media data to study conversations around the crisis, with a particular focus on the impact of vaccine misinformation. <cite class="ltx_cite ltx_citemacro_citep">(Crupi et al., <a href="#bib.bib10" title="" class="ltx_ref">2022</a>)</cite> study the evolution of Italian Twitter conversations around vaccines during the period 2019-2021,
+whereas <cite class="ltx_cite ltx_citemacro_citep">(Di Giovanni et al., <a href="#bib.bib14" title="" class="ltx_ref">2022</a>)</cite> collect tweets in multiple languages (French, German and Italian) during the first year of world vaccination programs. Both contributions give public access to tweet IDs, with the latter providing also a set of labeled pro/anti-vaccines tweets and hashtags that can be used for training machine learning classifiers.</p>
+</div>
+<div id="S2.p6" class="ltx_para">
+<p class="ltx_p"><cite class="ltx_cite ltx_citemacro_citep">(Calisir and Brambilla, <a href="#bib.bib7" title="" class="ltx_ref">2020</a>)</cite> provide a dataset of tweets discussing Brexit for a period of 45 months, from January 2016 until September 2019. The data, which comprises 50.8 million tweets and 3.97 million users, is enriched with metadata such as the bot score of users, sentiment score of tweets, and political stance labels predicted by a classifier developed by the authors.</p>
+</div>
+<div id="S2.p7" class="ltx_para">
+<p class="ltx_p">There is a large number of datasets that focus on the U.S. elections (both presidential and midterms), and we provide here a non-exhaustive list of available resources. <cite class="ltx_cite ltx_citemacro_citep">(Hanna et al., <a href="#bib.bib17" title="" class="ltx_ref">2011</a>)</cite> map candidates from the 2010 U.S. Midterm election with their Twitter accounts and a random sample of their followers. <cite class="ltx_cite ltx_citemacro_citep">(Bovet and Makse, <a href="#bib.bib6" title="" class="ltx_ref">2019</a>)</cite> collect over 171 M tweets in the English language, mentioning Donald Trump and Hillary Clinton during the 2016 U.S. Presidential election. <cite class="ltx_cite ltx_citemacro_citep">(Deb et al., <a href="#bib.bib11" title="" class="ltx_ref">2019</a>)</cite> and <cite class="ltx_cite ltx_citemacro_citep">(Yang et al., <a href="#bib.bib25" title="" class="ltx_ref">2022</a>)</cite> collect tweets discussing the 2018 U.S. Midterm election, both using a hashtag-based search (e.g. tweets sharing the hashtag ”#ivoted” on election day) and querying Twitter APIs with general keywords related to the midterm election. <cite class="ltx_cite ltx_citemacro_citep">(Chen et al., <a href="#bib.bib8" title="" class="ltx_ref">2022</a>)</cite> provide a longitudinal dataset of over 1.2 billion U.S. politics- and election-related tweets shared around the period of the 2020 U.S. Presidential election. Related to the same election, <cite class="ltx_cite ltx_citemacro_citep">(Abilov et al., <a href="#bib.bib2" title="" class="ltx_ref">2021</a>)</cite> release a multi-modal dataset of 7.6 M tweets and 25.6 M retweets from 2.6 M users related to voter fraud claims. They augmented the data with cluster labels, users’ suspension status, and perceptual hashes of tweeted images as well as aggregate data from external links and YouTube videos shared on Twitter. Lastly, <cite class="ltx_cite ltx_citemacro_citep">(Aiyappa et al., <a href="#bib.bib3" title="" class="ltx_ref">2023</a>)</cite> recently released a multi-platform dataset of public social media posts related to the 2022 US Election, which is very similar to the present resource.</p>
+</div>
+<div id="S2.p8" class="ltx_para">
+<p class="ltx_p">Unlike most existing datasets that focused only on Twitter or other individual platforms, our dataset covers a diverse set of social media platforms. In addition, we provide access to political ads placed on Meta plaforms as well as social media handles of political representatives. Insofar, our resource enable researchers to gain a more comprehensive understanding of social media discourse during the Italian election.</p>
+</div>
+</section>
+<section id="S3" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">3. </span>Data Collection</h2>
+
+<div id="S3.p1" class="ltx_para">
+<p class="ltx_p">This section describes the data collection procedure(s) carried out to gather data from different social media platforms. We remark that we employed the same list of keywords related to the Italian election, which we obtained through a snowball sampling approach using Twitter data only, to query different APIs. Our dataset conforms with FAIR principles: it is <span class="ltx_text ltx_font_italic">Findable</span>, <span class="ltx_text ltx_font_italic">Accessible</span> and <span class="ltx_text ltx_font_italic">Reusable</span> as it is publicly accessible in an online Github<span id="footnote4" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">4</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">4</sup>
+            <span class="ltx_tag ltx_tag_note">4</span>
+            
+            
+            
+          <a href="github.com/frapierri/ita-election-2022" title="" class="ltx_ref ltx_url ltx_font_typewriter">github.com/frapierri/ita-election-2022</a></span></span></span> and DataVerse repository<span id="footnote5" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">5</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">5</sup>
+            <span class="ltx_tag ltx_tag_note">5</span>
+            
+            
+            
+          <a href="doi.org/10.7910/DVN/EALXH2" title="" class="ltx_ref ltx_url ltx_font_typewriter">doi.org/10.7910/DVN/EALXH2</a></span></span></span>, where we provide the means to recreate it almost completely (see limitations discussed next). It is also <span class="ltx_text ltx_font_italic">Interoperable</span> as the data files are released in “.csv” and “.txt” formats. We summarize some statistics of the dataset in Table <a href="#S3.T1" title="Table 1 ‣ 3.1. Twitter ‣ 3. Data Collection ‣ ITA-ELECTION-2022: A multi-platform dataset of social media conversations around the 2022 Italian general election" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>.</p>
+</div>
+<div id="S3.p2" class="ltx_para">
+<p class="ltx_p">We remark that, at the time of this writing, <span class="ltx_text ltx_font_italic">it is unclear whether Twitter APIs will be as easily accessible to researchers</span> as they were during the collection of this dataset, and this might affect future usage of this resource. We encourage interested researchers in reaching out to us in case they find difficulties in accessing Twitter data.</p>
+</div>
+<section id="S3.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.1. </span>Twitter</h3>
+
+<div id="S3.SS1.p1" class="ltx_para">
+<p class="ltx_p">We collected all tweets in the Italian language related to the election by using <span class="ltx_text ltx_font_typewriter">tweepy</span> Python library to query Twitter v1.1 Filter streaming API endpoint<span id="footnote6" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">6</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">6</sup>
+              <span class="ltx_tag ltx_tag_note">6</span>
+              
+              
+              
+            developer.twitter.com/en/docs/twitter-api/v1/tweets/filter-realtime/overview</span></span></span> in the period September 2nd, 2022 - October 20th, 2022. We also leveraged Twitter historical Search API v2 endpoint<span id="footnote7" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">7</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">7</sup>
+              <span class="ltx_tag ltx_tag_note">7</span>
+              
+              
+              
+            developer.twitter.com/en/docs/twitter-api/tweets/search/introduction</span></span></span> to collect tweets retrospectively in the period July 1st, 2022 - September 1st, 2022. To query Twitter APIs we employed a snowball sampling approach, following existing work <cite class="ltx_cite ltx_citemacro_citep">(Di Giovanni et al., <a href="#bib.bib14" title="" class="ltx_ref">2022</a>; DeVerna et al., <a href="#bib.bib12" title="" class="ltx_ref">2021</a>)</cite>, and generated a list of relevant keywords starting with seed terms such as “elezioni2022” and “elezioni”(which means ”elections” in Italian); the final list contains 62 keywords and it is available in the repository associated with this paper. A sample is provided in Table <a href="#S3.T2" title="Table 2 ‣ 3.1. Twitter ‣ 3. Data Collection ‣ ITA-ELECTION-2022: A multi-platform dataset of social media conversations around the 2022 Italian general election" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>. The total collection of tweets contains 19,087,594 tweets shared by 618,089 unique users. We remark that to abide by Twitter’s terms of service we only share tweet IDs publicly. These can be “re-hydrated” to retrieve tweet objects, with the exception of removed or protected tweets, by querying Twitter API directly or using tools like <span class="ltx_text ltx_font_typewriter">Hydrator<span id="footnote8" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">8</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">8</sup>
+                <span class="ltx_tag ltx_tag_note"><span class="ltx_text ltx_font_serif">8</span></span>
+                
+                
+                
+              <a href="github.com/DocNow/hydrator" title="" class="ltx_ref ltx_url">github.com/DocNow/hydrator</a></span></span></span></span> and <span class="ltx_text ltx_font_typewriter">twarc</span>.<span id="footnote9" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">9</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">9</sup>
+              <span class="ltx_tag ltx_tag_note">9</span>
+              
+              
+              
+            <a href="github.com/DocNow/twarc" title="" class="ltx_ref ltx_url ltx_font_typewriter">github.com/DocNow/twarc</a></span></span></span></p>
+</div>
+<figure id="S3.T1" class="ltx_table">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t"><span class="ltx_text ltx_font_bold" style="font-size:90%;">Platform</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column ltx_border_t"><span class="ltx_text ltx_font_bold" style="font-size:90%;">Statistics</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">Twitter</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">19,087,594 tweets</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td"></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">618,089 unique accounts</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">Facebook</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">1,142,812 posts</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td"></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">445,461 unique accounts</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">Instagram</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">68,078 posts</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td"></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">5,274 unique accounts</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">Meta</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">29,211 ads</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td"></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">3,750 unique sponsors</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">YouTube</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">22,754 unique videos (Twitter)</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td"></td>
+<td class="ltx_td ltx_align_left"><span class="ltx_text" style="font-size:90%;">17,401 unique videos (FB)</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">TikTok</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">1,903 unique videos (Twitter)</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_border_b"></td>
+<td class="ltx_td ltx_align_left ltx_border_b"><span class="ltx_text" style="font-size:90%;">1,744 unique videos (FB)</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">Table 1. </span>Statistics of the dataset.</figcaption>
+</figure>
+<figure id="S3.T2" class="ltx_table">
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">elezioni</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">partito democratico</span></th>
+<th class="ltx_td ltx_align_left ltx_th ltx_th_column"><span class="ltx_text" style="font-size:90%;">berlusconi</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">renzi</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">movimento 5 stelle</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">salvini</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">calenda</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">di maio</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t"><span class="ltx_text" style="font-size:90%;">politiche2022</span></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_t"><span class="ltx_text" style="font-size:90%;">meloni</span></td>
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_t"><span class="ltx_text" style="font-size:90%;">elezioni2022</span></td>
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_t"><span class="ltx_text" style="font-size:90%;">conte</span></td>
+</tr>
+</tbody>
+</table>
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">Table 2. </span>A sample of Italian language keywords related to the 2022 election that were used to retrieve social media posts in our dataset.</figcaption>
+</figure>
+</section>
+<section id="S3.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.2. </span>Facebook and Instagram posts</h3>
+
+<div id="S3.SS2.p1" class="ltx_para">
+<p class="ltx_p">We collected Facebook and Instagram data by employing CrowdTangle, a public tool owned and operated by Meta <cite class="ltx_cite ltx_citemacro_citep">(CrowdTangle Team, <a href="#bib.bib9" title="" class="ltx_ref">2022</a>)</cite> that allows retrieving posts shared by public pages and groups with a certain amount of followers or that were manually added by other researchers on the platform <span id="footnote10" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">10</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">10</sup>
+              <span class="ltx_tag ltx_tag_note">10</span>
+              
+              
+              
+            <a href="help.crowdtangle.com/en/articles/1140930-what-data-is-crowdtangle-tracking" title="" class="ltx_ref ltx_url ltx_font_typewriter">help.crowdtangle.com/en/articles/1140930-what-data-is-crowdtangle-tracking</a></span></span></span>. We queried the <span class="ltx_text ltx_font_typewriter">/posts/search</span> endpoint<span id="footnote11" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">11</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">11</sup>
+              <span class="ltx_tag ltx_tag_note">11</span>
+              
+              
+              
+            <a href="github.com/CrowdTangle/API/wiki/Search" title="" class="ltx_ref ltx_url ltx_font_typewriter">github.com/CrowdTangle/API/wiki/Search</a></span></span></span> using the same list of keywords employed for collecting Twitter data. For each post, the API returns several attributes related to the post and the page or group (to which we refer as “account” in the following) that published it; the full list of attributes is available in the official documentation<span id="footnote12" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">12</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">12</sup>
+              <span class="ltx_tag ltx_tag_note">12</span>
+              
+              
+              
+            <a href="github.com/CrowdTangle/API/wiki" title="" class="ltx_ref ltx_url ltx_font_typewriter">github.com/CrowdTangle/API/wiki</a></span></span></span>. We retained only posts in the Italian language by filtering on the <span class="ltx_text ltx_font_typewriter">languageCode</span> parameter: the final dataset contains 1,142,812 Facebook posts, shared by 445,461 unique pages and groups and generating over 233 M interactions (shares, comments, reactions), and 68,078 Instagram posts, shared by 5,274 unique pages and generating over 97 M interactions (likes and comments).
+We provide access to the URLs and IDs of these posts in the repository associated with this paper<span id="footnote13" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">13</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">13</sup>
+              <span class="ltx_tag ltx_tag_note">13</span>
+              
+              
+              
+            <a href="github.com/CrowdTangle/API/wiki/Posts#get-postid" title="" class="ltx_ref ltx_url ltx_font_typewriter">github.com/CrowdTangle/API/wiki/Posts#get-postid</a></span></span></span>.</p>
+</div>
+</section>
+<section id="S3.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.3. </span>TikTok and YouTube videos</h3>
+
+<div id="S3.SS3.p1" class="ltx_para">
+<p class="ltx_p">We augmented our dataset of social media posts by extracting metadata for TikTok and YouTube videos shared in Facebook and Twitter messages present in our dataset. It is worth mentioning that no such links are shared in Instagram posts. For what concerns YouTube, we identified all external links to the platform and employed the official YouTube API<span id="footnote14" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">14</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">14</sup>
+              <span class="ltx_tag ltx_tag_note">14</span>
+              
+              
+              
+            <a href="developers.google.com/youtube/v3" title="" class="ltx_ref ltx_url ltx_font_typewriter">developers.google.com/youtube/v3</a></span></span></span> to extract video information such as the author, channel ID, video title, description, top 10 popular comments, etc. The resulting collection yields metadata for 22,754 unique YouTube videos shared on Twitter and 17,401 unique YouTube videos shared on Facebook. For what concerns TikTok, given the lack of an official API, we employed <span class="ltx_text ltx_font_typewriter">pyktok</span> Python library<span id="footnote15" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">15</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">15</sup>
+              <span class="ltx_tag ltx_tag_note">15</span>
+              
+              
+              
+            <a href="github.com/dfreelon/pyktok" title="" class="ltx_ref ltx_url ltx_font_typewriter">github.com/dfreelon/pyktok</a></span></span></span> to collect metadata about TikTok videos such as the title, description, length as well as information about the author of the video.
+The resulting collection yields metadata for 1,903 unique TikTok videos shared on Twitter and 1,744 unique TikTok videos shared on Facebook. We provide full access to this metadata in the repository associated with the paper.</p>
+</div>
+</section>
+<section id="S3.SS4" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.4. </span>Facebook and Instagram ads</h3>
+
+<figure id="S3.F1" class="ltx_figure">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_3">
+<div class="ltx_block ltx_figure_panel ltx_minipage ltx_align_center ltx_align_middle" style="width:208.1pt;">
+<img src="x1.jpg" id="S3.F1.g1" class="ltx_graphics ltx_img_landscape" width="598" height="394" alt="Refer to caption">
+</div>
+</div>
+<div class="ltx_flex_cell ltx_flex_size_3">
+<div class="ltx_block ltx_figure_panel ltx_minipage ltx_align_center ltx_align_middle" style="width:208.1pt;">
+<img src="x2.jpg" id="S3.F1.g2" class="ltx_graphics ltx_img_square" width="598" height="592" alt="Refer to caption">
+</div>
+</div>
+</div>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 1. </span>Example of an ad run on Meta platforms along with the information provided by Meta Ad Library API.</figcaption><div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1"><span class="ltx_ERROR ltx_centering ltx_figure_panel undefined">\Description</span></div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1">
+<p class="ltx_p ltx_figure_panel ltx_align_center">Illustration of an advertisement on Meta platforms. The image shows the ad and corresponding data from the Meta Ad Library API.</p>
+</div>
+</div>
+</figure>
+<div id="S3.SS4.p1" class="ltx_para">
+<p class="ltx_p">We leveraged Meta Ad Library API<span id="footnote16" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">16</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">16</sup>
+              <span class="ltx_tag ltx_tag_note">16</span>
+              
+              
+              
+            <a href="www.facebook.com/ads/library/api" title="" class="ltx_ref ltx_url ltx_font_typewriter">www.facebook.com/ads/library/api</a></span></span></span> to collect all ads about “social issues, elections or politics” that were active on Meta platforms (i.e., Facebook, Instagram, Messenger, and the Audience Network) during the period from July 1st, 2022 - October 20th, 2022. We provide an example of a sponsored ad in Figure <a href="#S3.F1" title="Figure 1 ‣ 3.4. Facebook and Instagram ads ‣ 3. Data Collection ‣ ITA-ELECTION-2022: A multi-platform dataset of social media conversations around the 2022 Italian general election" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>. We queried the API with the same set of keywords mentioned beforehand; the API allows to search ads using one keyword at a time, and we queried the endpoint multiple times eventually discarding duplicated ads. The resulting collection contains 29,211 unique ads paid by 3,750 unique sponsors. For each ad, the API provides several different attributes: date of creation, period when the ad is active, name of the sponsor, message, platform on which the ad is active, lower and upper bound for the amount spent and the number of impressions generated, etc. Each of these attributes is detailed in the API documentation, as referenced in the footnote above. In the repository associated with this dataset we provide access to the ID of ads, which can be then used to retrieve ads through Meta Ad Library interactive search console or API. In particular, to abide by Meta’s terms of use, an identification procedure is required to access the API endpoint, whereas the interactive search console only requires a Meta account.</p>
+</div>
+</section>
+<section id="S3.SS5" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.5. </span>Social media handles of political representatives</h3>
+
+<div id="S3.SS5.p1" class="ltx_para">
+<p class="ltx_p">We compiled a list of Facebook, Instagram and Twitter handles of elected members in the Senate and Chamber of deputies based on the official list released by the Italian Ministry of Interior<span id="footnote17" class="ltx_note ltx_role_footnote"><sup class="ltx_note_mark">17</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">17</sup>
+              <span class="ltx_tag ltx_tag_note">17</span>
+              
+              
+              
+             <a href="github.com/ondata/elezioni-politiche-2022" title="" class="ltx_ref ltx_url ltx_font_typewriter">github.com/ondata/elezioni-politiche-2022</a></span></span></span>. Specifically, for each representative, we manually checked whether their official account was present on the three platforms.
+In our dataset, we matched over 450 Twitter accounts and Facebook pages, and approximately 300 Instagram accounts. The full list is available in the repository associated with this paper. We refer the interested reader to a similar useful resource presented by <cite class="ltx_cite ltx_citemacro_citep">(Haman and Školník, <a href="#bib.bib16" title="" class="ltx_ref">2021</a>)</cite>, who provide an online running database of politicians’ activity on social media (currently only Twitter is supported) spanning multiple countries.</p>
+</div>
+</section>
+</section>
+<section id="S4" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">4. </span>Potential Applications</h2>
+
+<div id="S4.p1" class="ltx_para">
+<p class="ltx_p">There are several potential applications for our dataset, which can consider a single platform or multiple ones at the same time.</p>
+</div>
+<div id="S4.p2" class="ltx_para">
+<p class="ltx_p">Interested researchers could further current understanding of polarization processes taking place during election seasons by analyzing content shared on multiple social platforms at once. They could study whether “echo-chamber” effects take place on different platforms, highlighting similarities and differences in their formation process.</p>
+</div>
+<div id="S4.p3" class="ltx_para">
+<p class="ltx_p">Other researchers might leverage the data in order to study how political candidates interacted with potential voters on social media platforms, thus analyzing in detail the political communication strategies put in place by different candidates. They could also investigate the presence of correlational effects between online signals and electoral outcomes, or detect the presence of toxic and hateful speech originating in specific communities of political supporters.</p>
+</div>
+<div id="S4.p4" class="ltx_para">
+<p class="ltx_p">Some researchers could investigate the presence of mis/disinformation and astroturfing campaigns taking place in the run-up to the election, studying patterns of similarities and differences among different platforms. They could also analyze how fringe and harmful content spreads across communities present on different platforms, and whether influential accounts play a role in amplifying certain malicious narratives.</p>
+</div>
+</section>
+<section id="S5" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">5. </span>Conclusions</h2>
+
+<div id="S5.p1" class="ltx_para">
+<p class="ltx_p">We released <span class="ltx_text ltx_font_typewriter">ITA-ELECTION-2022</span>, a large-scale dataset of social media posts in the Italian language discussing the 2022 Italian General election, which took place on 25th September 2022, spanning multiple online platforms and covering a period of four months. In addition to gathering posts shared on Twitter, Facebook and Instagram, we collected ads sponsored on Meta platforms, we extracted metadata for YouTube and TikTok videos shared on different platforms during the collection period, and we compiled a list of social media handles associated to political representatives that can be used to gather further data. We described in detail the collection procedures carried out to build the dataset, and we suggested potential directions for future research.</p>
+</div>
+<div id="S5.p2" class="ltx_para">
+<p class="ltx_p">Our work is not without limitations. First, our keyword-based search might entail results that are not completely accurate, e.g., one of the terms employed for the query is “conte”, which might refer both to former PM Giuseppe Conte and football manager Antonio Conte. From another perspective, election-related terms might have been employed for marketing campaigns and promoting content that is not pertinent to the election. However, while we are unable to address these issues, which would require non-trivial efforts, researchers can further refine our data collection to meet their needs. Moreover, we performed a backward search to retrieve Twitter, Facebook and Instagram posts shared from July to September 2022, and we missed those that were deleted or removed during the same period. Similarly, by providing access only to IDs and URLs of collected posts, posts that have been removed or made private by users cannot be retrieved, thus limiting reproducibility analyses. Furthermore, we did not filter out the activity of automated and inauthentic accounts that might have polluted organic conversations around the election. Another limitation concerns Meta which, as highlighted in <cite class="ltx_cite ltx_citemacro_citep">(Le Pochat et al., <a href="#bib.bib19" title="" class="ltx_ref">2022</a>)</cite>, might not accurately label all political ads as such and our collection might be missing some data. Finally, the user base of different platforms analyzed in this work might not be fully representative of the actual Italian population, and this should be taken into consideration by future research.</p>
+</div>
+<div id="S5.p3" class="ltx_para">
+<p class="ltx_p">Despite these limitations, we believe that our dataset provides fertile ground for a number of intriguing and interesting research applications. We hope that this resource can advance our understanding of the interplay between online social media and democratic processes.</p>
+</div>
+</section>
+<section id="S6" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">6. </span>Ethical considerations</h2>
+
+<div id="S6.p1" class="ltx_para">
+<p class="ltx_p">We performed our data collection and public release in complete agreement with the platforms’ terms of service. We acknowledge that TikTok metadata was scraped from the platform, thus potentially violating the platform’s terms of service, but this was due to the lack of an official API <cite class="ltx_cite ltx_citemacro_citep">(Freelon, <a href="#bib.bib15" title="" class="ltx_ref">2018</a>)</cite>. We do not directly share the raw content of social media posts, but rather provide access to IDs and URLs that can be used to retrieve the original data, with the exception of posts that have been deleted by platforms, and removed or made private by their author. We did not cause any harm to nor expose information about individual users in the process of collecting and releasing the data, with the only exception of political representatives. We understand that disclosing their social media accounts might open up to potential abuse by malicious actors, but at the same time, it enables researchers, journalists and other stakeholders to put important public actors, such as the members of the Italian Parliament and Senate, to scrutiny in order to better understand the influence of social media platforms on the democratic process. Finally, we reckon that Twitter might limit access to its public APIs, and we encourage interested researchers in contacting us may they encounter difficulties in retrieving Twitter data.</p>
+</div>
+</section>
+<section id="bib" class="ltx_bibliography">
+<h2 class="ltx_title ltx_title_bibliography">References</h2>
+
+<ul class="ltx_biblist">
+      
+<li id="bib.bib1" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">(1)</span>
+<span class="ltx_bibblock">        
+
+
+
+
+</span>
+</li>
+      
+<li id="bib.bib2" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Abilov et al. (2021)</span>
+<span class="ltx_bibblock">
+Anton Abilov, Yiqing Hua,
+Hana Matatov, Ofra Amir, and
+Mor Naaman. 2021.
+
+</span>
+<span class="ltx_bibblock">VoterFraud2020: a Multi-modal Dataset of Election
+Fraud Claims on Twitter. In <em class="ltx_emph ltx_font_italic">Proceedings of the
+International AAAI Conference on Web and Social Media</em>,
+Vol. 15. 901–912.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib3" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Aiyappa et al. (2023)</span>
+<span class="ltx_bibblock">
+Rachith Aiyappa, Matthew R
+DeVerna, Manita Pote, Bao Tran Truong,
+Wanying Zhao, David Axelrod,
+Aria Pessianzadeh, Zoher Kachwala,
+Munjung Kim, Ozgur Can Seckin,
+et al. 2023.
+
+</span>
+<span class="ltx_bibblock">A multi-platform collection of social media posts
+about the 2022 US midterm elections. In
+<em class="ltx_emph ltx_font_italic">Proceedings of the International AAAI Conference on
+Web and Social Media</em>, Vol. 17. 981–989.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib4" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Allcott and Gentzkow (2017)</span>
+<span class="ltx_bibblock">
+Hunt Allcott and Matthew
+Gentzkow. 2017.
+
+</span>
+<span class="ltx_bibblock">Social media and fake news in the 2016 election.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">Journal of economic perspectives</em>
+31, 2 (2017),
+211–36.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib5" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Basile et al. (2018)</span>
+<span class="ltx_bibblock">
+Valerio Basile, Mirko
+Lai, and Manuela Sanguinetti.
+2018.
+
+</span>
+<span class="ltx_bibblock">Long-term social media data collection at the
+university of turin. In <em class="ltx_emph ltx_font_italic">Proceedings of the Fifth
+Italian Conference on Computational Linguistics (CLiC-it 2018)</em>. CEUR-WS,
+1–6.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib6" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Bovet and Makse (2019)</span>
+<span class="ltx_bibblock">
+Alexandre Bovet and
+Hernán A Makse. 2019.
+
+</span>
+<span class="ltx_bibblock">Influence of fake news in Twitter during the 2016
+US presidential election.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">Nature communications</em> 10,
+1 (2019), 1–14.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib7" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Calisir and Brambilla (2020)</span>
+<span class="ltx_bibblock">
+Emre Calisir and Marco
+Brambilla. 2020.
+
+</span>
+<span class="ltx_bibblock">The Long-Running Debate about Brexit on Social
+Media. In <em class="ltx_emph ltx_font_italic">Proceedings of the International AAAI
+Conference on Web and Social Media</em>, Vol. 14.
+848–852.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib8" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Chen et al. (2022)</span>
+<span class="ltx_bibblock">
+Emily Chen, Ashok Deb,
+and Emilio Ferrara. 2022.
+
+</span>
+<span class="ltx_bibblock"># Election2020: The first public Twitter dataset
+on the 2020 US Presidential election.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">Journal of Computational Social Science</em>
+5, 1 (2022),
+1–18.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib9" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">CrowdTangle Team (2022)</span>
+<span class="ltx_bibblock">
+CrowdTangle Team.
+2022.
+
+</span>
+<span class="ltx_bibblock">CrowdTangle.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+<span class="ltx_bibblock">
+<a href="https://crowdtangle.com/" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://crowdtangle.com/</a>
+
+</span>
+</li>
+      
+<li id="bib.bib10" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Crupi et al. (2022)</span>
+<span class="ltx_bibblock">
+Giuseppe Crupi, Yelena
+Mejova, Michele Tizzani, Daniela
+Paolotti, and André Panisson.
+2022.
+
+</span>
+<span class="ltx_bibblock">Echoes through Time: Evolution of the Italian
+COVID-19 Vaccination Debate. In <em class="ltx_emph ltx_font_italic">Proceedings of the
+International AAAI Conference on Web and Social Media</em>,
+Vol. 16. 102–113.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib11" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Deb et al. (2019)</span>
+<span class="ltx_bibblock">
+Ashok Deb, Luca Luceri,
+Adam Badaway, and Emilio Ferrara.
+2019.
+
+</span>
+<span class="ltx_bibblock">Perils and challenges of social media and election
+manipulation analysis: The 2018 us midterms. In
+<em class="ltx_emph ltx_font_italic">Companion proceedings of the 2019 world wide web
+conference</em>. 237–247.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib12" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">DeVerna et al. (2021)</span>
+<span class="ltx_bibblock">
+Matthew DeVerna, Francesco
+Pierri, Bao Truong, John Bollenbacher,
+David Axelrod, Niklas Loynes,
+Cristopher Torres-Lugo, Kai-Cheng Yang,
+Fil Menczer, and John Bryden.
+2021.
+
+</span>
+<span class="ltx_bibblock">CoVaxxy: A global collection of English Twitter
+posts about COVID-19 vaccines.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">Proceedings of the International AAAI
+Conference on Web and Social Media</em> (2021).
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib13" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Di Giovanni and Brambilla (2021)</span>
+<span class="ltx_bibblock">
+Marco Di Giovanni and
+Marco Brambilla. 2021.
+
+</span>
+<span class="ltx_bibblock">Content-based Stance Classification of Tweets about
+the 2020 Italian Constitutional Referendum. In
+<em class="ltx_emph ltx_font_italic">SocialNLP@ NAACL 2021</em>. 14–23.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib14" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Di Giovanni et al. (2022)</span>
+<span class="ltx_bibblock">
+Marco Di Giovanni,
+Francesco Pierri, Christopher
+Torres-Lugo, and Marco Brambilla.
+2022.
+
+</span>
+<span class="ltx_bibblock">VaccinEU: COVID-19 vaccine conversations on Twitter
+in French, German and Italian. In <em class="ltx_emph ltx_font_italic">Proceedings of
+the International AAAI Conference on Web and Social Media</em>,
+Vol. 16. 1236–1244.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib15" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Freelon (2018)</span>
+<span class="ltx_bibblock">
+Deen Freelon.
+2018.
+
+</span>
+<span class="ltx_bibblock">Computational research in the post-API age.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">Political Communication</em>
+35, 4 (2018),
+665–668.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib16" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Haman and Školník (2021)</span>
+<span class="ltx_bibblock">
+Michael Haman and Milan
+Školník. 2021.
+
+</span>
+<span class="ltx_bibblock">Politicians on Social Media. The online database of
+members of national parliaments on Twitter.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">Profesional de la información</em>
+30, 2 (2021).
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib17" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Hanna et al. (2011)</span>
+<span class="ltx_bibblock">
+Alexander Hanna, Ben
+Sayre, Leticia Bode, JungHwan Yang,
+and Dhavan Shah. 2011.
+
+</span>
+<span class="ltx_bibblock">Mapping the political Twitterverse: Candidates and
+their followers in the midterms. In <em class="ltx_emph ltx_font_italic">Proceedings of
+the International AAAI Conference on Web and Social Media</em>,
+Vol. 5. 510–513.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib18" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Kim et al. (2016)</span>
+<span class="ltx_bibblock">
+Yeojin Kim, William J
+Gonzenbach, Chris J Vargo, and Youngju
+Kim. 2016.
+
+</span>
+<span class="ltx_bibblock">First and second levels of intermedia agenda
+setting: Political advertising, newspapers, and Twitter during the 2012 US
+presidential election.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">International Journal of Communication</em>
+10 (2016), 20.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib19" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Le Pochat et al. (2022)</span>
+<span class="ltx_bibblock">
+Victor Le Pochat, Laura
+Edelson, Tom Van Goethem, Wouter Joosen,
+Damon McCoy, and Tobias Lauinger.
+2022.
+
+</span>
+<span class="ltx_bibblock">An Audit of Facebook’s Political Ad Policy
+Enforcement. In <em class="ltx_emph ltx_font_italic">Proceedings of the 31st USENIX
+Security Symposium</em>. USENIX Association.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib20" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Pierri (2020)</span>
+<span class="ltx_bibblock">
+Francesco Pierri.
+2020.
+
+</span>
+<span class="ltx_bibblock">The diffusion of mainstream and disinformation news
+on Twitter: the case of Italy and France. In
+<em class="ltx_emph ltx_font_italic">Companion proceedings of the web conference 2020</em>.
+617–622.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib21" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Pierri et al. (2020)</span>
+<span class="ltx_bibblock">
+Francesco Pierri,
+Alessandro Artoni, and Stefano Ceri.
+2020.
+
+</span>
+<span class="ltx_bibblock">Investigating Italian disinformation spreading on
+Twitter in the context of 2019 European elections.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">PloS one</em> 15,
+1 (2020), e0227821.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib22" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Rossi et al. (2021)</span>
+<span class="ltx_bibblock">
+Luca Rossi, Nicola
+Righetti, and Giada Marino.
+2021.
+
+</span>
+<span class="ltx_bibblock">(Nearly) Ten Years of Social Media and Political
+Elections in Italy: Questions, Platforms, and Methods.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">Social Media+ Society</em> 7,
+4 (2021),
+20563051211063460.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib23" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Sahly et al. (2019)</span>
+<span class="ltx_bibblock">
+Abdulsamad Sahly, Chun
+Shao, and K Hazel Kwon.
+2019.
+
+</span>
+<span class="ltx_bibblock">Social media for political campaigns: An
+examination of Trump’s and Clinton’s frame building and its effect on
+audience engagement.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">Social Media+ Society</em> 5,
+2 (2019),
+2056305119855141.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib24" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Vitak et al. (2011)</span>
+<span class="ltx_bibblock">
+Jessica Vitak, Paul Zube,
+Andrew Smock, Caleb T Carr,
+Nicole Ellison, and Cliff Lampe.
+2011.
+
+</span>
+<span class="ltx_bibblock">It’s complicated: Facebook users’ political
+participation in the 2008 election.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">CyberPsychology, behavior, and social
+networking</em> 14, 3
+(2011), 107–114.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+      
+<li id="bib.bib25" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yang et al. (2022)</span>
+<span class="ltx_bibblock">
+Kai-Cheng Yang, Pik-Mai
+Hui, and Filippo Menczer.
+2022.
+
+</span>
+<span class="ltx_bibblock">How Twitter data sampling biases US voter behavior
+characterizations.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic">PeerJ Computer Science</em> 8
+(2022), e1025.
+
+</span>
+<span class="ltx_bibblock">
+</span>
+</li>
+    
+</ul>
+</section>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Thu Dec  5 01:44:47 2024 by <a href="http://dlmf.nist.gov/LaTeXML/" class="ltx_LaTeXML_logo"><span style="letter-spacing:-0.2em; margin-right:0.1em;">L<span class="ltx_font_smallcaps" style="position:relative; bottom:2.2pt;">a</span>T<span class="ltx_font_smallcaps" style="font-size:120%;position:relative; bottom:-0.2ex;">e</span></span><span style="font-size:90%; position:relative; bottom:-0.2ex;">XML</span><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="Mascot Sammy"></a>
+</div></footer>
+</div>
+</body>
+</html>
