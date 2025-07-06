@@ -24,19 +24,51 @@ This repository contains all data, code, and results related to our study on ext
 │  ├── text_urls.json
 │  └── xml_urls.json
 │
-├── scripts/ # Scripts for format conversion and processing
+├── scripts/
 │  ├── convert_pdf_using_grobid.py
 │  ├── pdf_to_text_converter_arxiv.py
 │  └── convert_latex_to_html.sh
 │
-├── arxiv_extracted_urls_comparison.xlsx # Summary of format performance
-├── arxiv_file_formats.ipynb # Jupyter notebook with analysis and plots
+├── arxiv_extracted_urls_comparison.xlsx 
+├── arxiv_file_formats.ipynb
 └── README.md
 
 ```
 
 ---
 
+## 📁 Data
+
+- The data/ folder includes the same arXiv papers in:
+
+   - `pdf/`: original PDFs
+   - `latex/`: LaTeX source files
+   - `html/`: converted using LaTeXML
+   - `xml/`: converted using GROBID
+   - `text/`: plain text via PyMuPDF
+   
+- `*.json` files in `results/` contain extracted URL lists by format.
+- `arxiv_extracted_urls_comparison.xlsx` summarizes format coverage and valid URL extractions.
+---
+
+## ⚙️ Key Scripts
+
+| scripts/{File}                         | Description                                      |
+|------------------------------------|--------------------------------------------------|
+| `pdf_to_text_converter_arxiv.py`   | Converts PDFs to plain text using PyMuPDF       |
+| `convert_pdf_using_grobid.py`      | Extracts XML from PDFs using GROBID             |
+| `convert_latex_to_html.sh`         | Converts LaTeX source to HTML using LaTeXML     |
+
+---
+
+## 🛠️ Tools Used
+
+- Python 3.10.16
+- LaTeXML 0.8.8
+- GROBID 0.8.1
+- PyMuPDF 1.24.13
+
+---
 ## 🚀 To reproduce the results
 
 ### 1. Clone the Repository
@@ -59,40 +91,6 @@ cd arxiv-urls
 ### 3. Run the Jupyter Notebook
 
 - `arxiv_file_formats.ipynb` – Random paper selection, Format conversion, url extraction, visualizations
-
----
-
-## 📁 Data
-
-- The data/ folder includes the same arXiv papers in:
-
-   - `pdf/`: original PDFs
-   - `latex/`: LaTeX source files
-   - `html/`: converted using LaTeXML
-   - `xml/`: converted using GROBID
-   - `text/`: plain text via PyMuPDF
-   
-- `*.json` files in `results/` contain extracted URL lists by format.
-- `arxiv_extracted_urls_comparison.xlsx` summarizes format coverage and valid URL extractions.
----
-
-## ⚙️ Key Scripts
-
-| Script/{File}                         | Description                                      |
-|------------------------------------|--------------------------------------------------|
-| `pdf_to_text_converter_arxiv.py`   | Converts PDFs to plain text using PyMuPDF       |
-| `convert_pdf_using_grobid.py`      | Extracts XML from PDFs using GROBID             |
-| `convert_latex_to_html.sh`         | Converts LaTeX source to HTML using LaTeXML     |
-
----
-
-## 🛠️ Tools Used
-
-- Python 3.10.16
-- LaTeXML 0.8.8
-- GROBID 0.8.1
-- PyMuPDF 1.24.13
-
 ---
 
 
