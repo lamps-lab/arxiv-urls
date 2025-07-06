@@ -55,7 +55,7 @@ def convert_all_pdfs_in_directory(pdf_directory_path):
     Args:
         pdf_directory_path (str): Path to the root directory containing PDF files in nested directories.
     """
-    converted_root = "/data/datasets/arxiv-txt/"
+    converted_root = "/data/text/"
     os.makedirs(converted_root, exist_ok=True)
 
     count = 0

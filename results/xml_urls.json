@@ -1,0 +1,60 @@
+{
+  "2308.13469": [
+    "https://bmvc2022.mpi-inf.mpg.de/0126.pdf"
+  ],
+  "2108.04737": [
+    "https://github.com/AmBarry/erfe",
+    "https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.0006-341X.2005.030815.x"
+  ],
+  "2301.05119": [
+    "https://crowdtangle.com/"
+  ],
+  "2302.09293": [
+    "https://doi.org/10.1007/978-3-030-39250-5_13",
+    "https://doi.org/10.1093/cz/zoz016",
+    "https://doi.org/10.1109/JSEN.2021.3079366",
+    "https://doi.org/10.1145/1883612.1883613",
+    "https://doi.org/10.1145/380752.380859",
+    "https://doi.org/10.2196/35277",
+    "https://doi.org/10.3390/a14120349",
+    "https://doi.org/10.3390/a15110429",
+    "https://doi.org/10.3390/s22052012",
+    "https://doi.org/10.3847/1538-4365/aab766",
+    "https://doi.org/10.6084/m9.figshare.20039486.v1",
+    "https://doi.org/10.6084/m9.figshare.20288763.v2",
+    "https://doi.org/10.6084/m9.figshare.21415836.v2"
+  ],
+  "2101.07931": [
+    "https://blogs.cdc.gov/genomics/2020/04/06/using-digital/",
+    "https://pubmed.ncbi.nlm.nih.gov/32808095.32808095[pmid",
+    "https://www.cdc.gov/PCD/issues/2020/20_0246.htm",
+    "https://www.cdc.gov/coronavirus/2019-ncov/hcp/telehealth.html",
+    "https://www.cdc.gov/vaccines/covid-19/reporting/vams/index.html",
+    "https://www.centerforhealthsecurity.org/our-work/publications/interim-framework-for-covid-19-vaccine-allocation-and-distribut\\ion-in-the-us",
+    "https://www.fda.gov/vaccines-blood-biologics/vaccine-adverse-events/vaers-overview",
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7598529/#b0160"
+  ],
+  "1905.12790": [
+    "http://arxiv.org/abs/1707.06347",
+    "http://dx.doi.org/10.18653/v1/d17-1039",
+    "http://proceedings.mlr.press/v97/welleck19a.html",
+    "https://dl.fbaipublicfiles.com/XLM/mlm_ende_1024.pth",
+    "https://doi.org/10.1007/BF00992696",
+    "https://github.com/nyu-dl/dl4mt-seqgen"
+  ],
+  "1406.4592": [
+    "http://CRAN.R-project.org/doc/Rnews/",
+    "http://dx.doi.org/10.1371%2Fjournal.pone.0075707",
+    "http://www.R-project.org"
+  ],
+  "2112.03816": [
+    "https://doi.org/10.1038/nature14539",
+    "https://www.sciencedirect.com/science/article/pii/S188183661730188X",
+    "https://www.sciencedirect.com/science/article/pii/S2214317319303269"
+  ],
+  "2011.03287": [],
+  "2201.05256": [
+    "https://doi.org/10.5281/zenodo.5596294",
+    "https://github.com/Sushentsev/DapStep"
+  ]
+}
